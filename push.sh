@@ -326,7 +326,8 @@ prepare_stage() {
   # Pakai ls-files tanpa pola → list semua tracked, lalu filter.
   git ls-files 2>/dev/null | grep -E '^sessions/hisoka/' | while read -r f; do
     case "$f" in
-      sessions/hisoka/creds.json|sessions/hisoka/contacts.json|sessions/hisoka/groups.json) ;;
+      sessions/hisoka/creds.json|sessions/hisoka/contacts.json|sessions/hisoka/groups.json|\
+      sessions/hisoka/auth.db|sessions/hisoka/auth.db-shm|sessions/hisoka/auth.db-wal) ;;
       *) git rm --cached -q "$f" 2>>"$err_log" || true ;;
     esac
   done
@@ -344,6 +345,9 @@ prepare_stage() {
                 sessions/hisoka/creds.json \
                 sessions/hisoka/contacts.json \
                 sessions/hisoka/groups.json \
+                sessions/hisoka/auth.db \
+                sessions/hisoka/auth.db-shm \
+                sessions/hisoka/auth.db-wal \
                 attached_assets .agents \
                 .replit node_modules; do
     [ -e "$forced" ] || continue
