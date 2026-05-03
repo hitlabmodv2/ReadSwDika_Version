@@ -1453,7 +1453,12 @@ export default async function ({ message, type: messagesType }, hisoka) {
 
                                                 if (response && response.trim()) {
                                                         setAICooldown(m.sender);
-                                                        await processAIMediaAndSend(hisoka, m, response.trim());
+                                                        let autoSimiResp = response.trim();
+                                                        // Jangan balas stiker dengan stiker — strip semua marker stiker dari respons
+                                                        if (hasSticker) {
+                                                                autoSimiResp = autoSimiResp.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+                                                        }
+                                                        await processAIMediaAndSend(hisoka, m, autoSimiResp);
                                                         console.log(`\x1b[36m[AutoGemini]\x1b[39m Reply to ${userName} (${m.pushName}) in "${m.isGroup ? hisoka.getName(m.from) : 'DM'}" | Trigger: ${isBotMentioned ? 'mention' : 'reply'} | Media: ${hasMedia ? mediaLabel : 'none'}`);
 
                                                         // ── STIKER MEMORY: simpan analisis stiker baru ke DB (background) ──
@@ -1805,6 +1810,10 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 if (hasMedia) {
                                                                         autoFinalResponse = autoFinalResponse.replace(/\[GAMBAR:[^\]]{1,200}\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
                                                                 }
+                                                                // Jangan balas stiker dengan stiker — strip semua marker stiker dari respons
+                                                                if (hasSticker) {
+                                                                        autoFinalResponse = autoFinalResponse.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+                                                                }
                                                                 const mediaResult = await processAIMediaAndSend(hisoka, m, autoFinalResponse);
                                                                 const cleanResp = mediaResult.sentText;
                                                                 addToHistory(sessKey, userMessage, cleanResp || response.trim(), buildHistoryMeta(m, { mediaLabel: hasMedia ? mediaLabel : null }));
@@ -1966,7 +1975,12 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         }
 
                                                         if (pvResponse && pvResponse.trim()) {
-                                                                const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvResponse.trim());
+                                                                let pvFinalResponse = pvResponse.trim();
+                                                                // Jangan balas stiker dengan stiker — strip marker stiker dari respons
+                                                                if (pvHasSticker) {
+                                                                        pvFinalResponse = pvFinalResponse.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+                                                                }
+                                                                const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvFinalResponse);
                                                                 const pvClean = pvMediaResult.sentText;
                                                                 addToHistory(pvSessKey, pvUserMsg, pvClean || pvResponse.trim(), buildHistoryMeta(m, { mediaLabel: pvHasMedia ? pvMediaLabel : null }));
                                                                 console.log(`\x1b[36m[WilyPrivate]\x1b[39m ${pvUserName} | DM | Media: ${pvHasMedia ? pvMediaLabel : 'tidak ada'}`);
