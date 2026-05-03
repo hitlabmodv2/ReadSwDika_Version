@@ -396,11 +396,19 @@ export function buildDynamicAIBoost({
     userMessage = '',
     hasImage = false,
     hasSticker = false,
+    isStickerOnly = false,
     hasVideo = false,
     isDocumentMode = false,
     history = [],
 } = {}) {
     if (!userMessage && !hasImage && !hasSticker && !hasVideo && !isDocumentMode) return '';
+
+    // Sticker tanpa teks user → JANGAN inject reasoning/bullet, cukup info history
+    if (isStickerOnly) {
+        return history.length
+            ? `\n\n📌 KONTEKS: ${history.length} pesan sebelumnya tersedia — lanjutkan obrolan dari sana, jangan mulai ulang. Balas sticker dengan 1-3 kalimat natural SAJA.`
+            : `\n\n📌 Percakapan baru. Balas sticker dengan 1-3 kalimat natural SAJA.`;
+    }
 
     const topics = detectTopics(userMessage);
     const complexity = detectComplexity(userMessage);
@@ -1128,5 +1136,5 @@ Contoh BENAR:
 ${buildReactPromptRules()}
 ${buildPersonalityBoost(userName)}
 ${userMemory ? formatMemoryForPrompt(userMemory, userName) : ''}
-${buildDynamicAIBoost({ userMessage, hasImage, hasSticker, hasVideo, isDocumentMode, history })}`;
+${buildDynamicAIBoost({ userMessage, hasImage, hasSticker, isStickerOnly: hasSticker && !hasImage, hasVideo, isDocumentMode, history })}`;
 }
