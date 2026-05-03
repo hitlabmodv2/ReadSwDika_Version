@@ -1457,6 +1457,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         // Jangan balas stiker dengan stiker — strip semua marker stiker dari respons
                                                         if (hasSticker) {
                                                                 autoSimiResp = autoSimiResp.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+                                                                // Kalau setelah strip response jadi kosong, pakai fallback teks
+                                                                if (!autoSimiResp) autoSimiResp = 'Hehe~ stiker yang menarik 👀';
                                                         }
                                                         await processAIMediaAndSend(hisoka, m, autoSimiResp);
                                                         console.log(`\x1b[36m[AutoGemini]\x1b[39m Reply to ${userName} (${m.pushName}) in "${m.isGroup ? hisoka.getName(m.from) : 'DM'}" | Trigger: ${isBotMentioned ? 'mention' : 'reply'} | Media: ${hasMedia ? mediaLabel : 'none'}`);
@@ -1813,6 +1815,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 // Jangan balas stiker dengan stiker — strip semua marker stiker dari respons
                                                                 if (hasSticker) {
                                                                         autoFinalResponse = autoFinalResponse.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+                                                                        // Kalau setelah strip response jadi kosong, pakai fallback teks
+                                                                        if (!autoFinalResponse) autoFinalResponse = 'Hehe~ stiker yang menarik 👀';
                                                                 }
                                                                 const mediaResult = await processAIMediaAndSend(hisoka, m, autoFinalResponse);
                                                                 const cleanResp = mediaResult.sentText;
@@ -1979,6 +1983,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 // Jangan balas stiker dengan stiker — strip marker stiker dari respons
                                                                 if (pvHasSticker) {
                                                                         pvFinalResponse = pvFinalResponse.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+                                                                        // Kalau setelah strip response jadi kosong, pakai fallback teks
+                                                                        if (!pvFinalResponse) pvFinalResponse = 'Hehe~ stiker yang menarik 👀';
                                                                 }
                                                                 const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvFinalResponse);
                                                                 const pvClean = pvMediaResult.sentText;

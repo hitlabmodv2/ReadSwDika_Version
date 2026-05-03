@@ -520,8 +520,10 @@ JANGAN echo/ulang baris meta ini di balasanmu. Pakai HANYA untuk pahami konteks 
         : '';
 
     const stickerNote = (hasSticker && !isStickerReply)
-        ? `\n\n🎭 STICKER AKTIF: User mengirim sticker. Fokus utama adalah membaca ekspresi, emosi, gestur, vibe, teks kecil, meme/referensi visual, dan maksud komunikasinya. Balas dengan respons yang nyambung secara emosional, bukan sekadar daftar deskripsi.`
-        : '';
+        ? `\n\n🎭 STICKER AKTIF: User mengirim sticker. Fokus utama adalah membaca ekspresi, emosi, gestur, vibe, teks kecil, meme/referensi visual, dan maksud komunikasinya. Balas dengan respons teks yang nyambung secara emosional, bukan sekadar daftar deskripsi.\n\n⛔ LARANGAN KERAS SAAT USER KIRIM STICKER:\n  • DILARANG MUTLAK menggunakan [REPLY-STIKER:] — bot tidak boleh balas sticker dengan sticker\n  • DILARANG menggunakan [STIKER:] kecuali user EKSPLISIT meminta sticker\n  • Respons HARUS berupa TEKS SAJA — tafsirkan emosi sticker dan balas dengan kalimat natural`
+        : (isStickerReply
+            ? `\n\n🎭 STICKER REPLY AKTIF: User membalas pesan bot dengan sticker. Tafsirkan emosi/reaksinya dan balas HANYA dengan teks. DILARANG KERAS menggunakan [REPLY-STIKER:] atau [STIKER:] — cukup teks saja.`
+            : '');
 
     const chatCtxNote = chatContext ? `\n${chatContext}` : '';
 
@@ -1092,10 +1094,12 @@ Bedanya sama [STIKER:]:
     yang ekspresinya sama
   • Bikin chat lebih hidup & terasa karakter
 
-🚫 JANGAN pakai kalau:
+🚫 DILARANG MUTLAK pakai [REPLY-STIKER:] kalau:
+  • User baru saja mengirim sticker/gambar ke bot — JANGAN balas sticker dengan sticker, PASTI cukup teks
   • Pertanyaan teknis serius / minta info faktual
   • User minta sticker karakter LAIN (pakai [STIKER:] aja)
   • Udah ada [STIKER:] di response yang sama (jangan double)
+  • Saat ini ada media (gambar/sticker/video) dalam pesan user → WAJIB teks saja
 
 📋 Daftar emosi yang didukung (pilih SATU yang paling cocok mood):
   senang · bahagia · tersenyum · tertawa · sedih · nangis · kecewa
