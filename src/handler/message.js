@@ -49,7 +49,7 @@ import { searchAndGetImage, searchAndGetImages, extractImagesFromText } from '..
 import { extractVoiceNotesFromText, extractSongsFromText, extractVideosFromText, extractStickersFromText, extractReplyStickersFromText, extractTikTokFromText, extractInstagramFromText, extractYouTubeAudioFromText, hasMediaDownloadMarker, hasSocialDLMarker, hasStickerMarker } from '../helper/aiTools.js';
 import { getHistory, addToHistory, clearHistory, clearAllHistory, countHistory, getSessionKey, buildHistoryMeta, wrapCurrentUserMessage } from '../db/aiHistory.js';
 import { sendAIReply } from '../helper/aiReact.js';
-import { buildSmartAlbumCaptionPrompt, buildSmartImageHistoryPrompt, buildSmartImageWaitPrompt, buildWilyAICommandPrompt, buildWilyFallbackUserPrompt, buildWilyMediaUserPrompt, buildWilyVisionContextPrompt } from '../helper/aiPrompt.js';
+import { buildSmartAlbumCaptionPrompt, buildSmartImageHistoryPrompt, buildSmartImageWaitPrompt, buildWilyAICommandPrompt, buildWilyFallbackUserPrompt, buildWilyMediaUserPrompt, buildWilyVisionContextPrompt, buildVideoDownloadCaptionPrompt } from '../helper/aiPrompt.js';
 
 const WILY_VERBOSE_LOGS = process.env.WILY_VERBOSE_LOGS === 'true' || process.env.BOT_DEBUG_LOG === 'true';
 const wilyLog = (...args) => {
@@ -1308,7 +1308,14 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 imageMime = currentType === 'stickerMessage' ? 'image/webp' : 'image/jpeg';
                                                                 hasMedia = true;
                                                                 mediaLabel = currentType === 'stickerMessage' ? 'sticker' : 'gambar';
-                                                        } catch (_) {}
+                                                        } catch (_) {
+                                                                // Download gagal, tetap tandai media agar AI bisa merespons dengan konteks
+                                                                hasMedia = true;
+                                                                mediaLabel = currentType === 'stickerMessage' ? 'sticker' : 'gambar';
+                                                        }
+                                                } else if (currentType === 'videoMessage') {
+                                                        hasMedia = true;
+                                                        mediaLabel = 'video';
                                                 }
 
                                                 // Kalau tidak ada di pesan saat ini, coba dari pesan yang di-reply
@@ -1318,16 +1325,27 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 try {
                                                                         const cached = getCachedQuotedMedia(hisoka, m);
                                                                         imageBuffer = await getQuotedMediaBuffer(hisoka, m);
-                                                                        const info = getMediaInfo(qt, m.quoted, cached);
-                                                                        imageMime = info.mime;
+                                                                        if (imageBuffer?.length > 0) {
+                                                                                const info = getMediaInfo(qt, m.quoted, cached);
+                                                                                imageMime = info.mime;
+                                                                                hasMedia = true;
+                                                                                mediaLabel = info.label;
+                                                                        } else {
+                                                                                hasMedia = true;
+                                                                                mediaLabel = qt === 'stickerMessage' ? 'sticker' : 'gambar';
+                                                                        }
+                                                                } catch (_) {
                                                                         hasMedia = true;
-                                                                        mediaLabel = info.label;
-                                                                } catch (_) {}
+                                                                        mediaLabel = qt === 'stickerMessage' ? 'sticker' : 'gambar';
+                                                                }
+                                                        } else if (qt === 'videoMessage') {
+                                                                hasMedia = true;
+                                                                mediaLabel = 'video';
                                                         }
                                                 }
 
-                                                const hasSticker = hasMedia && mediaLabel === 'sticker';
-                                                const isImageReply = isReplyToBot && hasMedia;
+                                                const hasSticker = mediaLabel === 'sticker';
+                                                const isImageReply = isReplyToBot && hasMedia && mediaLabel !== 'video';
                                                 const isStickerReply = isReplyToBot && hasSticker;
 
                                                 // Kalau tidak ada teks dan tidak ada gambar, kasih pesan default
@@ -1514,7 +1532,15 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 imageMime = curType === 'stickerMessage' ? 'image/webp' : 'image/jpeg';
                                                                 hasMedia = true;
                                                                 mediaLabel = curType === 'stickerMessage' ? 'sticker' : 'gambar';
-                                                        } catch (_) {}
+                                                        } catch (_) {
+                                                                // Jika download gagal, tetap tandai hasMedia agar AI tahu ada media
+                                                                hasMedia = true;
+                                                                mediaLabel = curType === 'stickerMessage' ? 'sticker' : 'gambar';
+                                                        }
+                                                } else if (curType === 'videoMessage') {
+                                                        // Deteksi pesan video — bot balas dengan konteks video
+                                                        hasMedia = true;
+                                                        mediaLabel = 'video';
                                                 } else if (m.isQuoted && (qtType === 'imageMessage' || qtType === 'stickerMessage' || qtType === 'albumMessage')) {
                                                         try {
                                                                 const cached = getCachedQuotedMedia(hisoka, m);
@@ -1524,13 +1550,22 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                         imageMime = info.mime;
                                                                         hasMedia = true;
                                                                         mediaLabel = info.label;
+                                                                } else {
+                                                                        hasMedia = true;
+                                                                        mediaLabel = qtType === 'stickerMessage' ? 'sticker' : 'gambar';
                                                                 }
-                                                        } catch (_) {}
+                                                        } catch (_) {
+                                                                hasMedia = true;
+                                                                mediaLabel = qtType === 'stickerMessage' ? 'sticker' : 'gambar';
+                                                        }
+                                                } else if (m.isQuoted && qtType === 'videoMessage') {
+                                                        hasMedia = true;
+                                                        mediaLabel = 'video';
                                                 }
 
                                                 // Deteksi skenario: user reply pesan bot + kirim gambar sekaligus
-                                                const isImageReply = isReplyToBotMsg && hasMedia;
-                                                const hasSticker = hasMedia && mediaLabel === 'sticker';
+                                                const isImageReply = isReplyToBotMsg && hasMedia && mediaLabel !== 'video';
+                                                const hasSticker = mediaLabel === 'sticker';
                                                 const isStickerReply = isReplyToBotMsg && hasSticker;
 
                                                 if (!userMessage && !hasMedia) {
@@ -7937,6 +7972,17 @@ if (desc) {
 infoText += `╰════════════════════════╯`;
                                         
                                         await m.reply({ edit: loadingMsg.key, text: '✅ Berhasil! Mengirim media...' });
+
+                                        // Generate AI caption untuk TikTok
+                                        const aiCaptionPromiseTT = gemini.ask(buildVideoDownloadCaptionPrompt({
+                                            platform: 'TikTok',
+                                            title: desc || '',
+                                            author: author.nickname || author.username || author.unique_id || 'Unknown',
+                                            views: playCount || '',
+                                            likes: likeCount || '',
+                                            comments: commentCount || '',
+                                            description: desc || '',
+                                        })).catch(() => null);
                                         
                                         // Ekstrak video URL — handle format v3 (videoHD/videoSD) dan v2 (video.playAddr sebagai array)
                                         const pickUrl = (val) => {
@@ -7964,11 +8010,15 @@ infoText += `╰═════════════════════�
                                                 }
                                         }
                                         
+                                        // Tunggu AI caption selesai
+                                        const aiCaptionTT = await aiCaptionPromiseTT;
+                                        const finalCaptionTT = aiCaptionTT?.trim() || infoText;
+
                                         if (videoUrl) {
                                                 try {
                                                         await hisoka.sendMessage(m.from, {
                                                                 video: { url: videoUrl },
-                                                                caption: infoText
+                                                                caption: finalCaptionTT
                                                         }, { quoted: m });
                                                 } catch (videoErr) {
                                                         console.log('[TikTok] Video send failed:', videoErr.message);
@@ -7986,7 +8036,7 @@ infoText += `╰═════════════════════�
                                                                 try {
                                                                         await hisoka.sendMessage(m.from, {
                                                                                 image: { url: imgUrl },
-                                                                                caption: i === 0 ? infoText : `📷 ${i + 1}/${images.length}`
+                                                                                caption: i === 0 ? finalCaptionTT : `📷 ${i + 1}/${images.length}`
                                                                         }, { quoted: m });
                                                                 } catch (imgErr) {
                                                                         console.log('[TikTok] Image send failed:', imgErr.message);
@@ -8075,6 +8125,19 @@ infoText += `╰═════════════════════�
                                         }
                                         
                                         await m.reply({ edit: loadingMsg.key, text: '✅ Berhasil! Mengirim media...' });
+
+                                        // Generate AI caption untuk Instagram (paralel dengan pengiriman)
+                                        const aiCaptionPromiseIG = gemini.ask(buildVideoDownloadCaptionPrompt({
+                                            platform: 'Instagram',
+                                            author: username,
+                                            likes: likes ? likes.toLocaleString() : '',
+                                            comments: comments ? comments.toLocaleString() : '',
+                                            description: caption || '',
+                                        })).catch(() => null);
+
+                                        // Tunggu AI caption
+                                        const aiCaptionIG = await aiCaptionPromiseIG;
+                                        const finalCaptionIG = aiCaptionIG?.trim() || infoText;
                                         
                                         for (let i = 0; i < mediaUrls.length; i++) {
                                                 const mediaItem = mediaUrls[i];
@@ -8100,12 +8163,12 @@ infoText += `╰═════════════════════�
                                                         if (itemIsVideo) {
                                                                 await hisoka.sendMessage(m.from, {
                                                                         video: { url: mediaUrl },
-                                                                        caption: isFirstMedia ? infoText : ''
+                                                                        caption: isFirstMedia ? finalCaptionIG : ''
                                                                 }, { quoted: m });
                                                         } else {
                                                                 await hisoka.sendMessage(m.from, {
                                                                         image: { url: mediaUrl },
-                                                                        caption: isFirstMedia ? infoText : ''
+                                                                        caption: isFirstMedia ? finalCaptionIG : ''
                                                                 }, { quoted: m });
                                                         }
                                                 } catch (sendErr) {
@@ -9779,6 +9842,17 @@ infoText += `╰═════════════════════�
                                         mp3Caption += `│ ⬇️ _Sedang mengunduh audio MP3..._\n`;
                                         mp3Caption += `╰══════════════════════════════╯`;
 
+                                        // Generate AI caption secara paralel saat download berjalan
+                                        const aiCaptionPromiseYtmp3 = gemini.ask(buildVideoDownloadCaptionPrompt({
+                                            platform: 'YouTube Audio',
+                                            title: meta.title || '',
+                                            author: meta.uploader || meta.channel || '',
+                                            duration: durStr,
+                                            views: viewsFmt,
+                                            likes: meta.like_count ? parseInt(meta.like_count).toLocaleString('id-ID') : '',
+                                            description: meta.description || '',
+                                        })).catch(() => null);
+
                                         await hisoka.sendMessage(m.from, {
                                                 image: { url: thumbUrl },
                                                 caption: mp3Caption
@@ -9798,6 +9872,10 @@ infoText += `╰═════════════════════�
 
                                         const audioBuffer = fs.readFileSync(tmpFile);
 
+                                        // Tunggu AI caption selesai
+                                        const aiCaptionYtmp3 = await aiCaptionPromiseYtmp3;
+                                        const finalCaptionYtmp3 = aiCaptionYtmp3?.trim() || `🎵 *${meta.title}*\n👤 ${meta.uploader || ''}\n⏱️ ${durStr}`;
+
                                         await hisoka.sendMessage(m.from, {
                                                 audio: audioBuffer,
                                                 mimetype: 'audio/mpeg',
@@ -9806,7 +9884,7 @@ infoText += `╰═════════════════════�
                                         }, { quoted: m });
 
                                         await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
-                                        await m.reply({ edit: loadingMsg.key, text: `✅ *Audio MP3 berhasil dikirim!*\n📌 ${meta.title}` });
+                                        await m.reply({ edit: loadingMsg.key, text: `✅ *Audio MP3 berhasil dikirim!*\n\n${finalCaptionYtmp3}` });
 
                                         try { fs.unlinkSync(tmpFile); } catch (_) {}
 
@@ -9875,6 +9953,17 @@ infoText += `╰═════════════════════�
                                         mp4Caption += `│ ⬇️ _Sedang mengunduh video MP4..._\n`;
                                         mp4Caption += `╰══════════════════════════════╯`;
 
+                                        // Generate AI caption paralel saat download berjalan
+                                        const aiCaptionPromiseYtmp4 = gemini.ask(buildVideoDownloadCaptionPrompt({
+                                            platform: 'YouTube',
+                                            title: meta.title || '',
+                                            author: meta.uploader || meta.channel || '',
+                                            duration: durStr,
+                                            views: viewsFmt,
+                                            likes: meta.like_count ? parseInt(meta.like_count).toLocaleString('id-ID') : '',
+                                            description: meta.description || '',
+                                        })).catch(() => null);
+
                                         await hisoka.sendMessage(m.from, {
                                                 image: { url: thumbUrl },
                                                 caption: mp4Caption
@@ -9894,20 +9983,13 @@ infoText += `╰═════════════════════�
 
                                         const videoBuffer = fs.readFileSync(tmpFile);
 
-                                        let mp4DoneCaption = `╭═══〔 *🎬 YTMP4 DOWNLOADER* 〕═══╮\n`;
-                                        mp4DoneCaption += `│\n`;
-                                        mp4DoneCaption += `│ 📌 *${meta.title}*\n`;
-                                        mp4DoneCaption += `│ ⏱️ Durasi  : ${durStr}\n`;
-                                        mp4DoneCaption += `│ 📐 Kualitas: 360p\n`;
-                                        mp4DoneCaption += `│ 👁️ Views   : ${viewsFmt}\n`;
-                                        if (meta.uploader) mp4DoneCaption += `│ 👤 Channel : ${meta.uploader}\n`;
-                                        mp4DoneCaption += `│ 🔗 Link    : ${videoLink}\n`;
-                                        mp4DoneCaption += `│\n`;
-                                        mp4DoneCaption += `╰══════════════════════════════╯`;
+                                        // Tunggu AI caption selesai
+                                        const aiCaptionYtmp4 = await aiCaptionPromiseYtmp4;
+                                        const finalCaptionYtmp4 = aiCaptionYtmp4?.trim() || `🎬 *${meta.title}*\n👤 ${meta.uploader || ''}\n⏱️ ${durStr} • 360p`;
 
                                         await hisoka.sendMessage(m.from, {
                                                 video: videoBuffer,
-                                                caption: mp4DoneCaption,
+                                                caption: finalCaptionYtmp4,
                                                 mimetype: 'video/mp4'
                                         }, { quoted: m });
 

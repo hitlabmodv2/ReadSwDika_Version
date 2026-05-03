@@ -24,11 +24,42 @@ import { buildReactPromptRules, buildPersonalityBoost } from './aiReact.js';
 import { formatMemoryForPrompt } from './userMemory.js';
 
 export function buildWilyFallbackUserPrompt(mediaType = '') {
-    if (mediaType.includes('sticker')) return 'Pengguna mengirim sticker. Analisis ekspresi, emosi, gestur, dan maksud sticker ini, lalu balas dengan santai dan natural.';
-    if (mediaType.includes('video')) return 'Pengguna mengirim video';
+    if (mediaType.includes('sticker')) return 'Pengguna mengirim sticker. Analisis ekspresi, emosi, gestur, dan maksud sticker ini, lalu balas dengan santai dan natural seperti merespons reaksi sticker tersebut.';
+    if (mediaType.includes('video')) return 'Pengguna mengirim video. Berikan respons yang natural, minta mereka menjelaskan isi videonya atau tanyakan konteksnya dengan ramah.';
     if (mediaType.includes('audio')) return 'Pengguna mengirim voice note';
     if (mediaType.includes('document')) return 'Pengguna mengirim dokumen';
     return 'Halo!';
+}
+
+export function buildVideoDownloadCaptionPrompt({ platform = '', title = '', author = '', duration = '', description = '', views = '', likes = '', comments = '' } = {}) {
+    const parts = [];
+    if (title) parts.push(`Judul: "${title}"`);
+    if (author) parts.push(`Channel/Author: ${author}`);
+    if (duration) parts.push(`Durasi: ${duration}`);
+    if (views) parts.push(`Views: ${views}`);
+    if (likes) parts.push(`Likes: ${likes}`);
+    if (comments) parts.push(`Comments: ${comments}`);
+    if (description) parts.push(`Deskripsi/Caption asli: ${description.substring(0, 400)}`);
+
+    const emojiHint = platform === 'TikTok' ? '📱' : platform === 'Instagram' ? '📸' : platform === 'YouTube' ? '🎵' : '🎬';
+
+    return `Kamu adalah asisten bot WhatsApp yang cerdas dan natural.
+Tugasmu: buat caption WhatsApp yang menarik, akurat, dan informatif untuk ${platform === 'YouTube Audio' ? 'audio/musik' : 'video'} yang baru diunduh dari ${platform}.
+
+Informasi konten:
+${parts.join('\n')}
+
+Aturan WAJIB:
+1. Mulai dengan emoji relevan (${emojiHint}) dan judul dalam *bold*
+2. Tambahkan 1-2 kalimat komentar/deskripsi singkat yang akurat tentang konten ini
+3. Jika ada info musik (judul lagu/artis), sebut dengan tepat
+4. Bahasa Indonesia santai dan natural, tidak kaku atau template
+5. Jangan buat info palsu di luar data yang diberikan
+6. Maksimal 4-5 baris total — ringkas tapi berisi
+7. Jangan sertakan URL atau link apapun
+8. Jangan bilang kamu AI
+
+Caption:`
 }
 
 export function buildWilyMediaUserPrompt({
