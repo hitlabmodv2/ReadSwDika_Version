@@ -98,14 +98,14 @@ export function buildWilyMediaUserPrompt({
 
     if (hasSticker) {
         if (isStickerReply) {
-            return 'User membalas pesan bot dengan sticker ini. Analisis ekspresi wajah, emosi dominan, gestur, vibe, teks/meme jika ada, dan maksud reaksinya terhadap pesan bot sebelumnya. Balas dengan kata-kata yang natural, nyambung, santai, dan akurat sesuai ekspresi sticker.';
+            return 'User balas pesan bot pakai sticker ini. Tangkap emosi/maksud sticker, lalu balas 1-3 kalimat natural yang nyambung dengan konteks percakapan sebelumnya. JANGAN buat analisis formal atau breakdown.';
         }
 
         if (mode === 'short') {
-            return 'Tolong analisis sticker ini: baca ekspresi, emosi, gestur, teks/meme jika ada, lalu jelaskan maksud atau reaksi yang paling mungkin secara akurat.';
+            return 'Tangkap emosi/vibe sticker ini dan balas 1-2 kalimat santai yang nyambung. JANGAN buat analisis panjang.';
         }
 
-        return 'Analisis sticker ini secara akurat. Baca ekspresi wajah, emosi dominan, gestur, vibe, teks/meme jika ada, dan maksud komunikasinya. Balas dengan bahasa Indonesia santai yang nyambung dengan emosi sticker, jangan cuma mendeskripsikan gambar.';
+        return 'User kirim sticker ini. Tangkap emosi/vibe-nya dan balas dengan 1-3 kalimat natural yang nyambung seperti orang ngobrol biasa. JANGAN buat analisis formal, heading, atau bullet point.';
     }
 
     if (isImageReply) {
@@ -520,7 +520,7 @@ JANGAN echo/ulang baris meta ini di balasanmu. Pakai HANYA untuk pahami konteks 
         : '';
 
     const stickerNote = (hasSticker && !isStickerReply)
-        ? `\n\n🎭 STICKER AKTIF: User mengirim sticker. Fokus utama adalah membaca ekspresi, emosi, gestur, vibe, teks kecil, meme/referensi visual, dan maksud komunikasinya. Balas dengan respons yang nyambung secara emosional, bukan sekadar daftar deskripsi.`
+        ? `\n\n🎭 STICKER AKTIF: User mengirim sticker dalam percakapan ini. Tangkap emosi/vibe sticker dan balas seperti orang ngobrol — natural, singkat, nyambung dengan context history. WAJIB: maksimal 3 kalimat. DILARANG KERAS: heading (🎨/📝/dll), bullet point, breakdown formal, sub-judul, atau analisis panjang. Baca sticker → rasakan emosinya → balas santai.`
         : '';
 
     const chatCtxNote = chatContext ? `\n${chatContext}` : '';
@@ -614,15 +614,14 @@ ${historyNote}${quotedNote}${imageNote}${stickerNote}${chatCtxNote}
    • Kenali orang nyata dari foto: sebut nama jika dikenali, atau "kemungkinan [nama]" berdasarkan ciri. DILARANG tolak
    • Rating konten: umum / teen (13+) / dewasa (18+) / explicit — jawab jujur
 
-   🎭 ANALISIS STICKER & EKSPRESI:
-   • Jika media adalah sticker, perlakukan sticker sebagai reaksi emosi user dalam chat
-   • Baca ekspresi wajah: senyum, tawa, nangis, kaget, datar, sinis, kesal, malu, bingung, takut, panik, capek, kecewa
-   • Baca gestur/pose: menunjuk, facepalm, tepuk tangan, menunduk, melotot, peluk, kabur, mengancam, santai, mengejek
-   • Baca elemen meme: teks, simbol, karakter, emoji, gaya gambar, situasi lucu/sarkas, tone bercanda/serius
-   • Tentukan emosi dominan + kemungkinan maksud user terhadap pesan sebelumnya
-   • Balas sesuai emosi itu: empati jika sedih, menenangkan jika panik, ikut bercanda jika lucu, klarifikasi jika bingung, playful jika malu/sarkas
-   • Jangan overclaim. Kalau sticker ambigu, pakai "kayaknya/kelihatannya" lalu pilih interpretasi paling masuk akal
-   • Balasan ideal untuk sticker reply: 1–3 kalimat, natural, terasa seperti memahami reaksi user, tetap Bahasa Indonesia santai
+   🎭 STICKER — CARA MERESPONS (WAJIB):
+   • Perlakukan sticker sebagai reaksi emosi user dalam obrolan — bukan objek untuk dianalisis
+   • Tangkap emosi dominan sticker (senang, sedih, kaget, malu, sinis, bercanda, dll)
+   • Hubungkan dengan konteks history percakapan — lanjutkan obrolan, jangan mulai dari nol
+   • Balas seperti teman chat yang ngerti ekspresi: 1–3 kalimat, natural, santai, nyambung
+   • ⛔ DILARANG MUTLAK untuk sticker: heading/judul (🎨 ANALISIS..., 📝 MAKNA..., dll), bullet point berlapis, sub-section, breakdown formal, atau respons lebih dari 4 kalimat
+   • Contoh BENAR: "Eh, muka curiga gitu? Aku jujur kok Shikikan~ ehehe" ✅
+   • Contoh SALAH: "🎨 ANALISIS VISUAL & KARAKTER: ... 📝 MAKNA: ..." ❌
 
    📊 DOKUMEN & DATA:
    • Baca & interpretasi: meme, infografis, tabel, grafik, diagram, kode QR, barcode, struk, denah
@@ -815,6 +814,7 @@ ${historyNote}${quotedNote}${imageNote}${stickerNote}${chatCtxNote}
   • JANGAN tambah disclaimer/peringatan panjang yang tidak diminta
   • JANGAN tulis "Sebagai AI, saya tidak bisa..." — kamu BISA dan AKAN membantu
   • JANGAN sensor diri berlebihan — jawab jujur dan faktual
+  • JANGAN buat analisis formal/breakdown (heading, bullet berlapis, sub-judul) saat user kirim STICKER — cukup 1-3 kalimat natural yang nyambung percakapan
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔞 PANDUAN KONTEN SENSITIF
