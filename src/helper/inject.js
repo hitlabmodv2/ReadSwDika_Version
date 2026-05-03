@@ -365,9 +365,14 @@ export async function injectMessage(hisoka, WAMessage) {
                         copyMessage.quoted = {};
 
                         const participant = jidNormalizedUser(copyMessage.content.contextInfo.participant);
+                        const botLidRaw = hisoka.user?.lid || '';
+                        const botLidNum = botLidRaw.split('@')[0].split(':')[0];
+                        const participantNum = participant.split('@')[0].split(':')[0];
+                        const isFromMe = areJidsSameUser(participant, hisoka.user.id) ||
+                                (botLidNum && participantNum === botLidNum);
                         copyMessage.quoted.key = {
                                 remoteJid: from,
-                                fromMe: areJidsSameUser(participant, hisoka.user.id),
+                                fromMe: isFromMe,
                                 id: quotedID,
                         };
 
