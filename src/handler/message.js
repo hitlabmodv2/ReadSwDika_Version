@@ -1279,9 +1279,11 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         const quotedCtxParticipantAutoSimi = (m.content?.contextInfo?.participant || '').split('@')[0].split(':')[0];
                                         const _quotedStanzaIdAS = m.content?.contextInfo?.stanzaId || '';
                                         const _cachedQuotedAS = _quotedStanzaIdAS ? hisoka.cacheMsg?.get(_quotedStanzaIdAS) : null;
+                                        const botLidNum = (botLid || '').split('@')[0].split(':')[0];
                                         const isReplyToBot = m.isQuoted && (
                                                 m.quoted?.key?.fromMe === true ||
                                                 (botNumber && quotedCtxParticipantAutoSimi === botNumber) ||
+                                                (botLidNum && quotedCtxParticipantAutoSimi === botLidNum) ||
                                                 (_cachedQuotedAS?.key?.fromMe === true)
                                         );
 
@@ -1521,6 +1523,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         const isReplyToBotMsg = m.isQuoted && (
                                                 m.quoted?.key?.fromMe === true ||
                                                 (wilyBotNum && wilyQuotedParticipant === wilyBotNum) ||
+                                                (wilyBotLidNum && wilyQuotedParticipant === wilyBotLidNum) ||
                                                 (_wilyCachedQuoted?.key?.fromMe === true)
                                         );
 
