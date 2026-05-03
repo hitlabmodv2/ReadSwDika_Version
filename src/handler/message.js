@@ -1446,9 +1446,23 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                         finalMime = 'image/jpeg';
                                                                 } catch (_) {}
                                                         }
-                                                        response = await gemini.askWithImage(fullPrompt, finalBuffer, finalMime);
+                                                        try {
+                                                                response = await gemini.askWithImage(fullPrompt, finalBuffer, finalMime);
+                                                        } catch (_) {
+                                                                // Vision gagal, fallback ke text-only
+                                                                try { response = await gemini.ask(fullPrompt); } catch (_2) {}
+                                                        }
                                                 } else {
-                                                        response = await gemini.ask(fullPrompt);
+                                                        try {
+                                                                response = await gemini.ask(fullPrompt);
+                                                        } catch (_) {}
+                                                }
+
+                                                // Kalau semua AI path gagal dan ada stiker, berikan fallback agar bot tidak diam
+                                                if (!response && hasSticker) {
+                                                        response = isStickerReply
+                                                                ? `Eh ${userName} ngirim stiker sebagai reaksi~ Honolulu seneng liat ekspresif gitu! Ada yang mau diobrolin?`
+                                                                : `Wah stiker dari ${userName}! Lucu banget~ tapi Honolulu lagi kurang jelas liatnya. Kirim lagi atau cerita apa yang dimaksud?`;
                                                 }
 
                                                 if (response && response.trim()) {
@@ -1802,11 +1816,29 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                         for (const model of models) {
                                                                                 try { response = await gemini.chat({ model, contents: vContents }); break; } catch (_) {}
                                                                         }
+                                                                        // Kalau semua vision model gagal, fallback ke text-only
+                                                                        if (!response) {
+                                                                                try { response = await gemini.chat({ contents }); } catch (_) {}
+                                                                        }
                                                                 } else {
-                                                                        response = await gemini.askWithImage(systemPrompt + '\n\n' + visionContextText, finalBuffer, finalMime);
+                                                                        try {
+                                                                                response = await gemini.askWithImage(systemPrompt + '\n\n' + visionContextText, finalBuffer, finalMime);
+                                                                        } catch (_) {
+                                                                                // Vision gagal, fallback text-only
+                                                                                try { response = await gemini.chat({ contents }); } catch (_2) {}
+                                                                        }
                                                                 }
                                                         } else {
-                                                                response = await gemini.chat({ contents });
+                                                                try {
+                                                                        response = await gemini.chat({ contents });
+                                                                } catch (_) {}
+                                                        }
+
+                                                        // Kalau semua AI path gagal dan ada stiker/media, berikan fallback agar bot tidak diam
+                                                        if (!response && hasSticker) {
+                                                                response = isStickerReply
+                                                                        ? `Eh ${userName} ngirim stiker sebagai reaksi~ Honolulu seneng liat ekspresif banget gitu! Ada yang mau diobrolin?`
+                                                                        : `Wah stiker dari ${userName}! Lucu banget~ tapi Honolulu lagi agak kurang jelas liatnya. Kirim lagi atau cerita apa yang dimaksud?`;
                                                         }
 
                                                         if (response && response.trim()) {
