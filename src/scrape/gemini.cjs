@@ -1,32 +1,54 @@
 'use strict';
 
 const axios = require('axios');
+const fs    = require('fs');
+const path  = require('path');
 
 const SIGNUP_URL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAxof8_SbpDcww38NEQRhNh0Pzvbphh-IQ';
-const CHAT_URL = 'https://asia-northeast3-gemmy-ai-bdc03.cloudfunctions.net/gemini';
+const CHAT_URL   = 'https://asia-northeast3-gemmy-ai-bdc03.cloudfunctions.net/gemini';
+
+const TOKEN_CACHE_FILE = path.join(process.cwd(), 'data', 'gemini_tokens_scrape.json');
 
 const SIGNUP_HEADERS = {
-    'accept-encoding': 'gzip',
-    'accept-language': 'in-ID, en-US',
-    'connection': 'Keep-Alive',
-    'content-type': 'application/json',
-    'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 10; SM-J700F Build/QQ3A.200805.001)',
-    'x-android-cert': '037CD2976D308B4EFD63EC63C48DC6E7AB7E5AF2',
-    'x-android-package': 'com.jetkite.gemmy',
-    'x-client-version': 'Android/Fallback/X24000001/FirebaseCore-Android',
+    'accept-encoding':     'gzip',
+    'accept-language':     'in-ID, en-US',
+    'connection':          'Keep-Alive',
+    'content-type':        'application/json',
+    'user-agent':          'Dalvik/2.1.0 (Linux; U; Android 10; SM-J700F Build/QQ3A.200805.001)',
+    'x-android-cert':      '037CD2976D308B4EFD63EC63C48DC6E7AB7E5AF2',
+    'x-android-package':   'com.jetkite.gemmy',
+    'x-client-version':    'Android/Fallback/X24000001/FirebaseCore-Android',
     'x-firebase-appcheck': 'eyJlcnJvciI6IlVOS05PV05fRVJST1IifQ==',
-    'x-firebase-client': 'H4sIAAAAAAAAAKtWykhNLCpJSk0sKVayio7VUSpLLSrOzM9TslIyUqoFAFyivEQfAAAA',
-    'x-firebase-gmpid': '1:652803432695:android:c4341db6033e62814f33f2',
+    'x-firebase-client':   'H4sIAAAAAAAAAKtWykhNLCpJSk0sKVayio7VUSpLLSrOzM9TslIyUqoFAFyivEQfAAAA',
+    'x-firebase-gmpid':    '1:652803432695:android:c4341db6033e62814f33f2',
 };
 
-const FALLBACK_MODELS = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-pro-latest'];
+const FALLBACK_MODELS    = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-pro-latest'];
 const MAX_TOKEN_ROTATIONS = 5;
-const POOL_SIZE = 3;
+const POOL_SIZE           = 3;
 
 class Gemini {
     constructor() {
         this.tokenPool = [];
         this.poolIndex = 0;
+        this._loadTokenCache();
+    }
+
+    _loadTokenCache() {
+        try {
+            if (!fs.existsSync(TOKEN_CACHE_FILE)) return;
+            const raw  = JSON.parse(fs.readFileSync(TOKEN_CACHE_FILE, 'utf-8'));
+            const now  = Date.now();
+            this.tokenPool = (raw.pool || []).filter(t => t && t.token && t.expiry && now < t.expiry - 300000);
+        } catch (_) {}
+    }
+
+    _saveTokenCache() {
+        try {
+            const dir = path.dirname(TOKEN_CACHE_FILE);
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(TOKEN_CACHE_FILE, JSON.stringify({ pool: this.tokenPool, savedAt: Date.now() }));
+        } catch (_) {}
     }
 
     async _signup() {
@@ -40,12 +62,15 @@ class Gemini {
     }
 
     async _ensurePool() {
-        const now = Date.now();
+        const now    = Date.now();
+        const before = this.tokenPool.length;
         this.tokenPool = this.tokenPool.filter(t => t && now < t.expiry - 300000);
+        if (this.tokenPool.length !== before) this._saveTokenCache();
         while (this.tokenPool.length < POOL_SIZE) {
             try {
                 const t = await this._signup();
                 this.tokenPool.push(t);
+                this._saveTokenCache();
             } catch (e) {
                 if (this.tokenPool.length === 0) throw e;
                 break;
@@ -57,6 +82,7 @@ class Gemini {
         if (forceFresh) {
             const fresh = await this._signup();
             this.tokenPool.push(fresh);
+            this._saveTokenCache();
             this.poolIndex = this.tokenPool.length - 1;
             return fresh.token;
         }
@@ -66,7 +92,9 @@ class Gemini {
     }
 
     _invalidateToken(token) {
+        const before = this.tokenPool.length;
         this.tokenPool = this.tokenPool.filter(t => t.token !== token);
+        if (this.tokenPool.length !== before) this._saveTokenCache();
     }
 
     async getAuthToken() {
@@ -74,11 +102,10 @@ class Gemini {
     }
 
     async _callOnce({ token, model, contents, config }) {
-        // Default lebih rendah biar nggak ngarang. Caller bisa override via config.
         const generationConfig = {
             maxOutputTokens: 8192,
-            temperature: 0.7,
-            topP: 0.9,
+            temperature:     0.7,
+            topP:            0.9,
             ...config,
         };
         const { data } = await axios.post(
@@ -86,23 +113,20 @@ class Gemini {
             {
                 model,
                 stream: false,
-                request: {
-                    contents,
-                    generationConfig,
-                },
+                request: { contents, generationConfig },
             },
             {
                 headers: {
                     'accept-encoding': 'gzip',
-                    'authorization': `Bearer ${token}`,
-                    'content-type': 'application/json; charset=UTF-8',
-                    'user-agent': 'okhttp/5.3.2',
+                    'authorization':   `Bearer ${token}`,
+                    'content-type':    'application/json; charset=UTF-8',
+                    'user-agent':      'okhttp/5.3.2',
                 },
                 timeout: 30000,
             }
         );
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) throw new Error('Gemini returned empty response.');
+        if (!text) throw new Error('Gemini returned empty response. Raw: ' + JSON.stringify(data).slice(0, 200));
         return text;
     }
 
@@ -110,7 +134,7 @@ class Gemini {
         if (!Array.isArray(contents)) throw new Error('Contents must be an array.');
 
         const requestedModel = model;
-        const modelChain = [requestedModel, ...FALLBACK_MODELS.filter(m => m !== requestedModel)];
+        const modelChain     = [requestedModel, ...FALLBACK_MODELS.filter(m => m !== requestedModel)];
 
         let lastErr = null;
 
@@ -128,8 +152,8 @@ class Gemini {
                     return await this._callOnce({ token, model: m, contents, config });
                 } catch (err) {
                     lastErr = err;
-                    const status = err.response?.status;
-                    const body = err.response?.data;
+                    const status  = err.response?.status;
+                    const body    = err.response?.data;
                     const bodyStr = body ? (typeof body === 'string' ? body : JSON.stringify(body)) : '';
 
                     if (status === 401 || status === 403 || /UNAUTHENTICATED|invalid.?token|expired/i.test(bodyStr)) {
@@ -172,13 +196,20 @@ class Gemini {
         return this.chat({
             model,
             contents: [{
-                role: 'user',
+                role:  'user',
                 parts: [
                     { inlineData: { mimeType, data: base64 } },
                     { text: prompt },
                 ],
             }],
             temperature: 0.6,
+        });
+    }
+
+    async ask(prompt, { model = 'gemini-flash-latest' } = {}) {
+        return this.chat({
+            model,
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
         });
     }
 }

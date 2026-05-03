@@ -5,8 +5,8 @@ import fs from 'fs';
 import db, { stmtAiGet, stmtAiUpsert, stmtAiDelete, stmtAiDeleteAll, stmtAiCount } from './datadb.js';
 
 const DATA_DIR             = path.join(process.cwd(), 'data');
-const EXPIRE_MS            = 6 * 60 * 60 * 1000;
-const MAX_HISTORY_MESSAGES = 20;
+const EXPIRE_MS            = 24 * 60 * 60 * 1000;
+const MAX_HISTORY_MESSAGES = 30;
 const MAX_TEXT_PER_MESSAGE = 1500;
 
 /* ── Auto-migrasi dari data/ai_history/*.json ── */
