@@ -1526,8 +1526,11 @@ export default async function ({ message, type: messagesType }, hisoka) {
 
                                         // WilyAutoReply — respek scope: pm=hanya DM, gc=hanya grup, all=keduanya
                                         const isPrivateDM = !m.isGroup && m.from !== 'status@broadcast';
-                                        const triggerGroup = scopeAllowGC && m.isGroup && (isWilyMentioned || isReplyToBotMsg);
-                                        const triggerPM    = scopeAllowPM && isPrivateDM;
+                                        const isStickerMsg = getMediaTypeFromMessage(m) === 'stickerMessage';
+                                        // Grup: trigger saat bot di-mention (pesan apapun) ATAU saat ada yang reply pesan bot dengan STICKER
+                                        const triggerGroup = scopeAllowGC && m.isGroup && (isWilyMentioned || (isReplyToBotMsg && isStickerMsg));
+                                        // Private: semua sticker yang masuk ke DM langsung trigger bot
+                                        const triggerPM    = scopeAllowPM && isPrivateDM && isStickerMsg;
                                         const isLoadedCommand = m.command && !m.isBot && hisoka.loadedCommands?.some(c => c.toLowerCase() === m.command);
                                         if (isLoadedCommand) {
                                                 // Command bot harus tetap lanjut ke switch-case, jangan ditahan auto-reply AI/cooldown.
