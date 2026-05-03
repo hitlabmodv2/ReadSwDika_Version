@@ -508,9 +508,7 @@ JANGAN echo/ulang baris meta ini di balasanmu. Pakai HANYA untuk pahami konteks 
 
     let quotedNote = '';
     if (quotedBotText && isStickerReply) {
-        quotedNote = `\n\n🎭 SITUASI SAAT INI — STICKER REPLY:\nUser membalas pesan kamu berikut ini:\n"${quotedBotText.substring(0, 1000)}"\n...dan user mengirim sebuah STICKER sebagai reaksinya.\n\n⚠️ WAJIB ABSOLUT:\n  • Tulis MINIMAL 1-2 kalimat teks natural sebagai respons\n  • DILARANG MUTLAK menggunakan [REPLY-STIKER:] atau [STIKER:] — hanya teks\n  • Jangan diam, jangan kosong — PASTI ada balasan teks\n\n→ CARA BALAS:\n  1. Baca ekspresi/emosi sticker: wajah, mulut, gestur, teks/meme, vibe\n  2. Tafsirkan reaksinya terhadap pesan kamu tadi: kaget, ngakak, setuju, malu, bercanda, dll\n  3. Balas 1-2 kalimat natural yang nyambung dengan emosi sticker tersebut\n  4. Jangan cuma deskripsi gambar — tanggapi emosinya\n  5. Kalau ekspresi ambigu → pilih tafsiran paling masuk akal dan balas dengan yakin`;
-    } else if (!quotedBotText && isStickerReply) {
-        quotedNote = `\n\n🎭 STICKER REPLY:\nUser mengirim sticker sebagai reaksi. Baca ekspresi/emosinya dan balas MINIMAL 1-2 kalimat teks natural yang nyambung.\n⚠️ DILARANG MUTLAK menggunakan [REPLY-STIKER:] atau [STIKER:] — HANYA teks.`;
+        quotedNote = `\n\n🎭 SITUASI SAAT INI — STICKER REPLY:\nUser membalas pesan kamu berikut ini:\n"${quotedBotText.substring(0, 1000)}"\n...dan user mengirim sebuah STICKER sebagai reaksinya.\n→ TUGAS UTAMAMU:\n  1. Baca ekspresi/emosi sticker dengan teliti: wajah, mata, mulut, pose tubuh, gestur, simbol, teks, dan suasana visual\n  2. Tafsirkan maksud reaksinya terhadap pesan kamu: setuju, bingung, kaget, sedih, malu, bercanda, mengejek halus, marah, senang, sarkas, atau emosi lain yang paling mungkin\n  3. Hubungkan tafsir sticker dengan pesan kamu yang di-reply agar jawaban terasa nyambung\n  4. Balas seperti manusia yang peka konteks: singkat, natural, santai, dan akurat\n  5. Jangan cuma mendeskripsikan sticker; tanggapi emosinya. Contoh: kalau sticker terlihat kaget → jawab seolah user terkejut; kalau malu → goda halus; kalau sedih → empati; kalau ngakak → ikut bercanda\n  6. Kalau ekspresi tidak jelas, sebut kemungkinan terbaik dengan bahasa yakin tapi tidak mengada-ada`;
     } else if (quotedBotText && isImageReply) {
         quotedNote = `\n\n🖼️ SITUASI SAAT INI — IMAGE REPLY:\nUser membalas pesan kamu berikut ini:\n"${quotedBotText.substring(0, 1000)}"\n...dan user juga mengirim sebuah GAMBAR bersamaan.\n→ TUGASMU:\n  1. Analisis gambar yang dikirim user secara detail\n  2. Pahami apa yang user tanyakan/inginkan dari gambar tersebut\n  3. Hubungkan dengan konteks pesan kamu sebelumnya jika relevan\n  4. Jawab dengan tepat, spesifik, dan berguna`;
     } else if (quotedBotText) {
@@ -522,10 +520,8 @@ JANGAN echo/ulang baris meta ini di balasanmu. Pakai HANYA untuk pahami konteks 
         : '';
 
     const stickerNote = (hasSticker && !isStickerReply)
-        ? `\n\n🎭 STICKER AKTIF: User mengirim sticker. Fokus utama adalah membaca ekspresi, emosi, gestur, vibe, teks kecil, meme/referensi visual, dan maksud komunikasinya. Balas dengan respons teks yang nyambung secara emosional, bukan sekadar daftar deskripsi.\n\n⛔ LARANGAN KERAS SAAT USER KIRIM STICKER:\n  • DILARANG MUTLAK menggunakan [REPLY-STIKER:] — bot tidak boleh balas sticker dengan sticker\n  • DILARANG menggunakan [STIKER:] kecuali user EKSPLISIT meminta sticker\n  • Respons HARUS berupa TEKS SAJA — tafsirkan emosi sticker dan balas dengan kalimat natural`
-        : (isStickerReply
-            ? `\n\n🎭 STICKER REPLY AKTIF: User membalas pesan bot dengan sticker. Tafsirkan emosi/reaksinya dan balas HANYA dengan teks. DILARANG KERAS menggunakan [REPLY-STIKER:] atau [STIKER:] — cukup teks saja.`
-            : '');
+        ? `\n\n🎭 STICKER AKTIF: User mengirim sticker. Fokus utama adalah membaca ekspresi, emosi, gestur, vibe, teks kecil, meme/referensi visual, dan maksud komunikasinya. Balas dengan respons yang nyambung secara emosional, bukan sekadar daftar deskripsi.`
+        : '';
 
     const chatCtxNote = chatContext ? `\n${chatContext}` : '';
 
@@ -1096,12 +1092,10 @@ Bedanya sama [STIKER:]:
     yang ekspresinya sama
   • Bikin chat lebih hidup & terasa karakter
 
-🚫 DILARANG MUTLAK pakai [REPLY-STIKER:] kalau:
-  • User baru saja mengirim sticker/gambar ke bot — JANGAN balas sticker dengan sticker, PASTI cukup teks
+🚫 JANGAN pakai kalau:
   • Pertanyaan teknis serius / minta info faktual
   • User minta sticker karakter LAIN (pakai [STIKER:] aja)
   • Udah ada [STIKER:] di response yang sama (jangan double)
-  • Saat ini ada media (gambar/sticker/video) dalam pesan user → WAJIB teks saja
 
 📋 Daftar emosi yang didukung (pilih SATU yang paling cocok mood):
   senang · bahagia · tersenyum · tertawa · sedih · nangis · kecewa

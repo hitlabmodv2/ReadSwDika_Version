@@ -1446,38 +1446,14 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                         finalMime = 'image/jpeg';
                                                                 } catch (_) {}
                                                         }
-                                                        try {
-                                                                response = await gemini.askWithImage(fullPrompt, finalBuffer, finalMime);
-                                                        } catch (_) {
-                                                                // Vision gagal, fallback ke text-only
-                                                                try { response = await gemini.ask(fullPrompt); } catch (_2) {}
-                                                        }
+                                                        response = await gemini.askWithImage(fullPrompt, finalBuffer, finalMime);
                                                 } else {
-                                                        try {
-                                                                response = await gemini.ask(fullPrompt);
-                                                        } catch (_) {}
-                                                }
-
-                                                // Kalau semua AI path gagal dan ada stiker, berikan fallback agar bot tidak diam
-                                                if (!response && hasSticker) {
-                                                        response = isStickerReply
-                                                                ? `Eh ${userName} ngirim stiker sebagai reaksi~ Honolulu seneng liat ekspresif gitu! Ada yang mau diobrolin?`
-                                                                : `Wah stiker dari ${userName}! Lucu banget~ tapi Honolulu lagi kurang jelas liatnya. Kirim lagi atau cerita apa yang dimaksud?`;
+                                                        response = await gemini.ask(fullPrompt);
                                                 }
 
                                                 if (response && response.trim()) {
                                                         setAICooldown(m.sender);
-                                                        let autoSimiResp = response.trim();
-                                                        // Jangan balas stiker dengan stiker — strip semua marker stiker dari respons
-                                                        if (hasSticker) {
-                                                                autoSimiResp = autoSimiResp.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
-                                                                if (!autoSimiResp) {
-                                                                        autoSimiResp = isStickerReply
-                                                                                ? 'Eh reaksinya pake stiker gitu~ Honolulu bingung mau namanya apa, tapi kelihatannya ekspresif banget 😅'
-                                                                                : 'Wah stikernya lucu, tapi Honolulu lagi nggak bisa lihat gambarnya dengan jelas. Kirim lagi dong~';
-                                                                }
-                                                        }
-                                                        await processAIMediaAndSend(hisoka, m, autoSimiResp);
+                                                        await processAIMediaAndSend(hisoka, m, response.trim());
                                                         console.log(`\x1b[36m[AutoGemini]\x1b[39m Reply to ${userName} (${m.pushName}) in "${m.isGroup ? hisoka.getName(m.from) : 'DM'}" | Trigger: ${isBotMentioned ? 'mention' : 'reply'} | Media: ${hasMedia ? mediaLabel : 'none'}`);
 
                                                         // ── STIKER MEMORY: simpan analisis stiker baru ke DB (background) ──
@@ -1816,29 +1792,11 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                         for (const model of models) {
                                                                                 try { response = await gemini.chat({ model, contents: vContents }); break; } catch (_) {}
                                                                         }
-                                                                        // Kalau semua vision model gagal, fallback ke text-only
-                                                                        if (!response) {
-                                                                                try { response = await gemini.chat({ contents }); } catch (_) {}
-                                                                        }
                                                                 } else {
-                                                                        try {
-                                                                                response = await gemini.askWithImage(systemPrompt + '\n\n' + visionContextText, finalBuffer, finalMime);
-                                                                        } catch (_) {
-                                                                                // Vision gagal, fallback text-only
-                                                                                try { response = await gemini.chat({ contents }); } catch (_2) {}
-                                                                        }
+                                                                        response = await gemini.askWithImage(systemPrompt + '\n\n' + visionContextText, finalBuffer, finalMime);
                                                                 }
                                                         } else {
-                                                                try {
-                                                                        response = await gemini.chat({ contents });
-                                                                } catch (_) {}
-                                                        }
-
-                                                        // Kalau semua AI path gagal dan ada stiker/media, berikan fallback agar bot tidak diam
-                                                        if (!response && hasSticker) {
-                                                                response = isStickerReply
-                                                                        ? `Eh ${userName} ngirim stiker sebagai reaksi~ Honolulu seneng liat ekspresif banget gitu! Ada yang mau diobrolin?`
-                                                                        : `Wah stiker dari ${userName}! Lucu banget~ tapi Honolulu lagi agak kurang jelas liatnya. Kirim lagi atau cerita apa yang dimaksud?`;
+                                                                response = await gemini.chat({ contents });
                                                         }
 
                                                         if (response && response.trim()) {
@@ -1846,15 +1804,6 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 let autoFinalResponse = response.trim();
                                                                 if (hasMedia) {
                                                                         autoFinalResponse = autoFinalResponse.replace(/\[GAMBAR:[^\]]{1,200}\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
-                                                                }
-                                                                // Jangan balas stiker dengan stiker — strip semua marker stiker dari respons
-                                                                if (hasSticker) {
-                                                                        autoFinalResponse = autoFinalResponse.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
-                                                                        if (!autoFinalResponse) {
-                                                                                autoFinalResponse = isStickerReply
-                                                                                        ? 'Eh reaksinya pake stiker gitu~ Honolulu bingung mau namanya apa, tapi kelihatannya ekspresif banget 😅'
-                                                                                        : 'Wah stikernya lucu, tapi Honolulu lagi nggak bisa lihat gambarnya dengan jelas. Kirim lagi dong~';
-                                                                        }
                                                                 }
                                                                 const mediaResult = await processAIMediaAndSend(hisoka, m, autoFinalResponse);
                                                                 const cleanResp = mediaResult.sentText;
@@ -2017,17 +1966,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         }
 
                                                         if (pvResponse && pvResponse.trim()) {
-                                                                let pvFinalResponse = pvResponse.trim();
-                                                                // Jangan balas stiker dengan stiker — strip marker stiker dari respons
-                                                                if (pvHasSticker) {
-                                                                        pvFinalResponse = pvFinalResponse.replace(/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
-                                                                        if (!pvFinalResponse) {
-                                                                                pvFinalResponse = pvIsStickerReply
-                                                                                        ? 'Eh reaksinya pake stiker gitu~ Honolulu bingung mau namanya apa, tapi kelihatannya ekspresif banget 😅'
-                                                                                        : 'Wah stikernya lucu, tapi Honolulu lagi nggak bisa lihat gambarnya dengan jelas. Kirim lagi dong~';
-                                                                        }
-                                                                }
-                                                                const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvFinalResponse);
+                                                                const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvResponse.trim());
                                                                 const pvClean = pvMediaResult.sentText;
                                                                 addToHistory(pvSessKey, pvUserMsg, pvClean || pvResponse.trim(), buildHistoryMeta(m, { mediaLabel: pvHasMedia ? pvMediaLabel : null }));
                                                                 console.log(`\x1b[36m[WilyPrivate]\x1b[39m ${pvUserName} | DM | Media: ${pvHasMedia ? pvMediaLabel : 'tidak ada'}`);
