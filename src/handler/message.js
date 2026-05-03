@@ -49,7 +49,8 @@ import { searchAndGetImage, searchAndGetImages, extractImagesFromText } from '..
 import { extractVoiceNotesFromText, extractSongsFromText, extractVideosFromText, extractStickersFromText, extractReplyStickersFromText, extractTikTokFromText, extractInstagramFromText, extractYouTubeAudioFromText, hasMediaDownloadMarker, hasSocialDLMarker, hasStickerMarker } from '../helper/aiTools.js';
 import { getHistory, addToHistory, clearHistory, clearAllHistory, countHistory, getSessionKey, buildHistoryMeta, wrapCurrentUserMessage } from '../db/aiHistory.js';
 import { sendAIReply } from '../helper/aiReact.js';
-import { buildSmartAlbumCaptionPrompt, buildSmartImageHistoryPrompt, buildSmartImageWaitPrompt, buildWilyAICommandPrompt, buildWilyFallbackUserPrompt, buildWilyMediaUserPrompt, buildWilyVisionContextPrompt, buildVideoDownloadCaptionPrompt } from '../helper/aiPrompt.js';
+import { buildSmartAlbumCaptionPrompt, buildSmartImageHistoryPrompt, buildSmartImageWaitPrompt, buildWilyAICommandPrompt, buildWilyFallbackUserPrompt, buildWilyMediaUserPrompt, buildWilyVisionContextPrompt, buildVideoDownloadCaptionPrompt, buildStickerAnalysisExtractionPrompt } from '../helper/aiPrompt.js';
+import { hashSticker, lookupSticker, saveSticker, incrementStickerSeen, buildStickerContextHint, getStickerMemoryStats } from '../helper/stickerMemory.js';
 
 const WILY_VERBOSE_LOGS = process.env.WILY_VERBOSE_LOGS === 'true' || process.env.BOT_DEBUG_LOG === 'true';
 const wilyLog = (...args) => {
@@ -1418,6 +1419,19 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         userMemory,
                                                 });
 
+                                                // ── STIKER MEMORY: cek DB sebelum kirim ke AI ──
+                                                let _stickerHash1 = null;
+                                                let _stickerKnown1 = null;
+                                                if (hasSticker && imageBuffer?.length > 0) {
+                                                        _stickerHash1 = hashSticker(imageBuffer);
+                                                        _stickerKnown1 = lookupSticker(_stickerHash1);
+                                                        if (_stickerKnown1) {
+                                                                const hint = buildStickerContextHint(_stickerKnown1);
+                                                                if (hint) userMessage = hint + '\n\n' + (userMessage || '');
+                                                                incrementStickerSeen(_stickerHash1);
+                                                        }
+                                                }
+
                                                 let response;
                                                 const fullPrompt = systemPrompt + '\n\n' + userMessage;
 
@@ -1441,6 +1455,22 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         setAICooldown(m.sender);
                                                         await processAIMediaAndSend(hisoka, m, response.trim());
                                                         console.log(`\x1b[36m[AutoGemini]\x1b[39m Reply to ${userName} (${m.pushName}) in "${m.isGroup ? hisoka.getName(m.from) : 'DM'}" | Trigger: ${isBotMentioned ? 'mention' : 'reply'} | Media: ${hasMedia ? mediaLabel : 'none'}`);
+
+                                                        // ── STIKER MEMORY: simpan analisis stiker baru ke DB (background) ──
+                                                        if (hasSticker && imageBuffer?.length > 0 && _stickerHash1 && !_stickerKnown1) {
+                                                                (async () => {
+                                                                        try {
+                                                                                let fbuf = imageBuffer;
+                                                                                if (imageMime === 'image/webp') {
+                                                                                        try { const sh = (await import('sharp')).default; fbuf = await sh(imageBuffer).jpeg({ quality: 85 }).toBuffer(); } catch (_) {}
+                                                                                }
+                                                                                const rawJson = await gemini.askWithImage(buildStickerAnalysisExtractionPrompt(), fbuf, 'image/jpeg');
+                                                                                const parsed = JSON.parse(rawJson.trim().replace(/```json|```/g, '').trim());
+                                                                                saveSticker(_stickerHash1, parsed);
+                                                                                console.log(`\x1b[32m[StickerMemory]\x1b[39m Saved: ${_stickerHash1.substring(0, 8)}… → ${parsed.emotion} / ${parsed.category}`);
+                                                                        } catch (_) {}
+                                                                })();
+                                                        }
                                                 }
                                         }
                                 }
@@ -1723,6 +1753,19 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         userMessage,
                                                 });
 
+                                                // ── STIKER MEMORY: cek DB sebelum kirim ke AI ──
+                                                let _stickerHash2 = null;
+                                                let _stickerKnown2 = null;
+                                                if (hasSticker && imageBuffer?.length > 0) {
+                                                        _stickerHash2 = hashSticker(imageBuffer);
+                                                        _stickerKnown2 = lookupSticker(_stickerHash2);
+                                                        if (_stickerKnown2) {
+                                                                const hint2 = buildStickerContextHint(_stickerKnown2);
+                                                                if (hint2) userMessage = hint2 + '\n\n' + (userMessage || '');
+                                                                incrementStickerSeen(_stickerHash2);
+                                                        }
+                                                }
+
                                                 let response;
                                                 try {
                                                         if (imageBuffer && imageBuffer.length > 0) {
@@ -1767,6 +1810,22 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 addToHistory(sessKey, userMessage, cleanResp || response.trim(), buildHistoryMeta(m, { mediaLabel: hasMedia ? mediaLabel : null }));
                                                                 const triggerType = isWilyMentioned ? 'Mention' : isReplyToBotMsg ? 'Reply' : 'DM';
                                                                 wilyLog(`\x1b[36m[WilyAutoReply]\x1b[39m ${userName} | ${m.isGroup ? 'Grup' : 'Private'} | Trigger: ${triggerType} | Media: ${hasMedia ? mediaLabel : 'tidak ada'}`);
+
+                                                                // ── STIKER MEMORY: simpan analisis stiker baru ke DB (background) ──
+                                                                if (hasSticker && imageBuffer?.length > 0 && _stickerHash2 && !_stickerKnown2) {
+                                                                        (async () => {
+                                                                                try {
+                                                                                        let fbuf2 = imageBuffer;
+                                                                                        if (imageMime === 'image/webp') {
+                                                                                                try { const sh = (await import('sharp')).default; fbuf2 = await sh(imageBuffer).jpeg({ quality: 85 }).toBuffer(); } catch (_) {}
+                                                                                        }
+                                                                                        const rawJson2 = await gemini.askWithImage(buildStickerAnalysisExtractionPrompt(), fbuf2, 'image/jpeg');
+                                                                                        const parsed2 = JSON.parse(rawJson2.trim().replace(/```json|```/g, '').trim());
+                                                                                        saveSticker(_stickerHash2, parsed2);
+                                                                                        console.log(`\x1b[32m[StickerMemory]\x1b[39m Saved: ${_stickerHash2.substring(0, 8)}… → ${parsed2.emotion} / ${parsed2.category}`);
+                                                                                } catch (_) {}
+                                                                        })();
+                                                                }
                                                         }
                                                 } catch (arErr) {
                                                         wilyError('\x1b[31m[WilyAutoReply] Error:\x1b[39m', arErr.message);

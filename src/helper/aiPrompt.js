@@ -23,6 +23,28 @@
 import { buildReactPromptRules, buildPersonalityBoost } from './aiReact.js';
 import { formatMemoryForPrompt } from './userMemory.js';
 
+/**
+ * Prompt untuk ekstrak analisis stiker menjadi JSON terstruktur
+ * Dipakai background job saat bot pertama kali lihat stiker baru
+ */
+export function buildStickerAnalysisExtractionPrompt() {
+    return `Analisis stiker/gambar ini dan berikan hasil dalam format JSON murni tanpa markdown.
+
+Format JSON yang HARUS dikembalikan (semua field wajib):
+{
+  "emotion": "emosi dominan dalam 1-3 kata (contoh: senang, sedih, marah, bingung, malu, awkward, cool, lucu, dll)",
+  "category": "kategori stiker dalam 1-2 kata (contoh: meme, anime, karakter, ekspresi, hewan, teks, lucu, dll)",
+  "description": "deskripsi singkat isi stiker maksimal 1 kalimat",
+  "tags": ["tag1", "tag2", "tag3"]
+}
+
+Aturan WAJIB:
+- Kembalikan JSON murni saja, tanpa kode blok, tanpa penjelasan
+- tags maksimal 5 kata kunci relevan
+- Semua teks dalam bahasa Indonesia
+- Jika ada teks di stiker, sertakan di description`;
+}
+
 export function buildWilyFallbackUserPrompt(mediaType = '') {
     if (mediaType.includes('sticker')) return 'Pengguna mengirim sticker. Analisis ekspresi, emosi, gestur, dan maksud sticker ini, lalu balas dengan santai dan natural seperti merespons reaksi sticker tersebut.';
     if (mediaType.includes('video')) return 'Pengguna mengirim video. Berikan respons yang natural, minta mereka menjelaskan isi videonya atau tanyakan konteksnya dengan ramah.';
