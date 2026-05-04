@@ -217,11 +217,11 @@ function formatBytes(bytes) {
 
 let _autoCleanerInterval = null;
 
-export function stopAutoCleaner() {
+export function stopAutoCleaner({ silent = false } = {}) {
     if (_autoCleanerInterval) {
         clearInterval(_autoCleanerInterval);
         _autoCleanerInterval = null;
-        console.log(`\x1b[33m[Cleaner]\x1b[39m Auto-cleaner dihentikan`);
+        if (!silent) console.log(`\x1b[33m[Cleaner]\x1b[39m Auto-cleaner dihentikan`);
     }
 }
 
@@ -273,7 +273,7 @@ export function startAutoCleaner(intervalHours = 6) {
     const warnPct  = cleanerConfig.diskWarnPercent  || 80;
     const critPct  = cleanerConfig.diskCritPercent  || 90;
 
-    stopAutoCleaner();
+    stopAutoCleaner({ silent: true });
 
     clearOldFiles(24);
 
