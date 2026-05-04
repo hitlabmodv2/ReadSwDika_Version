@@ -667,10 +667,12 @@ export function hasSocialDLMarker(text) {
 }
 
 /**
- * Helper: cek apakah teks mengandung marker STIKER atau REPLY-STIKER.
+ * Helper: cek apakah teks mengandung marker STIKER, REPLY-STIKER, atau MEDIA sticker URL langsung.
  */
 export function hasStickerMarker(text) {
-    return /\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/i.test(text);
+    if (/\[(?:STIKER|STICKER|REPLY-STIKER|REPLY-STICKER):\s*[^\]]+\]/i.test(text)) return true;
+    if (/\[MEDIA\s*,\s*"https?:\/\/[^"]+"\s*,\s*"sticker"\s*\]/i.test(text)) return true;
+    return false;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1102,4 +1104,70 @@ export async function extractReplyStickersFromText(text, opts = {}) {
  */
 export function getHonoluluEmotionList() {
     return Object.keys(HONOLULU_EMOTION_TAGS);
+}
+
+// ════════════════════════════════════════════════════════════
+//  MEDIA STICKER URL LANGSUNG
+//  Marker: [MEDIA, "https://cdn.ornzora.eu.cc/...", "sticker"]
+//  Unduh webp dari URL CDN → kirim sebagai sticker WhatsApp
+// ════════════════════════════════════════════════════════════
+
+/**
+ * Parse marker [MEDIA, "url", "sticker"] dari response AI,
+ * unduh webp dari URL CDN, konversi ke sticker WhatsApp.
+ * @param {string} text
+ * @param {object} opts - { pack?: string, author?: string }
+ * @returns {Promise<{cleanText: string, stickers: Array<{buffer, url}>}>}
+ */
+export async function extractMediaStickersFromText(text, opts = {}) {
+    const stickers = [];
+    let cleanText = String(text || '');
+
+    const regex = /\[MEDIA\s*,\s*"(https?:\/\/[^"]+)"\s*,\s*"sticker"\s*\]/gi;
+    const matches = [...cleanText.matchAll(regex)];
+
+    if (matches.length === 0) return { cleanText, stickers };
+
+    let StickerCtor = null;
+    let StickerTypesEnum = null;
+    try {
+        const mod = await import('wa-sticker-formatter');
+        StickerCtor = mod.Sticker;
+        StickerTypesEnum = mod.StickerTypes;
+    } catch (e) {
+        aiToolsError(`[AITool/MEDIA-STICKER] wa-sticker-formatter tidak tersedia: ${e.message}`);
+        for (const match of matches) cleanText = cleanText.split(match[0]).join('');
+        return { cleanText: cleanText.replace(/\n{3,}/g, '\n\n').trim(), stickers };
+    }
+
+    const packName = opts.pack || 'Honolulu - Azur Lane';
+    const authorName = opts.author || 'Wily Bot';
+
+    for (const match of matches) {
+        const fullMarker = match[0];
+        const url = match[1].trim();
+        cleanText = cleanText.split(fullMarker).join('');
+        if (!url) continue;
+
+        try {
+            const res = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000 });
+            const rawBuffer = Buffer.from(res.data);
+            const sticker = new StickerCtor(rawBuffer, {
+                pack: packName,
+                author: authorName,
+                type: StickerTypesEnum.FULL,
+                categories: ['⚓', '✨'],
+                id: `honolulu.media.${Date.now()}`,
+                quality: 65,
+            });
+            const buffer = await sticker.toBuffer();
+            stickers.push({ buffer, url });
+            aiToolsLog(`[AITool/MEDIA-STICKER] ✅ ${url.split('/').pop()} → ${(buffer.length / 1024).toFixed(1)} KB`);
+        } catch (e) {
+            aiToolsError(`[AITool/MEDIA-STICKER] gagal "${url}": ${e.message}`);
+        }
+    }
+
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n').trim();
+    return { cleanText, stickers };
 }
