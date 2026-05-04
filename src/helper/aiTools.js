@@ -1035,8 +1035,30 @@ export async function searchHonoluluSticker(emosi) {
 }
 
 /**
- * Parse [REPLY-STIKER: emosi] / [REPLY-STICKER: emosi] dari response AI,
- * cari sticker karakter Honolulu yang cocok mood, konversi ke webp.
+ * Download sticker langsung dari URL (cdn.ornzora atau URL lain).
+ * @param {string} url
+ * @returns {Promise<{buffer: Buffer, url: string} | null>}
+ */
+async function fetchStickerFromUrl(url) {
+    try {
+        const res = await axios.get(url, {
+            responseType: 'arraybuffer',
+            timeout: 20000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36' },
+        });
+        const buffer = Buffer.from(res.data);
+        if (buffer.length < 500) return null;
+        return { buffer, url };
+    } catch (e) {
+        aiToolsError(`[AITool/REPLY-STIKER] gagal fetch URL "${url}": ${e.message}`);
+        return null;
+    }
+}
+
+/**
+ * Parse [REPLY-STIKER: URL|emosi] / [REPLY-STICKER: URL|emosi] dari response AI.
+ * Jika isi marker adalah URL → download langsung.
+ * Jika isi marker adalah kata emosi → search safebooru (legacy fallback).
  * @param {string} text
  * @param {object} opts - { pack?: string, author?: string }
  * @returns {Promise<{cleanText: string, stickers: Array<{buffer, emosi, sourceUrl}>}>}
@@ -1045,7 +1067,7 @@ export async function extractReplyStickersFromText(text, opts = {}) {
     const stickers = [];
     let cleanText = String(text || '');
 
-    const regex = /\[(?:REPLY-STIKER|REPLY-STICKER):\s*([^\]]{1,80})\]/gi;
+    const regex = /\[(?:REPLY-STIKER|REPLY-STICKER):\s*([^\]]{1,300})\]/gi;
     const matches = [...cleanText.matchAll(regex)];
 
     if (matches.length === 0) return { cleanText, stickers };
@@ -1067,29 +1089,42 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
     for (const match of matches) {
         const fullMarker = match[0];
-        const emosi = match[1].trim().toLowerCase();
+        const value = match[1].trim();
         cleanText = cleanText.split(fullMarker).join('');
-        if (!emosi) continue;
+        if (!value) continue;
 
         try {
-            const found = await searchHonoluluSticker(emosi);
-            if (!found) {
-                aiToolsError(`[AITool/REPLY-STIKER] tidak ada hasil untuk emosi "${emosi}"`);
-                continue;
+            let found = null;
+
+            if (/^https?:\/\//i.test(value)) {
+                found = await fetchStickerFromUrl(value);
+                if (!found) {
+                    aiToolsError(`[AITool/REPLY-STIKER] gagal fetch URL sticker: ${value}`);
+                    continue;
+                }
+            } else {
+                const emosi = value.toLowerCase();
+                found = await searchHonoluluSticker(emosi);
+                if (!found) {
+                    aiToolsError(`[AITool/REPLY-STIKER] tidak ada hasil untuk emosi "${emosi}"`);
+                    continue;
+                }
             }
+
+            const isWebp = /\.webp$/i.test(found.url);
             const sticker = new StickerCtor(found.buffer, {
                 pack: packName,
                 author: authorName,
-                type: StickerTypesEnum.FULL,
+                type: isWebp ? StickerTypesEnum.FULL : StickerTypesEnum.FULL,
                 categories: ['⚓', '✨'],
-                id: `honolulu.${emosi}.${Date.now()}`,
-                quality: 65,
+                id: `honolulu.reply.${Date.now()}`,
+                quality: 80,
             });
             const buffer = await sticker.toBuffer();
-            stickers.push({ buffer, emosi, sourceUrl: found.url });
-            aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${emosi}" → ${(buffer.length / 1024).toFixed(1)} KB webp`);
+            stickers.push({ buffer, emosi: value, sourceUrl: found.url });
+            aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 60)}" → ${(buffer.length / 1024).toFixed(1)} KB webp`);
         } catch (e) {
-            aiToolsError(`[AITool/REPLY-STIKER] gagal "${emosi}": ${e.message}`);
+            aiToolsError(`[AITool/REPLY-STIKER] gagal "${value.substring(0, 60)}": ${e.message}`);
         }
     }
 
