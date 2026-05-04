@@ -281,6 +281,8 @@ export function startAutoCleaner(intervalHours = 6) {
         clearOldFiles(hours);
     }, hours * 60 * 60 * 1000);
 
+    console.log(`\x1b[32m[Cleaner]\x1b[39m Auto-cleaner aktif — interval setiap ${hours} jam`);
+
     startDiskMonitor(warnPct, critPct);
 
     const disk = getDiskUsage();

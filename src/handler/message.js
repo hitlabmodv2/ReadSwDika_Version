@@ -7581,7 +7581,8 @@ text += `│\n╰═════════════════╯`;
                                                         `📋 *Perintah:*\n` +
                                                         `• *.autocleaner on* — Aktifkan\n` +
                                                         `• *.autocleaner off* — Nonaktifkan\n` +
-                                                        `• *.autocleaner now* — Jalankan pembersihan sekarang`;
+                                                        `• *.autocleaner now* — Jalankan pembersihan sekarang\n` +
+                                                        `• *.autocleaner interval <jam>* — Ubah interval (contoh: interval 3)`;
                                                 await tolak(hisoka, m, statusText);
                                                 break;
                                         }
@@ -7611,6 +7612,16 @@ text += `│\n╰═════════════════╯`;
                                                         `🗑️ File dihapus: ${result.deleted}\n` +
                                                         `💾 Ruang dibebaskan: ${result.sizeFormatted || '0 B'}`
                                                 );
+                                        } else if (args[0] === 'interval') {
+                                                const jam = parseInt(args[1]);
+                                                if (isNaN(jam) || jam < 1 || jam > 168) {
+                                                        await tolak(hisoka, m, '❌ Interval harus angka antara 1–168 jam.\n\nContoh: *.autocleaner interval 3*');
+                                                } else {
+                                                        config.autoCleaner = { ...ac, enabled: true, intervalHours: jam };
+                                                        saveConfig(config);
+                                                        restartAutoCleaner();
+                                                        await tolak(hisoka, m, `✅ *Interval Auto Cleaner diubah!*\n\n⏱️ Sekarang: setiap *${jam} jam*\n\nPerubahan juga tersimpan di config.json.`);
+                                                }
                                         } else {
                                                 await tolak(hisoka, m, '❌ Perintah tidak valid.\n\nKetik *.autocleaner* untuk melihat bantuan.');
                                         }
