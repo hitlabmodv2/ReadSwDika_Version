@@ -63,12 +63,6 @@ const WATCHED_FILES = [
     // jadibot.js      → sesi aktif user lain
 ];
 
-// File teks yang tidak perlu di-import ulang sebagai modul,
-// tapi tetap diwatch agar perubahan muncul di log.
-const WATCHED_TEXT_FILES = [
-    { key: 'aiPromptTxt', rel: 'src/helper/aiPrompt.txt' },
-];
-
 async function loadModule(rel) {
     const abs = path.join(ROOT, rel);
     const url = pathToFileURL(abs).href + `?t=${Date.now()}`;
@@ -118,32 +112,6 @@ function watchFile(rel, key) {
     }
 }
 
-function watchTextFile(rel, key) {
-    const abs = path.join(ROOT, rel);
-
-    if (_watchers[key]) {
-        try { _watchers[key].close(); } catch {}
-    }
-
-    try {
-        _watchers[key] = fs.watch(abs, { persistent: false }, (event) => {
-            if (event !== 'change' && event !== 'rename') return;
-
-            clearTimeout(_debounceTimers[key]);
-            _debounceTimers[key] = setTimeout(() => {
-                console.log(`\x1b[36m[HotReload] Perubahan terdeteksi: ${rel}\x1b[39m`);
-                console.log(`\x1b[32m[HotReload] ✓ '${rel}' aktif — prompt langsung dipakai di request berikutnya!\x1b[39m`);
-                if (typeof _reloadCallbacks[key] === 'function') {
-                    try { _reloadCallbacks[key](rel); } catch {}
-                }
-                if (event === 'rename') watchTextFile(rel, key);
-            }, DEBOUNCE_MS);
-        });
-    } catch (err) {
-        console.error(`\x1b[31m[HotReload] Tidak bisa watch '${rel}':\x1b[39m`, err.message);
-    }
-}
-
 export async function initHotReload() {
     let ok = 0;
     let fail = 0;
@@ -154,17 +122,6 @@ export async function initHotReload() {
         if (mod !== null) {
             _handlers[key] = mod;
             watchFile(rel, key);
-            ok++;
-        } else {
-            failed.push(rel);
-            fail++;
-        }
-    }
-
-    for (const { key, rel } of WATCHED_TEXT_FILES) {
-        const abs = path.join(ROOT, rel);
-        if (fs.existsSync(abs)) {
-            watchTextFile(rel, key);
             ok++;
         } else {
             failed.push(rel);

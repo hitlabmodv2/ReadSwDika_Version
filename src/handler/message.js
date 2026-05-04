@@ -46,7 +46,7 @@ import gemini from '../helper/gemini.js';
 import { updateUserName, getUserName } from '../db/userDb.js';
 import { loadUserMemory, detectAndUpdateMemory, clearUserMemory, memoryToReadable } from '../helper/userMemory.js';
 import { searchAndGetImage, searchAndGetImages, extractImagesFromText } from '../helper/imageSearch.js';
-import { extractVoiceNotesFromText, extractSongsFromText, extractVideosFromText, extractStickersFromText, extractReplyStickersFromText, extractMediaStickersFromText, extractTikTokFromText, extractInstagramFromText, extractYouTubeAudioFromText, hasMediaDownloadMarker, hasSocialDLMarker, hasStickerMarker } from '../helper/aiTools.js';
+import { extractVoiceNotesFromText, extractSongsFromText, extractVideosFromText, extractStickersFromText, extractReplyStickersFromText, extractTikTokFromText, extractInstagramFromText, extractYouTubeAudioFromText, hasMediaDownloadMarker, hasSocialDLMarker, hasStickerMarker } from '../helper/aiTools.js';
 import { getHistory, addToHistory, clearHistory, clearAllHistory, countHistory, getSessionKey, buildHistoryMeta, wrapCurrentUserMessage } from '../db/aiHistory.js';
 import { sendAIReply } from '../helper/aiReact.js';
 import { buildSmartAlbumCaptionPrompt, buildSmartImageHistoryPrompt, buildSmartImageWaitPrompt, buildWilyAICommandPrompt, buildWilyFallbackUserPrompt, buildWilyMediaUserPrompt, buildWilyVisionContextPrompt, buildVideoDownloadCaptionPrompt, buildStickerAnalysisExtractionPrompt } from '../helper/aiPrompt.js';
@@ -708,7 +708,7 @@ async function processAIMediaAndSend(hisoka, m, response) {
     working = imgRes.cleanText;
     const images = imgRes.images || [];
 
-    // ── 2. STIKER (search img → webp) + REPLY-STIKER (Honolulu Azur Lane) + MEDIA sticker URL ──
+    // ── 2. STIKER (search img → webp) + REPLY-STIKER (Honolulu Azur Lane) ──
     let stickers = [];
     if (hasStickerMarker(working)) {
         try {
@@ -726,15 +726,6 @@ async function processAIMediaAndSend(hisoka, m, response) {
             }
         } catch (e) {
             wilyError(`[AIMedia] ❌ extractReplyStickers gagal: ${e.message}`);
-        }
-        try {
-            const mediaStkRes = await extractMediaStickersFromText(working);
-            working = mediaStkRes.cleanText;
-            if (mediaStkRes.stickers?.length) {
-                stickers.push(...mediaStkRes.stickers);
-            }
-        } catch (e) {
-            wilyError(`[AIMedia] ❌ extractMediaStickers gagal: ${e.message}`);
         }
     }
 
