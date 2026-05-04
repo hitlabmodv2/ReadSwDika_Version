@@ -573,8 +573,13 @@ export async function extractImagesFromText(text) {
     }
 
     // Tahap 2: fallback URL gambar langsung di teks
+    // ── Hapus marker REPLY-STIKER / STIKER dulu biar URL .webp di dalamnya
+    //    tidak ikut kena tangkap regex gambar di bawah ini ──
+    const stickerMarkerRegex = /\[(?:REPLY-STIKER|REPLY-STICKER|STIKER|STICKER):\s*[^\]]{1,400}\]/gi;
+    const textForUrlScan = cleanText.replace(stickerMarkerRegex, '');
+
     const imgUrlRegex = /https?:\/\/[^\s"'<>\)\]]+\.(?:jpg|jpeg|png|webp|gif)(?:\?[^\s"'<>\)\]]*)?/gi;
-    const urlMatches = [...cleanText.matchAll(imgUrlRegex)];
+    const urlMatches = [...textForUrlScan.matchAll(imgUrlRegex)];
 
     if (urlMatches.length > 0) {
         const urlsToRemove = new Set(urlMatches.map(m => m[0]));
