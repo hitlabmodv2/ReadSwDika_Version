@@ -963,10 +963,8 @@ async function fetchStickerFromUrl(url) {
 }
 
 /**
- * Parse [REPLY-STIKER: URL|emosi] / [REPLY-STICKER: URL|emosi] dari response AI.
- * Jika isi marker adalah URL .webp → kirim buffer mentah langsung (sudah format sticker).
- * Jika isi marker adalah URL non-webp → download lalu konversi wa-sticker-formatter.
- * Jika isi marker adalah kata emosi → search safebooru + konversi (legacy fallback).
+ * Parse [REPLY-STIKER: URL] / [REPLY-STICKER: URL] dari response AI.
+ * Download webp dari CDN → proses wa-sticker-formatter (resize 512x512 + metadata WA) → kirim sebagai sticker.
  * @param {string} text
  * @param {object} opts - { pack?: string, author?: string }
  * @returns {Promise<{cleanText: string, stickers: Array<{buffer, emosi, sourceUrl}>}>}
@@ -980,6 +978,18 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
     if (matches.length === 0) return { cleanText, stickers };
 
+    let StickerCtor = null;
+    let StickerTypesEnum = null;
+    try {
+        const mod = await import('wa-sticker-formatter');
+        StickerCtor = mod.Sticker;
+        StickerTypesEnum = mod.StickerTypes;
+    } catch (e) {
+        aiToolsError(`[AITool/REPLY-STIKER] wa-sticker-formatter tidak tersedia: ${e.message}`);
+        for (const match of matches) cleanText = cleanText.split(match[0]).join('');
+        return { cleanText: cleanText.replace(/\n{3,}/g, '\n\n').trim(), stickers };
+    }
+
     const packName = opts.pack || 'Honolulu - Azur Lane';
     const authorName = opts.author || 'Wily Bot';
 
@@ -989,59 +999,37 @@ export async function extractReplyStickersFromText(text, opts = {}) {
         cleanText = cleanText.split(fullMarker).join('');
         if (!value) continue;
 
+        if (!/^https?:\/\//i.test(value)) {
+            aiToolsError(`[AITool/REPLY-STIKER] bukan URL valid: "${value}" — skip`);
+            continue;
+        }
+
         try {
-            const isUrl = /^https?:\/\//i.test(value);
-            const isWebpUrl = isUrl && /\.webp(\?.*)?$/i.test(value);
-
-            if (isWebpUrl) {
-                // .webp dari CDN sudah format sticker WhatsApp — kirim raw, TANPA konversi
-                const found = await fetchStickerFromUrl(value);
-                if (!found) {
-                    aiToolsError(`[AITool/REPLY-STIKER] gagal fetch webp: ${value}`);
-                    continue;
-                }
-                stickers.push({ buffer: found.buffer, emosi: value, sourceUrl: found.url });
-                aiToolsLog(`[AITool/REPLY-STIKER] ✅ webp raw "${value.substring(0, 70)}" → ${(found.buffer.length / 1024).toFixed(1)} KB`);
+            const found = await fetchStickerFromUrl(value);
+            if (!found) {
+                aiToolsError(`[AITool/REPLY-STIKER] gagal fetch: ${value}`);
                 continue;
             }
 
-            // Non-webp URL atau kata emosi → butuh konversi wa-sticker-formatter
-            let StickerCtor = null;
-            let StickerTypesEnum = null;
-            try {
-                const mod = await import('wa-sticker-formatter');
-                StickerCtor = mod.Sticker;
-                StickerTypesEnum = mod.StickerTypes;
-            } catch (e) {
-                aiToolsError(`[AITool/REPLY-STIKER] wa-sticker-formatter tidak tersedia: ${e.message}`);
-                continue;
-            }
-
-            let found = null;
-            if (isUrl) {
-                found = await fetchStickerFromUrl(value);
-                if (!found) {
-                    aiToolsError(`[AITool/REPLY-STIKER] gagal fetch URL: ${value}`);
-                    continue;
-                }
-            } else {
-                aiToolsError(`[AITool/REPLY-STIKER] nilai bukan URL: "${value}" — abaikan`);
-                continue;
-            }
-
+            // Selalu proses lewat wa-sticker-formatter:
+            // CDN webp adalah image/webp biasa (bukan WA sticker), perlu resize 512x512 + inject EXIF sticker
             const sticker = new StickerCtor(found.buffer, {
                 pack: packName,
                 author: authorName,
                 type: StickerTypesEnum.FULL,
                 categories: ['⚓', '✨'],
-                id: `honolulu.reply.${Date.now()}`,
-                quality: 80,
+                id: `honolulu.${Date.now()}`,
+                quality: 75,
             });
             const buffer = await sticker.toBuffer();
+            if (!buffer || buffer.length < 100) {
+                aiToolsError(`[AITool/REPLY-STIKER] buffer sticker kosong setelah konversi: ${value}`);
+                continue;
+            }
             stickers.push({ buffer, emosi: value, sourceUrl: found.url });
-            aiToolsLog(`[AITool/REPLY-STIKER] ✅ converted "${value.substring(0, 60)}" → ${(buffer.length / 1024).toFixed(1)} KB webp`);
+            aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 70)}" → ${(buffer.length / 1024).toFixed(1)} KB sticker`);
         } catch (e) {
-            aiToolsError(`[AITool/REPLY-STIKER] gagal "${value.substring(0, 60)}": ${e.message}`);
+            aiToolsError(`[AITool/REPLY-STIKER] gagal konversi "${value.substring(0, 70)}": ${e.message}`);
         }
     }
 
