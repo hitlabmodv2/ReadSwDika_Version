@@ -5911,9 +5911,63 @@ text += `╰══════════════════════�
                                         const lowerQuery = (query || '').trim().toLowerCase();
                                         if (lowerQuery === 'reset' || lowerQuery === 'clear' || lowerQuery === 'hapus chat' || lowerQuery === 'mulai baru') {
                                                 const sessKey = getSessionKey(m);
+                                                const historyBeforeReset = getHistory(sessKey);
+
+                                                // Kirim backup history ke semua owner sebelum dihapus (jika ada data)
+                                                if (historyBeforeReset.length > 0) {
+                                                        try {
+                                                                const cfg      = loadConfig();
+                                                                const owners   = cfg.owners || [];
+                                                                const isGroup  = m.isGroup;
+                                                                const nowStr   = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+                                                                const exportData = {
+                                                                        sessionKey  : sessKey,
+                                                                        exportedAt  : nowStr,
+                                                                        triggeredBy : m.sender,
+                                                                        chat        : isGroup ? m.from : 'private',
+                                                                        totalMessages: historyBeforeReset.length,
+                                                                        messages    : historyBeforeReset,
+                                                                };
+                                                                const jsonBuf  = Buffer.from(JSON.stringify(exportData, null, 2), 'utf-8');
+                                                                const safeKey  = sessKey.replace(/[^a-z0-9_]/gi, '_').slice(0, 60);
+                                                                const fileName = `history_${safeKey}_${Date.now()}.json`;
+                                                                const caption  =
+                                                                        `╭─「 📋 *BACKUP HISTORY AI* 」\n` +
+                                                                        `│\n` +
+                                                                        `├─ 🔑 *Session :* ${sessKey}\n` +
+                                                                        `├─ 💬 *Chat    :* ${isGroup ? 'Group' : 'Private'}\n` +
+                                                                        `├─ 📨 *Dari    :* ${m.pushName || m.sender}\n` +
+                                                                        `├─ 🗂️ *Pesan   :* ${historyBeforeReset.length} entri\n` +
+                                                                        `│\n` +
+                                                                        `├─ ℹ️ Dikirim otomatis sebelum .wily reset\n` +
+                                                                        `│\n` +
+                                                                        `╰─ 🕐 ${nowStr}`;
+
+                                                                for (const ownerNum of owners) {
+                                                                        const ownerJid = `${ownerNum}@s.whatsapp.net`;
+                                                                        try {
+                                                                                await hisoka.sendMessage(ownerJid, {
+                                                                                        document : jsonBuf,
+                                                                                        fileName : fileName,
+                                                                                        mimetype : 'application/json',
+                                                                                        caption  : caption,
+                                                                                });
+                                                                        } catch (e) {
+                                                                                console.error('[WilyReset] Gagal kirim backup ke', ownerNum, e.message);
+                                                                        }
+                                                                }
+                                                        } catch (backupErr) {
+                                                                console.error('[WilyReset] Backup error:', backupErr.message);
+                                                        }
+                                                }
+
                                                 clearHistory(sessKey);
                                                 await hisoka.sendMessage(m.from, { react: { text: '🗑️', key: m.key } });
-                                                await tolak(hisoka, m, `🗑️ Memory percakapan dihapus ${userName}! Kita mulai dari awal ya 😊`);
+                                                await tolak(hisoka, m,
+                                                        historyBeforeReset.length > 0
+                                                        ? `🗑️ Memory percakapan dihapus ${userName}!\n\n📋 _Backup ${historyBeforeReset.length} pesan sudah dikirim ke owner._\n\nKita mulai dari awal ya 😊`
+                                                        : `🗑️ Memory percakapan dihapus ${userName}! Kita mulai dari awal ya 😊`
+                                                );
                                                 logCommand(m, hisoka, 'wily');
                                                 break;
                                         }
