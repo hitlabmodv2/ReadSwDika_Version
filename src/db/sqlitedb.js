@@ -46,6 +46,25 @@ export class SQLiteDB {
         this.#stmtDelete = this.#db.prepare('DELETE FROM store WHERE collection = ? AND key = ?');
 
         this.#migrateFromJSON(dir, fileName);
+        this.#trimStore();
+    }
+
+    // Hapus baris store lama — simpan max 2000 per collection, buang yang paling jarang diupdate
+    #trimStore(maxRows = 2000) {
+        try {
+            const count = this.#db.prepare('SELECT COUNT(*) as c FROM store WHERE collection = ?').get(this.#collection);
+            if (count.c <= maxRows) return;
+            const deleted = this.#db.prepare(`
+                DELETE FROM store WHERE collection = ? AND key IN (
+                    SELECT key FROM store WHERE collection = ?
+                    ORDER BY updated_at ASC
+                    LIMIT ?
+                )
+            `).run(this.#collection, this.#collection, count.c - maxRows);
+            if (deleted.changes > 0) {
+                console.log(`\x1b[33m[SQLiteDB]\x1b[39m Trimmed ${deleted.changes} baris lama dari store[${this.#collection}]`);
+            }
+        } catch {}
     }
 
     #migrateFromJSON(dir, fileName) {

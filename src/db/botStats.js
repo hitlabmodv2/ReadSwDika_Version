@@ -10,7 +10,7 @@ const HEARTBEAT_JSON   = path.join(DATA_DIR, 'heartbeat.json');
 
 const HEARTBEAT_INTERVAL_MS  = 60 * 60 * 1000;
 const DEAD_THRESHOLD_MS      = 2 * 60 * 60 * 1000;
-const CHECKPOINT_INTERVAL_MS = 30 * 60 * 1000;
+const CHECKPOINT_INTERVAL_MS = 5 * 60 * 1000;
 
 const defaultStats = { startTime: null, totalRestarts: 0, lastHeartbeat: null };
 
