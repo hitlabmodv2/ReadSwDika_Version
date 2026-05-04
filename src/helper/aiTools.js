@@ -938,13 +938,11 @@ export async function extractYouTubeAudioFromText(text, opts = {}) {
 //  REPLY STICKER  — sticker reaksi karakter dari CDN
 //  Marker: [REPLY-STIKER: URL]
 //  Sumber: URL langsung dari daftar sticker di aiPrompt.js
-//  Output: webp sticker dikirim langsung tanpa konversi
+//  Output: webp + EXIF metadata sticker WA via node-webpmux
 // ════════════════════════════════════════════════════════════
 
 /**
- * Download sticker langsung dari URL (cdn.ornzora atau URL lain).
- * @param {string} url
- * @returns {Promise<{buffer: Buffer, url: string} | null>}
+ * Download webp dari URL CDN.
  */
 async function fetchStickerFromUrl(url) {
     try {
@@ -963,11 +961,44 @@ async function fetchStickerFromUrl(url) {
 }
 
 /**
+ * Inject EXIF sticker metadata ke webp buffer menggunakan node-webpmux.
+ * Metode ini sama persis dengan exif.js di repo referensi.
+ * @param {Buffer} webpBuf - Buffer webp mentah dari CDN
+ * @param {object} meta - { packName, packPublish, packId, emojis }
+ * @returns {Promise<Buffer>} - Buffer webp dengan EXIF sticker WA yang valid
+ */
+async function injectStickerExif(webpBuf, meta = {}) {
+    const webpMod = await import('node-webpmux');
+    const webp = webpMod.default || webpMod;
+
+    const json = {
+        'sticker-pack-id': meta.packId || `honolulu.${Date.now()}`,
+        'sticker-pack-name': meta.packName || 'Honolulu - Azur Lane',
+        'sticker-pack-publisher': meta.packPublish || 'Wily Bot',
+        'android-app-store-link': '',
+        'ios-app-store-link': '',
+        emojis: meta.emojis || ['⚓', '✨'],
+        'is-avatar-sticker': 0,
+    };
+
+    const exifAttr = Buffer.from([
+        0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00,
+        0x01, 0x00, 0x41, 0x57, 0x07, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x16, 0x00, 0x00, 0x00,
+    ]);
+    const jsonBuff = Buffer.from(JSON.stringify(json), 'utf-8');
+    const exif = Buffer.concat([exifAttr, jsonBuff]);
+    exif.writeUIntLE(jsonBuff.length, 14, 4);
+
+    const img = new webp.Image();
+    await img.load(webpBuf);
+    img.exif = exif;
+    return await img.save(null);
+}
+
+/**
  * Parse [REPLY-STIKER: URL] / [REPLY-STICKER: URL] dari response AI.
- * Download webp dari CDN → proses wa-sticker-formatter (resize 512x512 + metadata WA) → kirim sebagai sticker.
- * @param {string} text
- * @param {object} opts - { pack?: string, author?: string }
- * @returns {Promise<{cleanText: string, stickers: Array<{buffer, emosi, sourceUrl}>}>}
+ * Download webp CDN → inject EXIF sticker metadata (node-webpmux) → kirim sebagai sticker WA.
  */
 export async function extractReplyStickersFromText(text, opts = {}) {
     const stickers = [];
@@ -978,20 +1009,8 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
     if (matches.length === 0) return { cleanText, stickers };
 
-    let StickerCtor = null;
-    let StickerTypesEnum = null;
-    try {
-        const mod = await import('wa-sticker-formatter');
-        StickerCtor = mod.Sticker;
-        StickerTypesEnum = mod.StickerTypes;
-    } catch (e) {
-        aiToolsError(`[AITool/REPLY-STIKER] wa-sticker-formatter tidak tersedia: ${e.message}`);
-        for (const match of matches) cleanText = cleanText.split(match[0]).join('');
-        return { cleanText: cleanText.replace(/\n{3,}/g, '\n\n').trim(), stickers };
-    }
-
     const packName = opts.pack || 'Honolulu - Azur Lane';
-    const authorName = opts.author || 'Wily Bot';
+    const packPublish = opts.author || 'Wily Bot';
 
     for (const match of matches) {
         const fullMarker = match[0];
@@ -1011,25 +1030,22 @@ export async function extractReplyStickersFromText(text, opts = {}) {
                 continue;
             }
 
-            // Selalu proses lewat wa-sticker-formatter:
-            // CDN webp adalah image/webp biasa (bukan WA sticker), perlu resize 512x512 + inject EXIF sticker
-            const sticker = new StickerCtor(found.buffer, {
-                pack: packName,
-                author: authorName,
-                type: StickerTypesEnum.FULL,
-                categories: ['⚓', '✨'],
-                id: `honolulu.${Date.now()}`,
-                quality: 75,
+            const buffer = await injectStickerExif(found.buffer, {
+                packName,
+                packPublish,
+                packId: `honolulu.${Date.now()}`,
+                emojis: ['⚓', '✨'],
             });
-            const buffer = await sticker.toBuffer();
+
             if (!buffer || buffer.length < 100) {
-                aiToolsError(`[AITool/REPLY-STIKER] buffer sticker kosong setelah konversi: ${value}`);
+                aiToolsError(`[AITool/REPLY-STIKER] buffer kosong setelah inject EXIF: ${value}`);
                 continue;
             }
+
             stickers.push({ buffer, emosi: value, sourceUrl: found.url });
             aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 70)}" → ${(buffer.length / 1024).toFixed(1)} KB sticker`);
         } catch (e) {
-            aiToolsError(`[AITool/REPLY-STIKER] gagal konversi "${value.substring(0, 70)}": ${e.message}`);
+            aiToolsError(`[AITool/REPLY-STIKER] gagal "${value.substring(0, 70)}": ${e.message}`);
         }
     }
 
