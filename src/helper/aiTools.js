@@ -1057,8 +1057,9 @@ async function fetchStickerFromUrl(url) {
 
 /**
  * Parse [REPLY-STIKER: URL|emosi] / [REPLY-STICKER: URL|emosi] dari response AI.
- * Jika isi marker adalah URL → download langsung.
- * Jika isi marker adalah kata emosi → search safebooru (legacy fallback).
+ * Jika isi marker adalah URL .webp → kirim buffer mentah langsung (sudah format sticker).
+ * Jika isi marker adalah URL non-webp → download lalu konversi wa-sticker-formatter.
+ * Jika isi marker adalah kata emosi → search safebooru + konversi (legacy fallback).
  * @param {string} text
  * @param {object} opts - { pack?: string, author?: string }
  * @returns {Promise<{cleanText: string, stickers: Array<{buffer, emosi, sourceUrl}>}>}
@@ -1072,18 +1073,6 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
     if (matches.length === 0) return { cleanText, stickers };
 
-    let StickerCtor = null;
-    let StickerTypesEnum = null;
-    try {
-        const mod = await import('wa-sticker-formatter');
-        StickerCtor = mod.Sticker;
-        StickerTypesEnum = mod.StickerTypes;
-    } catch (e) {
-        aiToolsError(`[AITool/REPLY-STIKER] wa-sticker-formatter tidak tersedia: ${e.message}`);
-        for (const match of matches) cleanText = cleanText.split(match[0]).join('');
-        return { cleanText: cleanText.replace(/\n{3,}/g, '\n\n').trim(), stickers };
-    }
-
     const packName = opts.pack || 'Honolulu - Azur Lane';
     const authorName = opts.author || 'Wily Bot';
 
@@ -1094,12 +1083,38 @@ export async function extractReplyStickersFromText(text, opts = {}) {
         if (!value) continue;
 
         try {
-            let found = null;
+            const isUrl = /^https?:\/\//i.test(value);
+            const isWebpUrl = isUrl && /\.webp(\?.*)?$/i.test(value);
 
-            if (/^https?:\/\//i.test(value)) {
+            if (isWebpUrl) {
+                // .webp dari CDN sudah format sticker WhatsApp — kirim raw, TANPA konversi
+                const found = await fetchStickerFromUrl(value);
+                if (!found) {
+                    aiToolsError(`[AITool/REPLY-STIKER] gagal fetch webp: ${value}`);
+                    continue;
+                }
+                stickers.push({ buffer: found.buffer, emosi: value, sourceUrl: found.url });
+                aiToolsLog(`[AITool/REPLY-STIKER] ✅ webp raw "${value.substring(0, 70)}" → ${(found.buffer.length / 1024).toFixed(1)} KB`);
+                continue;
+            }
+
+            // Non-webp URL atau kata emosi → butuh konversi wa-sticker-formatter
+            let StickerCtor = null;
+            let StickerTypesEnum = null;
+            try {
+                const mod = await import('wa-sticker-formatter');
+                StickerCtor = mod.Sticker;
+                StickerTypesEnum = mod.StickerTypes;
+            } catch (e) {
+                aiToolsError(`[AITool/REPLY-STIKER] wa-sticker-formatter tidak tersedia: ${e.message}`);
+                continue;
+            }
+
+            let found = null;
+            if (isUrl) {
                 found = await fetchStickerFromUrl(value);
                 if (!found) {
-                    aiToolsError(`[AITool/REPLY-STIKER] gagal fetch URL sticker: ${value}`);
+                    aiToolsError(`[AITool/REPLY-STIKER] gagal fetch URL: ${value}`);
                     continue;
                 }
             } else {
@@ -1111,18 +1126,17 @@ export async function extractReplyStickersFromText(text, opts = {}) {
                 }
             }
 
-            const isWebp = /\.webp$/i.test(found.url);
             const sticker = new StickerCtor(found.buffer, {
                 pack: packName,
                 author: authorName,
-                type: isWebp ? StickerTypesEnum.FULL : StickerTypesEnum.FULL,
+                type: StickerTypesEnum.FULL,
                 categories: ['⚓', '✨'],
                 id: `honolulu.reply.${Date.now()}`,
                 quality: 80,
             });
             const buffer = await sticker.toBuffer();
             stickers.push({ buffer, emosi: value, sourceUrl: found.url });
-            aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 60)}" → ${(buffer.length / 1024).toFixed(1)} KB webp`);
+            aiToolsLog(`[AITool/REPLY-STIKER] ✅ converted "${value.substring(0, 60)}" → ${(buffer.length / 1024).toFixed(1)} KB webp`);
         } catch (e) {
             aiToolsError(`[AITool/REPLY-STIKER] gagal "${value.substring(0, 60)}": ${e.message}`);
         }
