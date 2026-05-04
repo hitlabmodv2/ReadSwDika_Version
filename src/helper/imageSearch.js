@@ -518,6 +518,28 @@ export async function searchAndGetImages(query, count = 1) {
 }
 
 // ── Parse marker [GAMBAR: query] dari teks AI ──
+// ── Kata kunci yang menandakan AI pakai [GAMBAR:] untuk reaksi/emosi sendiri
+// Marker ini harus diblokir — reaksi emosi harus pakai [REPLY-STIKER:] bukan [GAMBAR:]
+const REACTION_IMAGE_BLOCKLIST = [
+    'reaction', 'meme', 'anime girl', 'manga', 'manga panel', 'comic panel',
+    'gak peduli', 'tidak peduli', 'confused', 'confused anime', 'angry anime',
+    'sad anime', 'happy anime', 'anime reaction', 'anime expression',
+    'chibi reaction', 'blush anime', 'surprised anime', 'blushing',
+    'smug anime', 'pout', 'pouting', 'facepalm', 'frustrated anime',
+    'embarrassed anime', 'shocked anime', 'crying anime', 'laughing anime',
+    'nervous anime', 'scared anime', 'disgusted anime', 'tired anime',
+    'annoyed anime', 'thinking anime', 'skeptical anime', 'cute reaction',
+    'kawaii reaction', 'anime meme', 'sticker', 'expression anime',
+    'character reaction', 'light novel reaction', 'manga reaction',
+    'apa coba', 'apaan', 'reaction image', 'emote', 'emoticon anime',
+    'anime face', 'chibi expression', 'chibi emotion', 'waifu reaction',
+];
+
+function isReactionImageQuery(query) {
+    const lower = query.toLowerCase().trim();
+    return REACTION_IMAGE_BLOCKLIST.some(kw => lower.includes(kw));
+}
+
 export async function extractImagesFromText(text) {
     const images = [];
     let cleanText = text;
@@ -531,6 +553,13 @@ export async function extractImagesFromText(text) {
             const fullMarker = match[0];
             const query = match[1].trim();
             cleanText = cleanText.split(fullMarker).join('');
+
+            // ── Blokir kalau query adalah reaksi/emosi — harus pakai [REPLY-STIKER:] ──
+            if (isReactionImageQuery(query)) {
+                imageSearchLog(`[ImgMarker] 🚫 Query reaksi diblokir (gunakan REPLY-STIKER): "${query}"`);
+                continue;
+            }
+
             try {
                 const found = await searchAndGetImage(query);
                 if (found) {
