@@ -26,6 +26,7 @@ import path from 'path';
 import { exec } from 'child_process';
 import { fileURLToPath } from 'url';
 import { searchAndGetImage } from './imageSearch.js';
+import { isValidStickerUrl, selectStickerByMood } from './stickerMap.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1014,13 +1015,26 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
     for (const match of matches) {
         const fullMarker = match[0];
-        const value = match[1].trim();
+        let value = match[1].trim();
         cleanText = cleanText.split(fullMarker).join('');
         if (!value) continue;
 
         if (!/^https?:\/\//i.test(value)) {
             aiToolsError(`[AITool/REPLY-STIKER] bukan URL valid: "${value}" — skip`);
             continue;
+        }
+
+        // ── Validasi URL: harus dari CDN resmi ──
+        // Kalau AI kirim URL yang tidak ada di daftar resmi → fallback ke mood selector
+        if (!isValidStickerUrl(value)) {
+            aiToolsLog(`[AITool/REPLY-STIKER] ⚠️ URL tidak dikenal, fallback ke mood selector: "${value.substring(0, 60)}"`);
+            const fallbackUrl = selectStickerByMood(opts.contextText || cleanText);
+            if (fallbackUrl) {
+                aiToolsLog(`[AITool/REPLY-STIKER] 🎯 Mood fallback → ${fallbackUrl.substring(0, 70)}`);
+                value = fallbackUrl;
+            } else {
+                continue;
+            }
         }
 
         try {
