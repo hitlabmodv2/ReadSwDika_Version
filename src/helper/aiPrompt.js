@@ -23,6 +23,7 @@
 import { buildReactPromptRules, buildPersonalityBoost } from './aiReact.js';
 import { formatMemoryForPrompt } from './userMemory.js';
 import { buildStickerPromptList } from './stickerMap.js';
+import { buildStickerStoryHint } from './aiStickerStory.js';
 
 /**
  * Prompt untuk ekstrak analisis stiker menjadi JSON terstruktur
@@ -490,6 +491,7 @@ export function buildWilyAICommandPrompt({
     isDocumentMode = false,
     history = [],
     userMemory = null,
+    sessionKey = '',
 }) {
     const historyNote = hasHistory
         ? `\n⚡ KONTEKS AKTIF: Kamu sedang MELANJUTKAN percakapan dengan ${userName}.
@@ -1142,6 +1144,10 @@ Bedanya sama [STIKER:]:
   Teks bilang "ya terserah" tapi stiker malu → itu tsundere yang sebenarnya.
   Jangan takut kirim stiker — itu yang bikin Honolulu terasa nyata dan bukan chatbot biasa.
 
+${sessionKey ? (() => {
+    const hint = buildStickerStoryHint(sessionKey);
+    return hint ? `\n${hint}\n` : '';
+})() : ''}
 📋 DAFTAR STICKER — PILIH URL YANG PALING COCOK MOOD/KONTEKS:
 
 ${buildStickerPromptList('both')}

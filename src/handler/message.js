@@ -699,9 +699,10 @@ async function ensureYtdlp(hisoka, m) {
  *
  * @returns {Promise<{cleanText: string, sentText: string|null, counts: object}>}
  */
-async function processAIMediaAndSend(hisoka, m, response) {
+async function processAIMediaAndSend(hisoka, m, response, opts = {}) {
     let working = String(response || '').trim();
     if (!working) return { cleanText: '', sentText: null, counts: { images: 0, stickers: 0, voiceNotes: 0, songs: 0, videos: 0 } };
+    const _sessionKey = opts.sessionKey || '';
 
     // ── 1. GAMBAR (cepat, tanpa yt-dlp) ──
     const imgRes = await extractImagesFromText(working);
@@ -719,7 +720,7 @@ async function processAIMediaAndSend(hisoka, m, response) {
             wilyError(`[AIMedia] ❌ extractStickers gagal: ${e.message}`);
         }
         try {
-            const replyStkRes = await extractReplyStickersFromText(working);
+            const replyStkRes = await extractReplyStickersFromText(working, { sessionKey: _sessionKey, contextText: String(response || '').substring(0, 300) });
             working = replyStkRes.cleanText;
             if (replyStkRes.stickers?.length) {
                 stickers.push(...replyStkRes.stickers);
@@ -1419,6 +1420,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         isStickerReply,
                                                         userMessage,
                                                         userMemory,
+                                                        sessionKey: getSessionKey(m),
                                                 });
 
                                                 // ── STIKER MEMORY: cek DB sebelum kirim ke AI ──
@@ -1455,7 +1457,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
 
                                                 if (response && response.trim()) {
                                                         setAICooldown(m.sender);
-                                                        await processAIMediaAndSend(hisoka, m, response.trim());
+                                                        await processAIMediaAndSend(hisoka, m, response.trim(), { sessionKey: getSessionKey(m) });
                                                         console.log(`\x1b[36m[AutoGemini]\x1b[39m Reply to ${userName} (${m.pushName}) in "${m.isGroup ? hisoka.getName(m.from) : 'DM'}" | Trigger: ${isBotMentioned ? 'mention' : 'reply'} | Media: ${hasMedia ? mediaLabel : 'none'}`);
 
                                                         // ── STIKER MEMORY: simpan analisis stiker baru ke DB (background) ──
@@ -1735,6 +1737,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         userMessage,
                                                         history: histMsgs,
                                                         userMemory,
+                                                        sessionKey: sessKey,
                                                 });
                                                 const currentMsgMeta = buildHistoryMeta(m, { mediaLabel: hasMedia ? mediaLabel : null });
                                                 let contents;
@@ -1811,7 +1814,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 if (hasMedia) {
                                                                         autoFinalResponse = autoFinalResponse.replace(/\[GAMBAR:[^\]]{1,200}\]/gi, '').replace(/\n{3,}/g, '\n\n').trim();
                                                                 }
-                                                                const mediaResult = await processAIMediaAndSend(hisoka, m, autoFinalResponse);
+                                                                const mediaResult = await processAIMediaAndSend(hisoka, m, autoFinalResponse, { sessionKey: sessKey });
                                                                 const cleanResp = mediaResult.sentText;
                                                                 addToHistory(sessKey, userMessage, cleanResp || response.trim(), buildHistoryMeta(m, { mediaLabel: hasMedia ? mediaLabel : null }));
                                                                 const triggerType = isWilyMentioned ? 'Mention' : isReplyToBotMsg ? 'Reply' : 'DM';
@@ -1940,6 +1943,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         userMessage: pvUserMsg,
                                                         history: pvHistMsgs,
                                                         userMemory: pvUserMemory,
+                                                        sessionKey: pvSessKey,
                                                 });
 
                                                 let pvContents;
@@ -1972,7 +1976,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         }
 
                                                         if (pvResponse && pvResponse.trim()) {
-                                                                const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvResponse.trim());
+                                                                const pvMediaResult = await processAIMediaAndSend(hisoka, m, pvResponse.trim(), { sessionKey: pvSessKey });
                                                                 const pvClean = pvMediaResult.sentText;
                                                                 addToHistory(pvSessKey, pvUserMsg, pvClean || pvResponse.trim(), buildHistoryMeta(m, { mediaLabel: pvHasMedia ? pvMediaLabel : null }));
                                                                 console.log(`\x1b[36m[WilyPrivate]\x1b[39m ${pvUserName} | DM | Media: ${pvHasMedia ? pvMediaLabel : 'tidak ada'}`);
@@ -6455,6 +6459,7 @@ text += `╰══════════════════════�
                                                 isDocumentMode,
                                                 history: historyMessages,
                                                 userMemory: aiCmdUserMemory,
+                                                sessionKey: sessKey,
                                         });
 
                                         // Bangun final user message (gabung pertanyaan + konteks dokumen jika ada)
@@ -6553,7 +6558,7 @@ text += `╰══════════════════════�
                                                         }
                                                         finalResponse = stripped;
                                                 }
-                                                const wilyMediaResult = await processAIMediaAndSend(hisoka, m, finalResponse);
+                                                const wilyMediaResult = await processAIMediaAndSend(hisoka, m, finalResponse, { sessionKey: sessKey });
                                                 const wilyClean = wilyMediaResult.sentText;
                                                 const wc = wilyMediaResult.counts;
                                                 const mediaSummary = [

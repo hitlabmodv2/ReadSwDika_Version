@@ -27,6 +27,7 @@ import { exec } from 'child_process';
 import { fileURLToPath } from 'url';
 import { searchAndGetImage } from './imageSearch.js';
 import { isValidStickerUrl, selectStickerByMood } from './stickerMap.js';
+import { logStickerSent } from './aiStickerStory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1032,6 +1033,7 @@ export async function extractReplyStickersFromText(text, opts = {}) {
             if (fallbackUrl) {
                 aiToolsLog(`[AITool/REPLY-STIKER] 🎯 Mood fallback → ${fallbackUrl.substring(0, 70)}`);
                 value = fallbackUrl;
+                opts._wasFallback = true;
             } else {
                 continue;
             }
@@ -1058,6 +1060,19 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
             stickers.push({ buffer, emosi: value, sourceUrl: found.url });
             aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 70)}" → ${(buffer.length / 1024).toFixed(1)} KB sticker`);
+
+            // ── Catat ke ai_sticker_story & ai_sticker_pattern ──
+            try {
+                logStickerSent({
+                    sessionKey:  opts.sessionKey  || '',
+                    stickerUrl:  value,
+                    mood:        opts.mood         || opts.detectedMood || '',
+                    context:     (opts.contextText || '').substring(0, 200),
+                    wasFallback: !!opts._wasFallback,
+                });
+            } catch (logErr) {
+                aiToolsError(`[AITool/REPLY-STIKER] logStickerSent error: ${logErr.message}`);
+            }
         } catch (e) {
             aiToolsError(`[AITool/REPLY-STIKER] gagal "${value.substring(0, 70)}": ${e.message}`);
         }

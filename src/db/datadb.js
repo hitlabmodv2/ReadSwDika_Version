@@ -28,6 +28,25 @@ db.exec(`
         value      TEXT NOT NULL,
         updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
     );
+    CREATE TABLE IF NOT EXISTS ai_sticker_story (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_key TEXT    NOT NULL DEFAULT '',
+        sticker_url TEXT    NOT NULL,
+        mood        TEXT    NOT NULL DEFAULT '',
+        context     TEXT    NOT NULL DEFAULT '',
+        was_fallback INTEGER NOT NULL DEFAULT 0,
+        sent_at     INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_sticker_story_session ON ai_sticker_story (session_key);
+    CREATE INDEX IF NOT EXISTS idx_sticker_story_url     ON ai_sticker_story (sticker_url);
+    CREATE INDEX IF NOT EXISTS idx_sticker_story_sent    ON ai_sticker_story (sent_at DESC);
+
+    CREATE TABLE IF NOT EXISTS ai_sticker_pattern (
+        sticker_url  TEXT PRIMARY KEY,
+        total_sent   INTEGER NOT NULL DEFAULT 1,
+        moods_json   TEXT    NOT NULL DEFAULT '{}',
+        last_sent    INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+    );
 `);
 
 export const stmtUserGet    = db.prepare('SELECT data FROM users WHERE id = ?');
