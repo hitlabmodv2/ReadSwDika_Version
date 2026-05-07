@@ -1,4 +1,4 @@
-<div align="center">
+[<div align="center">
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=28&pause=1000&color=25D366&center=true&vCenter=true&width=600&lines=🤖+WILY+BOT;WhatsApp+Multi-Fitur+Bot;Powered+by+Baileys+%2B+Node.js" alt="Typing SVG" />
 
@@ -712,3 +712,4 @@ File temporary (hasil download) dibersihkan otomatis setiap 6 jam.
 **Made with ❤️ by Bang Wily**
 
 </div>
+](https://github.com/hitlabmodv2/ReadSwDika_Version.git)
