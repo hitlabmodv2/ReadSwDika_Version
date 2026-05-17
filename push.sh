@@ -4054,8 +4054,8 @@ action_create_branch() {
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
   printf "  ${C_BOLD}Nama branch baru ▸ ${C_RESET}"
   local name
-  read -r name
-  name=$(echo "$name" | tr -d '[:space:]')
+  read -r name </dev/tty
+  name=$(printf '%s' "$name" | tr -d '[:space:]\r\n')
 
   if [ -z "$name" ] || [ "$name" = "0" ]; then
     echo -e "${C_YELLOW}↩ Kembali ke menu.${C_RESET}"
@@ -4071,6 +4071,7 @@ action_create_branch() {
   fi
 
   # Cek apakah branch sudah ada via GitHub API
+  spinner_start "Cek nama branch"
   local chk_http
   chk_http=$(curl -s -o /dev/null -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4078,26 +4079,26 @@ action_create_branch() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/git/ref/heads/${name}" \
     2>/dev/null)
+  spinner_stop
   if [ "$chk_http" = "200" ]; then
-    echo -e "${C_RED}✖ Branch '${name}' sudah ada di GitHub.${C_RESET}"
+    echo -e "  ${C_RED}✖ Branch '${name}' sudah ada di GitHub.${C_RESET}"
     sleep 2
     return
   fi
 
-  echo ""
-  echo -e "  ${C_CYAN}▸${C_RESET} ambil SHA dari ${DEFAULT_BRANCH}..."
-
   # Ambil SHA tip dari DEFAULT_BRANCH via GitHub API (tidak butuh switch branch lokal)
-  local sha_resp sha_http sha
+  spinner_start "Ambil SHA dari ${DEFAULT_BRANCH}"
+  local sha_resp sha
   sha_resp=$(curl -s -o /tmp/_gh_sha.json -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
     -H "Accept: application/vnd.github+json" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/git/ref/heads/${DEFAULT_BRANCH}" \
     2>/dev/null)
+  spinner_stop
 
   if [ "$sha_resp" != "200" ]; then
-    echo -e "${C_RED}✖ Gagal ambil SHA branch ${DEFAULT_BRANCH} (HTTP ${sha_resp})${C_RESET}"
+    echo -e "  ${C_RED}✖ Gagal ambil SHA branch ${DEFAULT_BRANCH} (HTTP ${sha_resp})${C_RESET}"
     rm -f /tmp/_gh_sha.json
     sleep 2
     return
@@ -4107,15 +4108,13 @@ action_create_branch() {
   rm -f /tmp/_gh_sha.json
 
   if [ -z "$sha" ]; then
-    echo -e "${C_RED}✖ SHA tidak ditemukan dari response GitHub${C_RESET}"
+    echo -e "  ${C_RED}✖ SHA tidak ditemukan dari response GitHub${C_RESET}"
     sleep 2
     return
   fi
 
-  echo -e "  ${C_DIM}   SHA: ${sha:0:10}...${C_RESET}"
-  echo -e "  ${C_CYAN}▸${C_RESET} bikin branch ${C_BOLD}${name}${C_RESET} via GitHub API..."
-
-  # Buat branch di GitHub via API — tanpa perlu git checkout lokal
+  # Buat branch di GitHub via API
+  spinner_start "Buat branch ${name}"
   local create_http
   create_http=$(curl -s -o /tmp/_gh_create.json -w "%{http_code}" \
     -X POST \
@@ -4125,27 +4124,44 @@ action_create_branch() {
     "https://api.github.com/repos/${USER}/${REPO}/git/refs" \
     -d "{\"ref\":\"refs/heads/${name}\",\"sha\":\"${sha}\"}" \
     2>/dev/null)
+  spinner_stop
 
-  if [ "$create_http" = "201" ]; then
-    echo ""
-    echo -e "  ${C_GREEN}🎉 Branch '${name}' berhasil dibuat di GitHub!${C_RESET}"
-    echo -e "  ${C_BLUE}🔗 https://github.com/${USER}/${REPO}/tree/${name}${C_RESET}"
-    local _ts_cb; _ts_cb=$(date '+%H:%M:%S %d %b %Y')
-    local _btn_cb='{"inline_keyboard":[[{"text":"🌿 Lihat Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/tree/'"${name}"'"},{"text":"🔀 Buat PR","url":"https://github.com/'"${USER}"'/'"${REPO}"'/compare/'"${name}"'"}],[{"text":"📁 Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${name}"'"}]]}'
-    send_telegram_photo "https://w.wallhaven.cc/full/x1/wallhaven-x1ppvz.jpg" "🌱 <b>BRANCH BARU DIBUAT</b>
-━━━━━━━━━━━━━━━━━━━━
-📁 <code>${USER}/${REPO}</code>
-🌿 Branch baru: <code>${name}</code>
-🔗 github.com/${USER}/${REPO}/tree/${name}
-━━━━━━━━━━━━━━━━━━━━
-🕐 ${_ts_cb}" "$_btn_cb" 2>/dev/null &
-  else
+  if [ "$create_http" != "201" ]; then
     local api_msg
     api_msg=$(grep -o '"message": *"[^"]*"' /tmp/_gh_create.json 2>/dev/null | head -1 | sed 's/"message": *"//;s/"//')
     echo -e "  ${C_RED}❌ Gagal buat branch (HTTP ${create_http})${C_RESET}"
     [ -n "$api_msg" ] && echo -e "  ${C_DIM}   GitHub: ${api_msg}${C_RESET}"
+    rm -f /tmp/_gh_create.json
+    prompt_back_or_exit
+    return
   fi
+
   rm -f /tmp/_gh_create.json
+  echo -e "  ${C_GREEN}✅ Branch '${C_BOLD}${name}${C_RESET}${C_GREEN}' berhasil dibuat!${C_RESET}"
+  echo ""
+
+  # ── Push file lokal terkini ke branch baru ──────────────────────────────
+  echo -e "${C_BOLD}📤 Upload file lokal ke branch baru...${C_RESET}"
+  echo -e "  ${C_DIM}(aturan gitignore berlaku — sama seperti upload biasa)${C_RESET}"
+  echo ""
+
+  SELECTED_BRANCHES=("$name")
+  if ! commit_pending_changes; then
+    echo -e "  ${C_YELLOW}⚠️  Tidak ada perubahan baru untuk di-commit.${C_RESET}"
+  fi
+
+  push_head_to_branch "$name"
+
+  local _ts_cb; _ts_cb=$(date '+%H:%M:%S %d %b %Y')
+  local _btn_cb='{"inline_keyboard":[[{"text":"🌿 Lihat Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/tree/'"${name}"'"},{"text":"🔀 Buat PR","url":"https://github.com/'"${USER}"'/'"${REPO}"'/compare/'"${name}"'"}],[{"text":"📁 Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${name}"'"}]]}'
+  send_telegram_photo "https://w.wallhaven.cc/full/x1/wallhaven-x1ppvz.jpg" "🌱 <b>BRANCH BARU DIBUAT + PUSH</b>
+━━━━━━━━━━━━━━━━━━━━
+📁 <code>${USER}/${REPO}</code>
+🌿 Branch baru: <code>${name}</code>
+📤 File lokal sudah ter-upload
+🔗 github.com/${USER}/${REPO}/tree/${name}
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_ts_cb}" "$_btn_cb" 2>/dev/null &
 
   prompt_back_or_exit
 }
