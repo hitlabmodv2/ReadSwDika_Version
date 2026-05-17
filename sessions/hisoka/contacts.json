@@ -53,7 +53,9 @@
     "id": "6282393354095@s.whatsapp.net",
     "name": "Feli",
     "lid": "263483945930926@lid",
-    "jid": "6282393354095@s.whatsapp.net"
+    "jid": "6282393354095@s.whatsapp.net",
+    "notify": "j",
+    "verifiedName": "j"
   },
   "212699767515@s.whatsapp.net": {
     "isContact": true,
@@ -30751,7 +30753,8 @@
     "id": "60172160495@s.whatsapp.net",
     "name": "pushkontak wa 26",
     "lid": "67066115670033@lid",
-    "jid": "60172160495@s.whatsapp.net"
+    "jid": "60172160495@s.whatsapp.net",
+    "notify": "aldysensei🍃"
   },
   "6281295856027@s.whatsapp.net": {
     "isContact": true,
@@ -31450,5 +31453,15 @@
     "id": "144289963184306@lid",
     "lid": "144289963184306@lid",
     "imgUrl": "removed"
+  },
+  "67066115670033@lid": {
+    "id": "67066115670033@lid",
+    "lid": "67066115670033@lid",
+    "notify": "aldysensei🍃"
+  },
+  "94485052690680@lid": {
+    "id": "94485052690680@lid",
+    "lid": "94485052690680@lid",
+    "imgUrl": "changed"
   }
 }
