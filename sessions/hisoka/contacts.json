@@ -2498,7 +2498,8 @@
     "id": "6285754553096@s.whatsapp.net",
     "name": "√ASI-125",
     "lid": "169797337784433@lid",
-    "jid": "6285754553096@s.whatsapp.net"
+    "jid": "6285754553096@s.whatsapp.net",
+    "notify": "Maury.Denver ƒт『𝐂.𝐈.𝐇』"
   },
   "6283153755611@s.whatsapp.net": {
     "isContact": true,
@@ -23166,7 +23167,8 @@
     "id": "6289678522775@s.whatsapp.net",
     "name": "! Zacky Ariansyah",
     "lid": "193020829909081@lid",
-    "jid": "6289678522775@s.whatsapp.net"
+    "jid": "6289678522775@s.whatsapp.net",
+    "notify": "Zacky Ariansyah"
   },
   "6283873058380@s.whatsapp.net": {
     "isContact": true,
@@ -31302,7 +31304,7 @@
   "279379418607700@lid": {
     "id": "279379418607700@lid",
     "lid": "279379418607700@lid",
-    "imgUrl": "removed"
+    "imgUrl": "changed"
   },
   "18391385538759@lid": {
     "id": "18391385538759@lid",
@@ -31337,6 +31339,11 @@
   "165949013520441@lid": {
     "id": "165949013520441@lid",
     "lid": "165949013520441@lid",
+    "imgUrl": "changed"
+  },
+  "238001368121398@lid": {
+    "id": "238001368121398@lid",
+    "lid": "238001368121398@lid",
     "imgUrl": "changed"
   }
 }

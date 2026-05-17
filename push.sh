@@ -1654,17 +1654,51 @@ fetch_branches_recent() {
 banner() {
   clear >/dev/tty 2>/dev/null || true
 
-  local _tgl _bln _thn _jam _total_commit
-  _tgl=$(date '+%d'       2>/dev/null || echo "")
-  _bln=$(date '+%b'       2>/dev/null || echo "")
-  _thn=$(date '+%Y'       2>/dev/null || echo "")
-  _jam=$(date '+%H:%M:%S' 2>/dev/null || echo "")
+  # Waktu realtime Asia/Jakarta
+  local _now _jam _tgl _bln _thn _hari_en _total_commit
+  _now=$(TZ=Asia/Jakarta date '+%H %M %S %d %b %Y %A' 2>/dev/null \
+      || date '+%H %M %S %d %b %Y %A' 2>/dev/null || echo "")
+  _jam=$(TZ=Asia/Jakarta date '+%H:%M:%S' 2>/dev/null || date '+%H:%M:%S' 2>/dev/null || echo "")
+  _tgl=$(TZ=Asia/Jakarta date '+%d'       2>/dev/null || date '+%d' 2>/dev/null || echo "")
+  _bln=$(TZ=Asia/Jakarta date '+%b'       2>/dev/null || date '+%b' 2>/dev/null || echo "")
+  _thn=$(TZ=Asia/Jakarta date '+%Y'       2>/dev/null || date '+%Y' 2>/dev/null || echo "")
+  _hari_en=$(TZ=Asia/Jakarta date '+%A'   2>/dev/null || date '+%A' 2>/dev/null || echo "")
+
+  # Nama hari Indonesia
+  local _hari_id
+  case "$_hari_en" in
+    Monday)    _hari_id="Senin" ;;
+    Tuesday)   _hari_id="Selasa" ;;
+    Wednesday) _hari_id="Rabu" ;;
+    Thursday)  _hari_id="Kamis" ;;
+    Friday)    _hari_id="Jumat" ;;
+    Saturday)  _hari_id="Sabtu" ;;
+    Sunday)    _hari_id="Minggu" ;;
+    *)         _hari_id="$_hari_en" ;;
+  esac
+
+  # Salam berdasarkan jam WIB
+  local _jam_num _salam _salam_icon
+  _jam_num=$(TZ=Asia/Jakarta date '+%H' 2>/dev/null || date '+%H' 2>/dev/null || echo "12")
+  _jam_num="${_jam_num#0}"   # hapus leading zero agar perbandingan aritmetik benar
+  [ -z "$_jam_num" ] && _jam_num=0
+  if   [ "$_jam_num" -ge 4  ] && [ "$_jam_num" -lt 11 ]; then
+    _salam="Selamat Pagi"; _salam_icon="🌅"
+  elif [ "$_jam_num" -ge 11 ] && [ "$_jam_num" -lt 15 ]; then
+    _salam="Selamat Siang"; _salam_icon="☀️"
+  elif [ "$_jam_num" -ge 15 ] && [ "$_jam_num" -lt 18 ]; then
+    _salam="Selamat Sore";  _salam_icon="🌇"
+  else
+    _salam="Selamat Malam"; _salam_icon="🌙"
+  fi
+
   _total_commit=$(git rev-list --count HEAD 2>/dev/null || echo "?")
 
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│  🚀  PUSH SCRIPT — BANG WILY  🚀  │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  echo -e "  📅 ${_tgl} ${_bln} ${_thn}  ${C_CYAN}${C_BOLD}🕐 ${_jam}${C_RESET}"
+  echo -e "  ${_salam_icon} ${C_BOLD}${_salam}${C_RESET}${C_DIM}, Bang Wily!${C_RESET}"
+  echo -e "  📅 ${C_BOLD}${_hari_id}${C_RESET}${C_DIM}, ${_tgl} ${_bln} ${_thn}${C_RESET}  ${C_CYAN}${C_BOLD}🕐 ${_jam} WIB${C_RESET}"
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
   echo -e "  📁 ${C_BOLD}${USER}/${REPO}${C_RESET}"
   echo -e "  🌿 ${C_GREEN}${DEFAULT_BRANCH}${C_RESET}${C_DIM}  •  ${_total_commit} commit${C_RESET}"
@@ -5828,14 +5862,12 @@ _sr_apply_switch() {
 prompt_back_or_exit() {
   echo ""
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
-  echo -e "  ${C_GREEN}1${C_RESET} ${C_BOLD}›${C_RESET} Kembali ke menu"
-  echo -e "  ${C_RED}0${C_RESET} ${C_BOLD}›${C_RESET} Keluar"
+  printf "  ${C_DIM}Enter = kembali ke menu  •  ${C_RESET}${C_RED}0${C_RESET}${C_DIM} = keluar${C_RESET}\n"
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
   printf "  ${C_BOLD}▸ ${C_RESET}"
   local _ans
-  read -r _ans
-  _ans="${_ans:-1}"
-  case "$_ans" in
+  read -r _ans </dev/tty 2>/dev/null || read -r _ans
+  case "${_ans:-}" in
     0|q|Q|exit) goodbye_prompt ;;
   esac
 }
