@@ -215,6 +215,64 @@ progress_stop() {
 
 CUSTOM_MSG="${1:-}"
 
+# ===== Animasi startup (progress 0–100%) =====
+_SPLASH_PID=""
+
+_startup_anim_loop() {
+  local user="$1" repo="$2"
+  local bw=26
+
+  clear >/dev/tty 2>/dev/null || true
+  printf "\n" >/dev/tty
+  printf "  \033[1m╔══════════════════════════════════════╗\033[0m\n" >/dev/tty
+  printf "  \033[1m║   🚀  PUSH SCRIPT — BANG WILY        ║\033[0m\n" >/dev/tty
+  printf "  \033[1m╚══════════════════════════════════════╝\033[0m\n\n" >/dev/tty
+  printf "  \033[2m👤 %-16s  📁 %s\033[0m\n\n" "$user" "${user}/${repo}" >/dev/tty
+
+  local msgs=("Inisialisasi" "Setup git remote" "Koneksi GitHub" "Deteksi branch" "Verifikasi" "Siap!")
+  local bounds=(0 14 30 52 74 92 98)
+  local nm=6
+  local seg=0 p=0
+
+  while true; do
+    local cap="${bounds[$(( seg < nm ? seg + 1 : nm ))]:-98}"
+    [ $p -lt $cap ] && p=$(( p + 1 ))
+    [ $p -ge $cap ] && [ $seg -lt $(( nm - 1 )) ] && seg=$(( seg + 1 ))
+    [ $p -gt 98 ] && p=98
+
+    local f=$(( p * bw / 100 ))
+    local bf="" be="" j=0
+    while [ $j -lt $f ]; do bf="${bf}█"; j=$(( j+1 )); done
+    while [ $j -lt $bw ]; do be="${be}░"; j=$(( j+1 )); done
+
+    local msg="${msgs[$( [ $seg -lt $nm ] && echo $seg || echo $(( nm-1 )) )]}"
+    printf "\r  [\033[32m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2m%s ...\033[0m   " \
+      "$bf" "$be" "$p" "$msg" >/dev/tty 2>/dev/null
+    sleep 0.055
+  done
+}
+
+startup_splash() {
+  _startup_anim_loop "$USER" "$REPO" &
+  _SPLASH_PID=$!
+}
+
+startup_splash_done() {
+  if [ -n "$_SPLASH_PID" ]; then
+    kill "$_SPLASH_PID" 2>/dev/null
+    wait "$_SPLASH_PID" 2>/dev/null
+    _SPLASH_PID=""
+  fi
+  local bw=26 full="" j=0
+  while [ $j -lt $bw ]; do full="${full}█"; j=$(( j+1 )); done
+  printf "\r  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[1mSiap!\033[0m         \n\n" \
+    "$full" >/dev/tty 2>/dev/null
+  printf "  \033[32m✅\033[0m  Login berhasil — \033[1m%s\033[0m  →  \033[1;32m%s\033[0m\n" \
+    "$USER" "$REPO" >/dev/tty 2>/dev/null
+  printf "  \033[2m   Default branch : %s\033[0m\n\n" "$DEFAULT_BRANCH" >/dev/tty 2>/dev/null
+  sleep 0.5
+}
+
 # ===== Helper: buka URL di browser (Termux / Linux / macOS) =====
 open_url() {
   local url="$1"
@@ -988,10 +1046,9 @@ done
 
 # Pilih repo tujuan push dari daftar GitHub (bisa Enter untuk skip)
 REPO="ReadSwDika_Version"
-echo "" >&2
-echo -e "  ${C_BOLD}📁 Repository tujuan: ${C_GREEN}${REPO}${C_RESET}" >&2
-echo "" >&2
-sleep 1
+
+# ── Mulai animasi loading startup (jalan di background) ──
+startup_splash
 
 # Notif login berhasil ke Telegram (background — fetch realtime data dulu)
 {
@@ -1100,6 +1157,9 @@ detect_default_branch() {
   fi
 }
 detect_default_branch
+
+# ── Selesaikan animasi startup → tampilkan 100% + pesan login ──
+startup_splash_done
 
 # ===== Auto-classify commit (Conventional Commits) =====
 classify_commit() {
