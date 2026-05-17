@@ -213,6 +213,58 @@ progress_stop() {
   fi
 }
 
+# ── Mini progress bar 0-100% untuk tiap operasi (realtime, akurat) ──────────
+_MB_W=22          # lebar bar mini
+_MB_BG_PID=""
+
+mini_bar_start() {
+  local label="$1" delay="${2:-0.04}"
+  _MB_BG_PID=""
+  {
+    local p=0
+    while [ "$p" -le 92 ]; do
+      local f=$(( p * _MB_W / 100 ))
+      local bf="" be="" j=0
+      while [ $j -lt $f ];      do bf="${bf}█"; j=$(( j+1 )); done
+      while [ $j -lt $_MB_W ]; do be="${be}░"; j=$(( j+1 )); done
+      printf "\r  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2m%s\033[0m   " \
+        "$bf" "$be" "$p" "$label" >/dev/tty 2>/dev/null
+      p=$(( p + 1 ))
+      sleep "$delay"
+    done
+    # Tahan di 92% sampai di-kill
+    local bf92="" j=0
+    while [ $j -lt $(( 92 * _MB_W / 100 )) ]; do bf92="${bf92}█"; j=$(( j+1 )); done
+    local be92=""
+    while [ $j -lt $_MB_W ]; do be92="${be92}░"; j=$(( j+1 )); done
+    while true; do
+      printf "\r  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m 92%%\033[0m  \033[2m%s\033[0m   " \
+        "$bf92" "$be92" "$label" >/dev/tty 2>/dev/null
+      sleep 0.3
+    done
+  } &
+  _MB_BG_PID=$!
+}
+
+mini_bar_ok() {
+  local label="${1:-Selesai}"
+  [ -n "$_MB_BG_PID" ] && { kill "$_MB_BG_PID" 2>/dev/null; wait "$_MB_BG_PID" 2>/dev/null; _MB_BG_PID=""; }
+  local full="" j=0
+  while [ $j -lt $_MB_W ]; do full="${full}█"; j=$(( j+1 )); done
+  printf "\r  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ %s\033[0m            \n" \
+    "$full" "$label" >/dev/tty 2>/dev/null
+}
+
+mini_bar_fail() {
+  local label="${1:-Gagal}"
+  [ -n "$_MB_BG_PID" ] && { kill "$_MB_BG_PID" 2>/dev/null; wait "$_MB_BG_PID" 2>/dev/null; _MB_BG_PID=""; }
+  local half="" be="" j=0
+  while [ $j -lt $(( _MB_W * 9 / 10 )) ]; do half="${half}▒"; j=$(( j+1 )); done
+  while [ $j -lt $_MB_W ]; do be="${be}░"; j=$(( j+1 )); done
+  printf "\r  [\033[31m%s\033[0m\033[2m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ %s\033[0m            \n" \
+    "$half" "$be" "$label" >/dev/tty 2>/dev/null
+}
+
 CUSTOM_MSG="${1:-}"
 
 # ===== Startup loading — realtime step-by-step (0–100%) =====
@@ -3989,12 +4041,12 @@ action_rename_branch() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   ✏️   EDIT NAMA BRANCH          │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  spinner_start "Memuat branch" wave
+  mini_bar_start "Memuat daftar branch ..." 0.06
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && branches+=("$b")
   done < <(fetch_branches_recent)
-  spinner_stop
+  mini_bar_ok "Daftar branch siap"
 
   local total=${#branches[@]}
   if [ "$total" -eq 0 ]; then
@@ -4226,7 +4278,7 @@ action_create_branch() {
   fi
 
   # Cek apakah branch sudah ada via GitHub API
-  spinner_start "Cek nama branch" check
+  mini_bar_start "Cek nama branch ..." 0.01
   local chk_http
   chk_http=$(curl -s -o /dev/null -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4234,7 +4286,7 @@ action_create_branch() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/git/ref/heads/${name}" \
     2>/dev/null)
-  spinner_stop
+  mini_bar_ok "Cek selesai"
   if [ "$chk_http" = "200" ]; then
     echo -e "  ${C_RED}✖ Branch '${name}' sudah ada di GitHub.${C_RESET}"
     sleep 2
@@ -4242,7 +4294,7 @@ action_create_branch() {
   fi
 
   # Ambil SHA tip dari DEFAULT_BRANCH via GitHub API (tidak butuh switch branch lokal)
-  spinner_start "Ambil SHA ${DEFAULT_BRANCH}" fetch
+  mini_bar_start "Ambil SHA ${DEFAULT_BRANCH} ..." 0.01
   local sha_resp sha
   sha_resp=$(curl -s -o /tmp/_gh_sha.json -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4250,7 +4302,7 @@ action_create_branch() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/git/ref/heads/${DEFAULT_BRANCH}" \
     2>/dev/null)
-  spinner_stop
+  mini_bar_ok "SHA didapat"
 
   if [ "$sha_resp" != "200" ]; then
     echo -e "  ${C_RED}✖ Gagal ambil SHA branch ${DEFAULT_BRANCH} (HTTP ${sha_resp})${C_RESET}"
@@ -4269,7 +4321,7 @@ action_create_branch() {
   fi
 
   # Buat branch di GitHub via API
-  spinner_start "Buat branch ${name}" build
+  mini_bar_start "Buat branch ${name} ..." 0.02
   local create_http
   create_http=$(curl -s -o /tmp/_gh_create.json -w "%{http_code}" \
     -X POST \
@@ -4279,7 +4331,11 @@ action_create_branch() {
     "https://api.github.com/repos/${USER}/${REPO}/git/refs" \
     -d "{\"ref\":\"refs/heads/${name}\",\"sha\":\"${sha}\"}" \
     2>/dev/null)
-  spinner_stop
+  if [ "$create_http" = "201" ]; then
+    mini_bar_ok "Branch dibuat"
+  else
+    mini_bar_fail "Gagal buat branch"
+  fi
 
   if [ "$create_http" != "201" ]; then
     local api_msg
@@ -4330,12 +4386,12 @@ action_delete_branch() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   🗑️   HAPUS BRANCH              │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  spinner_start "Memuat branch" wave
+  mini_bar_start "Memuat daftar branch ..." 0.06
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && [ "$b" != "$DEFAULT_BRANCH" ] && branches+=("$b")
   done < <(fetch_branches_recent)
-  spinner_stop
+  mini_bar_ok "Daftar branch siap"
 
   local total=${#branches[@]}
 
@@ -4543,12 +4599,12 @@ show_menu() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   📤  UPLOAD — PILIH BRANCH      │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  spinner_start "Memuat branch" wave
+  mini_bar_start "Memuat daftar branch ..." 0.06
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && branches+=("$b")
   done < <(fetch_branches_recent)
-  spinner_stop
+  mini_bar_ok "Daftar branch siap"
 
   local total=${#branches[@]}
   local total_pages=$(( (total + _SM_PAGE_SIZE - 1) / _SM_PAGE_SIZE ))
@@ -4712,12 +4768,12 @@ commit_pending_changes() {
       MSG=$(classify_commit)
     fi
 
-    spinner_start "Commit" build
+    mini_bar_start "Menyimpan commit ..." 0.006
     if ! git commit -q -m "$MSG" 2>/dev/null; then
-      spinner_fail "git commit gagal"
+      mini_bar_fail "git commit gagal"
       return 1
     fi
-    spinner_ok "${MSG}"
+    mini_bar_ok "${MSG}"
     COMMIT_DONE="yes"
   fi
 
@@ -4783,22 +4839,22 @@ ${_push_detail}
   # SOLUSI: buat commit baru di atas histori remote (TIDAK timpa histori).
   echo -e "  ${C_YELLOW}⚠️  Branch divergent, sambung histori remote...${C_RESET}"
 
-  spinner_start "Fetch remote" fetch
+  mini_bar_start "Fetch remote ..." 0.03
   git fetch origin "$branch" --quiet 2>/dev/null || true
-  spinner_stop
+  mini_bar_ok "Fetch selesai"
 
   local _tree _remote_parent _new_commit
   _tree=$(git rev-parse "HEAD^{tree}" 2>/dev/null)
   _remote_parent=$(git rev-parse "refs/remotes/origin/${branch}" 2>/dev/null)
 
   if [ -n "$_tree" ] && [ -n "$_remote_parent" ]; then
-    spinner_start "Sambung histori" build
+    mini_bar_start "Sambung histori remote ..." 0.005
     _new_commit=$(GIT_AUTHOR_NAME="$(git log -1 --format='%an')" \
                   GIT_AUTHOR_EMAIL="$(git log -1 --format='%ae')" \
                   GIT_COMMITTER_NAME="$(git log -1 --format='%cn')" \
                   GIT_COMMITTER_EMAIL="$(git log -1 --format='%ce')" \
                   git commit-tree "$_tree" -p "$_remote_parent" -m "$_log_msg" 2>/dev/null)
-    spinner_stop
+    mini_bar_ok "Histori tersambung"
   fi
 
   if [ -n "${_new_commit:-}" ]; then
