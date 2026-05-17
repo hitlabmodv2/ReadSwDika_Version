@@ -1,7 +1,7 @@
 'use strict';
 
 import path from 'path';
-import { kvGet, kvSet, kvMigrateFromJSON } from './datadb.js';
+import { kvGet, kvSet, kvMigrateFromJSON, kvMigrateKey } from './datadb.js';
 
 const DATA_DIR       = path.join(process.cwd(), 'data');
 const STATS_JSON     = path.join(DATA_DIR, 'bot_stats.json');
@@ -12,13 +12,15 @@ const DEAD_THRESHOLD_MS     = 2 * 60 * 60 * 1000;
 
 const defaultStats = { startTime: null, totalRestarts: 0, lastHeartbeat: null };
 
-kvMigrateFromJSON('bot_stats', STATS_JSON);
-kvMigrateFromJSON('heartbeat', HEARTBEAT_JSON);
+kvMigrateFromJSON('system/bot_stats', STATS_JSON);
+kvMigrateFromJSON('system/heartbeat', HEARTBEAT_JSON);
+kvMigrateKey('bot_stats', 'system/bot_stats');
+kvMigrateKey('heartbeat', 'system/heartbeat');
 
-function loadStats()        { return kvGet('bot_stats', { ...defaultStats }); }
-function saveStats(stats)   { kvSet('bot_stats', stats); }
-function updateHeartbeat()  { kvSet('heartbeat', { time: Date.now() }); }
-function getLastHeartbeat() { return kvGet('heartbeat', null)?.time ?? null; }
+function loadStats()        { return kvGet('system/bot_stats', { ...defaultStats }); }
+function saveStats(stats)   { kvSet('system/bot_stats', stats); }
+function updateHeartbeat()  { kvSet('system/heartbeat', { time: Date.now() }); }
+function getLastHeartbeat() { return kvGet('system/heartbeat', null)?.time ?? null; }
 
 let heartbeatInterval = null;
 

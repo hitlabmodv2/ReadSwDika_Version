@@ -43,7 +43,7 @@ import { Boom } from '@hapi/boom';
 import qrcode from 'qrcode-terminal';
 
 import JSONDB from './src/db/json.js';
-import { kvGet, kvSet, kvMigrateFromJSON } from './src/db/datadb.js';
+import { kvGet, kvSet, kvMigrateFromJSON, kvMigrateKey } from './src/db/datadb.js';
 import { initBotStats } from './src/db/botStats.js';
 import { injectClient } from './src/helper/inject.js';
 import { getCaseName, loadConfig } from './src/helper/utils.js';
@@ -159,14 +159,15 @@ function isJadibotSessionValid(number) {
 }
 
 /* ================= BOT ADMIN STATUS TRACKER ================= */
-kvMigrateFromJSON('botadmin', path.join(process.cwd(), 'data', 'system', 'botadmin.json'));
+kvMigrateFromJSON('system/botadmin', path.join(process.cwd(), 'data', 'system', 'botadmin.json'));
+kvMigrateKey('botadmin', 'system/botadmin');
 
 function loadBotAdminData() {
-  return kvGet('botadmin', {});
+  return kvGet('system/botadmin', {});
 }
 
 function saveBotAdminData(data) {
-  kvSet('botadmin', data);
+  kvSet('system/botadmin', data);
 }
 
 function saveBotAdminStatus(hisoka, allGroups) {

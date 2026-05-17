@@ -1,6 +1,42 @@
 {
   "errors": [
     {
+      "fingerprint": "console.error::\u001b[Nm[HotReload] ✗ Gagal reload 'src/handler/antitagsw.js', pakai versi lama.\u001b[Nm",
+      "source": "console.error",
+      "message": "\u001b[31m[HotReload] ✗ Gagal reload 'src/handler/antitagsw.js', pakai versi lama.\u001b[39m",
+      "stack": "Error: \u001b[31m[HotReload] ✗ Gagal reload 'src/handler/antitagsw.js', pakai versi lama.\u001b[39m\n    at console.error (file:///home/runner/workspace/index.js:352:27)\n    at Timeout._onTimeout (file:///home/runner/workspace/src/helper/hotReload.js:102:29)",
+      "count": 3,
+      "firstSeen": "2026-05-17T07:44:08.349Z",
+      "lastSeen": "2026-05-17T07:44:28.098Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[HotReload] Gagal load 'src/handler/antitagsw.js':\u001b[Nm The requested module '../db/datadb.js' does not provide an ex",
+      "source": "console.error",
+      "message": "\u001b[31m[HotReload] Gagal load 'src/handler/antitagsw.js':\u001b[39m The requested module '../db/datadb.js' does not provide an export named 'kvMigrateKey'",
+      "stack": "Error: \u001b[31m[HotReload] Gagal load 'src/handler/antitagsw.js':\u001b[39m The requested module '../db/datadb.js' does not provide an export named 'kvMigrateKey'\n    at console.error (file:///home/runner/workspace/index.js:352:27)\n    at loadModule (file:///home/runner/workspace/src/helper/hotReload.js:73:17)\n    at async Timeout._onTimeout (file:///home/runner/workspace/src/helper/hotReload.js:92:29)",
+      "count": 3,
+      "firstSeen": "2026-05-17T07:44:08.341Z",
+      "lastSeen": "2026-05-17T07:44:28.089Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[HotReload] ✗ Gagal reload 'src/db/botStats.js', pakai versi lama.\u001b[Nm",
+      "source": "console.error",
+      "message": "\u001b[31m[HotReload] ✗ Gagal reload 'src/db/botStats.js', pakai versi lama.\u001b[39m",
+      "stack": "Error: \u001b[31m[HotReload] ✗ Gagal reload 'src/db/botStats.js', pakai versi lama.\u001b[39m\n    at console.error (file:///home/runner/workspace/index.js:352:27)\n    at Timeout._onTimeout (file:///home/runner/workspace/src/helper/hotReload.js:102:29)",
+      "count": 1,
+      "firstSeen": "2026-05-17T07:44:07.152Z",
+      "lastSeen": "2026-05-17T07:44:07.152Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[HotReload] Gagal load 'src/db/botStats.js':\u001b[Nm The requested module './datadb.js' does not provide an export named",
+      "source": "console.error",
+      "message": "\u001b[31m[HotReload] Gagal load 'src/db/botStats.js':\u001b[39m The requested module './datadb.js' does not provide an export named 'kvMigrateKey'",
+      "stack": "Error: \u001b[31m[HotReload] Gagal load 'src/db/botStats.js':\u001b[39m The requested module './datadb.js' does not provide an export named 'kvMigrateKey'\n    at console.error (file:///home/runner/workspace/index.js:352:27)\n    at loadModule (file:///home/runner/workspace/src/helper/hotReload.js:73:17)\n    at async Timeout._onTimeout (file:///home/runner/workspace/src/helper/hotReload.js:92:29)",
+      "count": 1,
+      "firstSeen": "2026-05-17T07:44:07.142Z",
+      "lastSeen": "2026-05-17T07:44:07.142Z"
+    },
+    {
       "fingerprint": "AlqanimeNotif::[AlqanimeNotif] Gagal kirim ke N@g.us: Request failed with status code N",
       "source": "AlqanimeNotif",
       "message": "[AlqanimeNotif] Gagal kirim ke 120363192554714254@g.us: Request failed with status code 403",

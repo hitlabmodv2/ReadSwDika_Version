@@ -35,8 +35,9 @@ import { createRequire } from 'module';
 const _require = createRequire(import.meta.url);
 const { isJidGroup, jidNormalizedUser, areJidsSameUser, jidDecode, getContentType } = _require('socketon');
 
-import { kvGet, kvSet, kvMigrateFromJSON } from '../db/datadb.js';
-kvMigrateFromJSON('antitagsw', path.join(process.cwd(), 'data', 'antitagsw.json'));
+import { kvGet, kvSet, kvMigrateFromJSON, kvMigrateKey } from '../db/datadb.js';
+kvMigrateFromJSON('security/antitagsw', path.join(process.cwd(), 'data', 'antitagsw.json'));
+kvMigrateKey('antitagsw', 'security/antitagsw');
 
 // Set global untuk menandai pesan yang dihapus oleh antitagsw
 // agar anti-delete tidak mengirim notifikasi "PESAN DIHAPUS"
@@ -145,12 +146,12 @@ function loadConfig() {
 }
 
 function loadData() {
-    return kvGet('antitagsw', { groups: [], warnings: {} });
+    return kvGet('security/antitagsw', { groups: [], warnings: {} });
 }
 
 function saveData(data) {
     try {
-        kvSet('antitagsw', data);
+        kvSet('security/antitagsw', data);
     } catch (err) {
         console.error('\x1b[31m[AntiTagSW] Gagal simpan data:\x1b[39m', err.message);
     }

@@ -21,9 +21,10 @@
 import axios from 'axios';
 import https from 'https';
 import path from 'path';
-import { kvGet, kvSet, kvMigrateFromJSON } from '../db/datadb.js';
+import { kvGet, kvSet, kvMigrateFromJSON, kvMigrateKey } from '../db/datadb.js';
 
-kvMigrateFromJSON('gemini_tokens', path.join(process.cwd(), 'data', 'gemini_tokens.json'));
+kvMigrateFromJSON('ai/gemini_tokens', path.join(process.cwd(), 'data', 'gemini_tokens.json'));
+kvMigrateKey('gemini_tokens', 'ai/gemini_tokens');
 
 const GEMINI_VERBOSE_LOGS = process.env.WILY_VERBOSE_LOGS === 'true' || process.env.BOT_DEBUG_LOG === 'true';
 const GEMINI_TIMING_LOGS = process.env.GEMINI_TIMING_LOGS !== 'false';
@@ -70,7 +71,7 @@ class Gemini {
 
     _loadTokenCache() {
         try {
-            const raw = kvGet('gemini_tokens', null);
+            const raw = kvGet('ai/gemini_tokens', null);
             if (!raw) return;
             const now = Date.now();
             this.tokenPool = (raw.pool || []).filter(t => t && t.token && t.expiry && now < t.expiry - 300000);
@@ -82,7 +83,7 @@ class Gemini {
 
     _saveTokenCache() {
         try {
-            kvSet('gemini_tokens', { pool: this.tokenPool, savedAt: Date.now() });
+            kvSet('ai/gemini_tokens', { pool: this.tokenPool, savedAt: Date.now() });
         } catch (_) {}
     }
 

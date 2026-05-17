@@ -9525,7 +9525,7 @@ response += `╰═════════════════╯`;
                                                 const isOwnMessage = quotedKey.fromMe === true;
 
                                                 if (m.isGroup) {
-                                                        const botAdminData = kvGet('botadmin', {});
+                                                        const botAdminData = kvGet('system/botadmin', {});
                                                         const isBotGroupAdmin = botAdminData[m.from] === true;
 
                                                         if (!isOwnMessage && !isBotGroupAdmin) {
