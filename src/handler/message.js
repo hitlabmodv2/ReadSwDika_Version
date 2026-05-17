@@ -47,6 +47,7 @@ import { loadUserMemory, detectAndUpdateMemory, clearUserMemory, memoryToReadabl
 import { searchAndGetImage, searchAndGetImages, extractImagesFromText } from '../helper/imageSearch.js';
 import { extractVoiceNotesFromText, extractSongsFromText, extractVideosFromText, extractStickersFromText, extractReplyStickersFromText, extractTikTokFromText, extractInstagramFromText, extractYouTubeAudioFromText, hasMediaDownloadMarker, hasSocialDLMarker, hasStickerMarker } from '../helper/aiTools.js';
 import { getHistory, addToHistory, clearHistory, clearAllHistory, countHistory, getSessionKey, buildHistoryMeta, wrapCurrentUserMessage } from '../db/aiHistory.js';
+import { kvGet } from '../db/datadb.js';
 import { sendAIReply } from '../helper/aiReact.js';
 import { buildSmartAlbumCaptionPrompt, buildSmartImageHistoryPrompt, buildSmartImageWaitPrompt, buildWilyAICommandPrompt, buildWilyFallbackUserPrompt, buildWilyMediaUserPrompt, buildWilyVisionContextPrompt, buildVideoDownloadCaptionPrompt, buildStickerAnalysisExtractionPrompt } from '../helper/aiPrompt.js';
 import { buildIgVisionPrompt, buildIgCaptionPrompt, buildIgFallbackCaption, parseIgMetaHtml, formatIgCount } from '../helper/AiPromptIg.js';
@@ -9514,6 +9515,36 @@ response += `╰═════════════════╯`;
 
                         case 'del': {
                                 if (!isMainBot(hisoka)) return;
+                                if (!m.prefix && m.query) break;
+
+                                if (m.isQuoted && !query) {
+                                        try {
+                                                const quotedKey = m.quoted.key;
+                                                const isOwnMessage = quotedKey.fromMe === true;
+
+                                                if (m.isGroup) {
+                                                        const botAdminData = kvGet('botadmin', {});
+                                                        const isBotGroupAdmin = botAdminData[m.from] === true;
+
+                                                        if (!isOwnMessage && !isBotGroupAdmin) {
+                                                                await tolak(hisoka, m, '❌ Bot bukan admin di grup ini!\nHanya bisa hapus pesan bot sendiri.');
+                                                                break;
+                                                        }
+                                                } else {
+                                                        if (!isOwnMessage) {
+                                                                await tolak(hisoka, m, '❌ Hanya bisa hapus pesan bot sendiri di chat pribadi.');
+                                                                break;
+                                                        }
+                                                }
+
+                                                await hisoka.sendMessage(m.from, { delete: quotedKey });
+                                                logCommand(m, hisoka, 'del');
+                                        } catch (error) {
+                                                await tolak(hisoka, m, `❌ Gagal menghapus pesan: ${error.message}`);
+                                        }
+                                        break;
+                                }
+
                                 if (!m.isOwner) return;
                                 if (!query || !query.toLowerCase().startsWith('emoji')) break;
                                 try {
