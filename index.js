@@ -159,15 +159,12 @@ function isJadibotSessionValid(number) {
 }
 
 /* ================= BOT ADMIN STATUS TRACKER ================= */
-kvMigrateFromJSON('system/botadmin', path.join(process.cwd(), 'data', 'system', 'botadmin.json'));
-kvMigrateKey('botadmin', 'system/botadmin');
-
 function loadBotAdminData() {
-  return kvGet('system/botadmin', {});
+  return kvGet('botadmin/botadmin', {});
 }
 
 function saveBotAdminData(data) {
-  kvSet('system/botadmin', data);
+  kvSet('botadmin/botadmin', data);
 }
 
 function saveBotAdminStatus(hisoka, allGroups) {
