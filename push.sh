@@ -2096,8 +2096,7 @@ action_check_token() {
   echo -e "  ${C_DIM}Token   :${C_RESET} ${tok_masked}"
   echo -e "  ${C_DIM}Jenis   :${C_RESET} ${tok_type_color}${C_BOLD}${tok_type_label}${C_RESET}"
   echo ""
-  echo -e "  ${C_CYAN}▸${C_RESET} Menghubungi GitHub API untuk validasi token..."
-  echo ""
+  mini_bar_start "Validasi token ke GitHub ..." 0.04
 
   local api_out
   api_out=$(curl -s -i \
@@ -2108,6 +2107,7 @@ action_check_token() {
 
   local http_code
   http_code=$(echo "$api_out" | head -1 | grep -oE '[0-9]{3}' | head -1)
+  if [ "$http_code" = "200" ]; then mini_bar_ok "Token aktif ✅"; else mini_bar_fail "HTTP ${http_code}"; fi
 
   local headers body
   headers=$(printf '%s' "$api_out" | awk '/^\r?$/{exit} {print}')
@@ -2219,7 +2219,7 @@ action_rename_repo() {
   fi
 
   echo ""
-  echo -e "  ${C_CYAN}▸${C_RESET} Menghubungi GitHub API untuk rename repo..."
+  mini_bar_start "Rename repo di GitHub ..." 0.05
 
   local api_http
   api_http=$(curl -s -o /tmp/_gh_rename.json -w "%{http_code}" \
@@ -2230,7 +2230,9 @@ action_rename_repo() {
     "https://api.github.com/repos/${USER}/${REPO}" \
     -d "{\"name\":\"${new_name}\"}" 2>/dev/null)
 
+  relogin_if_needed "$api_http" "rename repo" || return
   if [ "$api_http" = "200" ]; then
+    mini_bar_ok "Rename berhasil"
     local old_repo="$REPO"
     REPO="$new_name"
 
@@ -2258,6 +2260,7 @@ action_rename_repo() {
   else
     local api_msg
     api_msg=$(grep -o '"message":"[^"]*"' /tmp/_gh_rename.json 2>/dev/null | head -1 | sed 's/"message":"//;s/"//')
+    mini_bar_fail "Gagal HTTP ${api_http}"
     echo ""
     echo -e "  ${C_RED}❌ Gagal rename repository (HTTP ${api_http})${C_RESET}"
     [ -n "$api_msg" ] && echo -e "  ${C_DIM}   GitHub: ${api_msg}${C_RESET}"
@@ -2277,12 +2280,14 @@ action_switch_default() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   🔀  GANTI DEFAULT BRANCH       │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  echo -e "  ${C_DIM}▸ Memuat branch...${C_RESET}"
+  mini_bar_start "Memuat daftar branch ..." 0.06
 
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && [ "$b" != "$DEFAULT_BRANCH" ] && branches+=("$b")
   done < <(fetch_branches_recent)
+
+  if [ "${#branches[@]}" -eq 0 ]; then mini_bar_fail "Tidak ada branch"; else mini_bar_ok "${#branches[@]} branch dimuat"; fi
 
   local total=${#branches[@]}
   local total_pages=$(( (total + _GD_PAGE_SIZE - 1) / _GD_PAGE_SIZE ))
@@ -2525,7 +2530,7 @@ action_list_branches() {
   echo ""
   echo -e "  ${C_DIM}repo  ${C_RESET}${C_BOLD}${USER}/${REPO}${C_RESET}"
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
-  echo -e "  ${C_DIM}▸ [1/3] Mengambil daftar branch...${C_RESET}"
+  mini_bar_start "[1/3] Ambil daftar branch ..." 0.05
 
   local http_code
   http_code=$(curl -s -o "$TMP_LIST" -w "%{http_code}" \
@@ -2534,7 +2539,9 @@ action_list_branches() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/branches?per_page=100" 2>/dev/null)
 
+  relogin_if_needed "$http_code" "ambil branch" || return
   if [ "$http_code" != "200" ]; then
+    mini_bar_fail "HTTP ${http_code}"
     echo -e "  ${C_RED}❌ Gagal ambil branch list (HTTP ${http_code})${C_RESET}"
     rm -f "$TMP_LIST"
     prompt_back_or_exit
@@ -2568,12 +2575,13 @@ action_list_branches() {
     fi
   done
 
+  mini_bar_ok "${total_all} branch ditemukan"
   local total_all=$(( ${#nd_names[@]} + 1 ))
 
   # ════════════════════════════════════════════════════════════════════════
   # FASE 2 — Ambil tanggal commit semua branch secara PARALEL
   # ════════════════════════════════════════════════════════════════════════
-  echo -e "  ${C_DIM}▸ [2/3] Mengambil tanggal branch (paralel)...${C_RESET}"
+  mini_bar_start "[2/3] Ambil tanggal commit (paralel) ..." 0.04
 
   local total_nd=${#nd_names[@]}
   local def_date="" def_rel="-" def_msg="-"
@@ -2595,6 +2603,7 @@ action_list_branches() {
       "https://api.github.com/repos/${USER}/${REPO}/git/commits/${sha}" 2>/dev/null &
   done
   wait
+  mini_bar_ok "Data commit siap"
 
   _slb_parse_date() {
     grep -oE '"date"[[:space:]]*:[[:space:]]*"[^"]*"' "$1" | head -1 \
@@ -3044,7 +3053,7 @@ action_create_repo() {
 
   # ── Kirim ke GitHub API ─────────────────────────────────────────────────
   echo ""
-  echo -e "  ${C_DIM}▸ Membuat repository di GitHub...${C_RESET}"
+  mini_bar_start "Membuat repository di GitHub ..." 0.05
 
   local resp http_code
   resp=$(curl -s -w "\n%{http_code}" \
@@ -3057,6 +3066,8 @@ action_create_repo() {
     "https://api.github.com/user/repos" 2>/dev/null)
 
   http_code=$(printf '%s' "$resp" | tail -1)
+  relogin_if_needed "$http_code" "buat repo" || return
+  if [ "$http_code" = "201" ]; then mini_bar_ok "Repository dibuat"; else mini_bar_fail "HTTP ${http_code}"; fi
   local body
   body=$(printf '%s' "$resp" | sed '$d')
 
@@ -3262,7 +3273,7 @@ action_import_repo() {
 
   # ── Langkah 1: Buat repo kosong dulu ────────────────────────────────────
   echo ""
-  echo -e "  ${C_DIM}▸ [1/2] Membuat repository kosong...${C_RESET}"
+  mini_bar_start "[1/2] Membuat repo kosong di GitHub ..." 0.05
   local create_resp create_code
   local name_esc
   name_esc=$(printf '%s' "$imp_repo_name" | sed 's/\\/\\\\/g;s/"/\\"/g')
@@ -3280,6 +3291,8 @@ action_import_repo() {
   local create_body
   create_body=$(printf '%s' "$create_resp" | sed '$d')
 
+  relogin_if_needed "$create_code" "buat repo import" || return
+  if [ "$create_code" = "201" ]; then mini_bar_ok "Repo kosong dibuat"; else mini_bar_fail "HTTP ${create_code}"; fi
   if [ "$create_code" != "201" ]; then
     local cerr
     cerr=$(printf '%s' "$create_body" \
@@ -3298,7 +3311,7 @@ action_import_repo() {
   fi
 
   # ── Langkah 2: Mulai import ──────────────────────────────────────────────
-  echo -e "  ${C_DIM}▸ [2/2] Memulai import dari sumber...${C_RESET}"
+  mini_bar_start "[2/2] Memulai import dari sumber ..." 0.05
 
   # Bangun payload import
   local src_url_esc
@@ -3324,6 +3337,9 @@ action_import_repo() {
   imp_code=$(printf '%s' "$imp_resp" | tail -1)
   local imp_body
   imp_body=$(printf '%s' "$imp_resp" | sed '$d')
+
+  relogin_if_needed "$imp_code" "mulai import" || return
+  if [ "$imp_code" = "201" ]; then mini_bar_ok "Import dimulai"; else mini_bar_fail "HTTP ${imp_code}"; fi
 
   # ── Tampilkan status awal + polling ─────────────────────────────────────
   clear >/dev/tty 2>/dev/null || true
@@ -3574,7 +3590,7 @@ action_delete_repo() {
   echo ""
 
   # ── Ambil info repo dulu dari API ───────────────────────────────────────
-  echo -e "  ${C_DIM}▸ Mengambil info repository...${C_RESET}"
+  mini_bar_start "Mengambil info repository ..." 0.05
   local info_raw info_code
   info_raw=$(curl -s -w "\n%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -3585,6 +3601,8 @@ action_delete_repo() {
   local info_body
   info_body=$(printf '%s' "$info_raw" | sed '$d')
 
+  relogin_if_needed "$info_code" "ambil info repo" || return
+  if [ "$info_code" = "200" ]; then mini_bar_ok "Info repo didapat"; else mini_bar_fail "HTTP ${info_code}"; fi
   if [ "$info_code" = "404" ]; then
     echo -e "  ${C_RED}❌ Repository '${del_owner}/${del_repo}' tidak ditemukan.${C_RESET}"
     echo ""
@@ -3803,7 +3821,7 @@ action_list_repos() {
     echo -e "${C_BOLD}│   📋  SEMUA REPOSITORY            │${C_RESET}"
     echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
     echo ""
-    echo -e "  ${C_DIM}▸ Mengambil data dari GitHub...${C_RESET}"
+    mini_bar_start "Mengambil data repo dari GitHub ..." 0.05
 
     # Ambil total count dulu (per_page=1 untuk efisiensi)
     local count_raw total_count=0
@@ -3837,6 +3855,8 @@ action_list_repos() {
     local body
     body=$(printf '%s' "$raw_resp" | sed '$d')
 
+    relogin_if_needed "$http_code" "ambil daftar repo" || continue
+    if [ "$http_code" = "200" ]; then mini_bar_ok "Data repo dimuat"; else mini_bar_fail "HTTP ${http_code}"; fi
     if [ "$http_code" != "200" ]; then
       clear >/dev/tty 2>/dev/null || true
       echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
@@ -5062,7 +5082,7 @@ action_releases_tags() {
   # ──────────────────────────────────────────────────────────────────────────
   _rt_list_releases() {
     _rt_header
-    echo -e "  ${C_DIM}▸ Mengambil data releases dari GitHub...${C_RESET}"
+    mini_bar_start "Mengambil data releases ..." 0.05
     local TMP=/tmp/_gh_rel_$$.json
     local http
     http=$(curl -s -o "$TMP" -w "%{http_code}" \
@@ -5071,10 +5091,13 @@ action_releases_tags() {
       -H "X-GitHub-Api-Version: 2022-11-28" \
       "https://api.github.com/repos/${USER}/${REPO}/releases?per_page=20" 2>/dev/null)
 
+    relogin_if_needed "$http" "ambil releases" || return
     if [ "$http" != "200" ]; then
+      mini_bar_fail "HTTP ${http}"
       echo -e "  ${C_RED}❌ Gagal ambil releases (HTTP ${http})${C_RESET}"
       rm -f "$TMP"; prompt_back_or_exit; return
     fi
+    mini_bar_ok "Releases dimuat"
 
     local count
     count=$(node -e "try{const d=JSON.parse(require('fs').readFileSync('$TMP','utf8'));console.log(d.length);}catch(e){console.log(0);}" 2>/dev/null)
@@ -5152,7 +5175,7 @@ action_releases_tags() {
     esac
 
     echo ""
-    echo -e "  ${C_CYAN}▸ Membuat release ${C_BOLD}${rtag}${C_RESET}${C_CYAN}...${C_RESET}"
+    mini_bar_start "Membuat release ${rtag} ..." 0.05
 
     local TMP=/tmp/_gh_relcreate_$$.json
     local payload
@@ -5174,6 +5197,8 @@ action_releases_tags() {
       "https://api.github.com/repos/${USER}/${REPO}/releases" \
       -d "$payload" 2>/dev/null)
 
+    relogin_if_needed "$http" "buat release" || return
+    if [ "$http" = "201" ]; then mini_bar_ok "Release dibuat ✅"; else mini_bar_fail "HTTP ${http}"; fi
     local _rt_ts; _rt_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
     if [ "$http" = "201" ]; then
       local rel_url
@@ -5519,7 +5544,7 @@ action_switch_repo() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   🔄  GANTI REPO AKTIF           │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  echo -e "  ${C_DIM}▸ Memuat daftar repo dari GitHub...${C_RESET}"
+  mini_bar_start "Memuat daftar repo dari GitHub ..." 0.06
 
   # Ambil daftar repo milik USER via API (max 100 per halaman, sorted by updated)
   local _sr_raw
@@ -5542,6 +5567,7 @@ try:
 except: pass
 ' 2>/dev/null)
 
+  if [ "${#repos[@]}" -eq 0 ]; then mini_bar_fail "Tidak ada repo"; else mini_bar_ok "${#repos[@]} repo dimuat"; fi
   local total=${#repos[@]}
   local total_pages=$(( (total + _SR_PAGE_SIZE - 1) / _SR_PAGE_SIZE ))
   [ "$total_pages" -eq 0 ] && total_pages=1
@@ -5851,6 +5877,38 @@ check_token_realtime() {
 
   printf "\n  \033[32m✅ Re-login berhasil! Melanjutkan...\033[0m\n"
   sleep 0.8
+}
+
+# ===== Re-login otomatis jika API call mid-operation dapat 401/403 =====
+relogin_if_needed() {
+  local code="$1" context="${2:-operasi}"
+  case "$code" in 401|403) ;; *) return 0 ;; esac
+
+  clear >/dev/tty 2>/dev/null || true
+  printf "\n"
+  printf "  \033[1m╔══════════════════════════════════════╗\033[0m\n"
+  printf "  \033[1m║   🔴  TOKEN EXPIRED — LOGIN ULANG    ║\033[0m\n"
+  printf "  \033[1m╚══════════════════════════════════════╝\033[0m\n\n"
+  printf "  \033[31mHTTP %s saat %s — Token tidak valid.\033[0m\n" "$code" "$context"
+  printf "  \033[33mPaste token baru — tidak perlu restart script.\033[0m\n\n"
+
+  rm -f .token.secret 2>/dev/null
+  _delete_token_backup 2>/dev/null || true
+
+  TOKEN=$(setup_token)
+  while true; do
+    local _vr=0
+    validate_token "$TOKEN" || _vr=$?
+    [ "$_vr" -eq 0 ] || [ "$_vr" -eq 2 ] && break
+    TOKEN=$(setup_token)
+  done
+
+  REMOTE_URL="https://${USER}:${TOKEN}@github.com/${USER}/${REPO}.git"
+  git remote set-url origin "$REMOTE_URL" 2>/dev/null || true
+
+  printf "\n  \033[32m✅ Re-login berhasil! Operasi %s dapat diulang.\033[0m\n" "$context"
+  sleep 0.8
+  return 1
 }
 
 # ===== Loop menu utama =====
