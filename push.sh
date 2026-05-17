@@ -215,62 +215,79 @@ progress_stop() {
 
 CUSTOM_MSG="${1:-}"
 
-# ===== Animasi startup (progress 0–100%) =====
-_SPLASH_PID=""
+# ===== Startup loading — realtime step-by-step (0–100%) =====
+_SB_W=26          # lebar bar
+_SB_BG_PID=""     # PID background sweeper (untuk step lambat / network)
 
-_startup_anim_loop() {
-  local user="$1" repo="$2"
-  local bw=26
+_sbar_draw() {
+  local pct=$1 msg="$2"
+  [ "$pct" -gt 100 ] && pct=100
+  local f=$(( pct * _SB_W / 100 ))
+  local bf="" be="" j=0
+  while [ $j -lt $f ];        do bf="${bf}█"; j=$(( j+1 )); done
+  while [ $j -lt $_SB_W ];   do be="${be}░"; j=$(( j+1 )); done
+  if [ "$pct" -ge 100 ]; then
+    printf "\r  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[1m%s\033[0m            " \
+      "$bf" "$msg" >/dev/tty 2>/dev/null
+  else
+    printf "\r  [\033[32m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2m%s\033[0m   " \
+      "$bf" "$be" "$pct" "$msg" >/dev/tty 2>/dev/null
+  fi
+}
 
-  clear >/dev/tty 2>/dev/null || true
-  printf "\n" >/dev/tty
-  printf "  \033[1m╔══════════════════════════════════════╗\033[0m\n" >/dev/tty
-  printf "  \033[1m║   🚀  PUSH SCRIPT — BANG WILY        ║\033[0m\n" >/dev/tty
-  printf "  \033[1m╚══════════════════════════════════════╝\033[0m\n\n" >/dev/tty
-  printf "  \033[2m👤 %-16s  📁 %s\033[0m\n\n" "$user" "${user}/${repo}" >/dev/tty
-
-  local msgs=("Inisialisasi" "Setup git remote" "Koneksi GitHub" "Deteksi branch" "Verifikasi" "Siap!")
-  local bounds=(0 14 30 52 74 92 98)
-  local nm=6
-  local seg=0 p=0
-
-  while true; do
-    local cap="${bounds[$(( seg < nm ? seg + 1 : nm ))]:-98}"
-    [ $p -lt $cap ] && p=$(( p + 1 ))
-    [ $p -ge $cap ] && [ $seg -lt $(( nm - 1 )) ] && seg=$(( seg + 1 ))
-    [ $p -gt 98 ] && p=98
-
-    local f=$(( p * bw / 100 ))
-    local bf="" be="" j=0
-    while [ $j -lt $f ]; do bf="${bf}█"; j=$(( j+1 )); done
-    while [ $j -lt $bw ]; do be="${be}░"; j=$(( j+1 )); done
-
-    local msg="${msgs[$( [ $seg -lt $nm ] && echo $seg || echo $(( nm-1 )) )]}"
-    printf "\r  [\033[32m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2m%s ...\033[0m   " \
-      "$bf" "$be" "$p" "$msg" >/dev/tty 2>/dev/null
-    sleep 0.055
+# Sweep pct from→to dengan delay antar langkah
+_sbar_sweep() {
+  local from=$1 to=$2 delay=$3 msg="$4"
+  local p=$from
+  while [ "$p" -le "$to" ]; do
+    _sbar_draw "$p" "$msg"
+    p=$(( p + 1 ))
+    sleep "$delay"
   done
 }
 
-startup_splash() {
-  _startup_anim_loop "$USER" "$REPO" &
-  _SPLASH_PID=$!
+# Background sweeper untuk operasi lambat (network).
+# Maju pelan dari from→to lalu diam di to sampai di-kill.
+_sbar_bg_start() {
+  local from=$1 to=$2 delay=$3 msg="$4"
+  {
+    local p=$from
+    while [ "$p" -le "$to" ]; do
+      _sbar_draw "$p" "$msg"
+      p=$(( p + 1 ))
+      sleep "$delay"
+    done
+    while true; do _sbar_draw "$to" "$msg"; sleep 0.4; done
+  } &
+  _SB_BG_PID=$!
 }
 
-startup_splash_done() {
-  if [ -n "$_SPLASH_PID" ]; then
-    kill "$_SPLASH_PID" 2>/dev/null
-    wait "$_SPLASH_PID" 2>/dev/null
-    _SPLASH_PID=""
+_sbar_bg_stop() {
+  if [ -n "$_SB_BG_PID" ]; then
+    kill "$_SB_BG_PID" 2>/dev/null
+    wait "$_SB_BG_PID" 2>/dev/null
+    _SB_BG_PID=""
   fi
-  local bw=26 full="" j=0
-  while [ $j -lt $bw ]; do full="${full}█"; j=$(( j+1 )); done
-  printf "\r  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[1mSiap!\033[0m         \n\n" \
-    "$full" >/dev/tty 2>/dev/null
-  printf "  \033[32m✅\033[0m  Login berhasil — \033[1m%s\033[0m  →  \033[1;32m%s\033[0m\n" \
+}
+
+# Tampilkan banner + bar di 0%
+startup_begin() {
+  clear >/dev/tty 2>/dev/null || true
+  printf "\n  \033[1m╔══════════════════════════════════════╗\033[0m\n" >/dev/tty
+  printf "  \033[1m║   🚀  PUSH SCRIPT — BANG WILY        ║\033[0m\n" >/dev/tty
+  printf "  \033[1m╚══════════════════════════════════════╝\033[0m\n\n" >/dev/tty
+  printf "  \033[2m👤 %-16s  📁 %s\033[0m\n\n" "$USER" "${USER}/${REPO}" >/dev/tty
+  _sbar_draw 0 "Inisialisasi ..."
+}
+
+# Tampilkan 100% + pesan sukses
+startup_done() {
+  _sbar_bg_stop
+  _sbar_draw 100 "Siap!"
+  printf "\n\n  \033[32m✅\033[0m  Login berhasil — \033[1m%s\033[0m  →  \033[1;32m%s\033[0m\n" \
     "$USER" "$REPO" >/dev/tty 2>/dev/null
   printf "  \033[2m   Default branch : %s\033[0m\n\n" "$DEFAULT_BRANCH" >/dev/tty 2>/dev/null
-  sleep 0.5
+  sleep 0.4
 }
 
 # ===== Helper: buka URL di browser (Termux / Linux / macOS) =====
@@ -1047,8 +1064,11 @@ done
 # Pilih repo tujuan push dari daftar GitHub (bisa Enter untuk skip)
 REPO="ReadSwDika_Version"
 
-# ── Mulai animasi loading startup (jalan di background) ──
-startup_splash
+# ── Startup: banner + bar 0% ──
+startup_begin
+
+# ── 0→8% : inisialisasi selesai, kirim notif Telegram di background ──
+_sbar_sweep 1 8 0.03 "Inisialisasi ..."
 
 # Notif login berhasil ke Telegram (background — fetch realtime data dulu)
 {
@@ -1120,18 +1140,18 @@ startup_splash
 🕐 ${_ts_login}" "$_btn_login" 2>/dev/null
 } &
 
+# ── 9→25% : setup REMOTE_URL ──
+_sbar_sweep 9 25 0.025 "Setup remote URL ..."
 REMOTE_URL="https://${USER}:${TOKEN}@github.com/${USER}/${REPO}.git"
 
-# ===== Setup git =====
+# ── 26→44% : git init + config ──
+_sbar_sweep 26 32 0.02 "Init git repo ..."
 [ -d .git ] || git init -q
+_sbar_sweep 33 38 0.02 "Konfigurasi git user ..."
 git config user.name "$USER"
 git config user.email "${USER}@users.noreply.github.com"
-
-# Kalau ada >1 remote yang punya branch dengan nama sama (mis. 'main' di
-# origin DAN di gitsafe-backup), git checkout jadi ambigu. Setting ini
-# bilang "selalu prefer origin" → fix "matched multiple remote tracking branches".
 git config checkout.defaultRemote origin
-
+_sbar_sweep 39 44 0.02 "Setup git remote ..."
 if git remote get-url origin >/dev/null 2>&1; then
   git remote set-url origin "$REMOTE_URL"
 else
@@ -1156,10 +1176,17 @@ detect_default_branch() {
     echo -e "${C_DIM}⚠️  Gagal deteksi default branch dari GitHub, pakai fallback: ${DEFAULT_BRANCH}${C_RESET}" >&2
   fi
 }
-detect_default_branch
 
-# ── Selesaikan animasi startup → tampilkan 100% + pesan login ──
-startup_splash_done
+# ── 45→88% : koneksi GitHub (network call — animasi pelan di background) ──
+_sbar_bg_start 45 88 0.12 "Koneksi ke GitHub ..."
+detect_default_branch 2>/dev/null
+_sbar_bg_stop
+
+# ── 89→99% : verifikasi hasil ──
+_sbar_sweep 89 99 0.025 "Verifikasi ..."
+
+# ── 100% : selesai ──
+startup_done
 
 # ===== Auto-classify commit (Conventional Commits) =====
 classify_commit() {
