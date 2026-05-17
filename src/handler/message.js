@@ -6376,6 +6376,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
    ╰ *.antitagsw reset*
 
 ╭─「 💬 *PESAN & STICKER* 」
+├➤ *.del / .d* — Hapus pesan (reply)
 ├➤ *.s / .sticker*
 ├➤ *.toimg*
 ├➤ *.stickerly [query/link]*
@@ -9513,6 +9514,7 @@ response += `╰═════════════════╯`;
                                 break;
                         }
 
+                        case 'd':
                         case 'del': {
                                 if (!isMainBot(hisoka)) return;
                                 if (!m.prefix && m.query) break;
