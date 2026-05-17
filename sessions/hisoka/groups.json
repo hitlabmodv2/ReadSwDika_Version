@@ -12223,7 +12223,7 @@
     "subjectOwner": "",
     "subjectOwnerLid": "",
     "subjectTime": 1720055772,
-    "size": 1897,
+    "size": 1898,
     "creation": 1717629092,
     "owner": "",
     "ownerLid": "",
@@ -19222,6 +19222,11 @@
         "admin": null
       },
       {
+        "id": "30232727785612@lid",
+        "jid": "30232727785612@lid",
+        "admin": null
+      },
+      {
         "id": "38522383769721@lid",
         "jid": "38522383769721@lid",
         "admin": null
@@ -21721,7 +21726,7 @@
         "jid": "254193512226986@lid",
         "admin": null
       },
-      "30232727785612@lid"
+      "81227109396725@lid"
     ]
   }
 }
