@@ -2154,7 +2154,8 @@
     "id": "62881025542877@s.whatsapp.net",
     "name": "! Rara",
     "lid": "74797375574209@lid",
-    "jid": "62881025542877@s.whatsapp.net"
+    "jid": "62881025542877@s.whatsapp.net",
+    "notify": "🫪"
   },
   "6281548983229@s.whatsapp.net": {
     "isContact": true,
@@ -5355,7 +5356,8 @@
     "id": "6289688206739@s.whatsapp.net",
     "name": "Agan Rizkia",
     "lid": "81582920577063@lid",
-    "jid": "6289688206739@s.whatsapp.net"
+    "jid": "6289688206739@s.whatsapp.net",
+    "notify": "Wily"
   },
   "6287876011114@s.whatsapp.net": {
     "isContact": true,
@@ -6027,7 +6029,8 @@
     "id": "6287793006207@s.whatsapp.net",
     "name": "! bstation123321",
     "lid": "32830813913177@lid",
-    "jid": "6287793006207@s.whatsapp.net"
+    "jid": "6287793006207@s.whatsapp.net",
+    "notify": "...."
   },
   "6281254375339@s.whatsapp.net": {
     "isContact": true,
@@ -11831,7 +11834,9 @@
     "id": "6285956660403@s.whatsapp.net",
     "name": "! Fadli",
     "lid": "176549462564879@lid",
-    "jid": "6285956660403@s.whatsapp.net"
+    "jid": "6285956660403@s.whatsapp.net",
+    "notify": "Cosmouz",
+    "verifiedName": "Cosmouz"
   },
   "6283166143208@s.whatsapp.net": {
     "isContact": true,
@@ -17678,7 +17683,8 @@
     "id": "6285695777114@s.whatsapp.net",
     "name": "! Aisyah",
     "lid": "129334601846925@lid",
-    "jid": "6285695777114@s.whatsapp.net"
+    "jid": "6285695777114@s.whatsapp.net",
+    "notify": "╰っホム┌Ryuuka┐/⁠ᐠ⁠｡⁠ꞈ⁠｡⁠ᐟ⁠\\"
   },
   "6281279758216@s.whatsapp.net": {
     "isContact": true,
@@ -27530,7 +27536,8 @@
     "id": "6281346000596@s.whatsapp.net",
     "name": "Rafi",
     "lid": "173430896894091@lid",
-    "jid": "6281346000596@s.whatsapp.net"
+    "jid": "6281346000596@s.whatsapp.net",
+    "notify": "Rafi_ajah"
   },
   "62882329218803@s.whatsapp.net": {
     "isContact": true,
@@ -28279,7 +28286,8 @@
     "id": "6283174681433@s.whatsapp.net",
     "name": "Azwan",
     "lid": "44156575568084@lid",
-    "jid": "6283174681433@s.whatsapp.net"
+    "jid": "6283174681433@s.whatsapp.net",
+    "notify": "Bakwan beku (Azwan)"
   },
   "6289521273942@s.whatsapp.net": {
     "isContact": true,
@@ -30169,7 +30177,9 @@
     "id": "6285163699722@s.whatsapp.net",
     "name": "Gzibran 391",
     "lid": "205170688397425@lid",
-    "jid": "6285163699722@s.whatsapp.net"
+    "jid": "6285163699722@s.whatsapp.net",
+    "notify": "Branzi",
+    "verifiedName": "Branzi"
   },
   "6281353997176@s.whatsapp.net": {
     "isContact": true,
@@ -31345,5 +31355,65 @@
     "id": "238001368121398@lid",
     "lid": "238001368121398@lid",
     "imgUrl": "changed"
+  },
+  "6283123405940@s.whatsapp.net": {
+    "id": "6283123405940@s.whatsapp.net",
+    "notify": "rawrrrr amanah_selalu",
+    "verifiedName": "rawrrrr amanah_selalu"
+  },
+  "74797375574209@lid": {
+    "id": "74797375574209@lid",
+    "lid": "74797375574209@lid",
+    "notify": "🫪"
+  },
+  "263445207371837@lid": {
+    "id": "263445207371837@lid",
+    "lid": "263445207371837@lid",
+    "notify": "Jose pulang ada gulali",
+    "imgUrl": "changed"
+  },
+  "26547712958494@lid": {
+    "id": "26547712958494@lid",
+    "lid": "26547712958494@lid",
+    "notify": "Arthur.remi_kan"
+  },
+  "192732849020986@lid": {
+    "id": "192732849020986@lid",
+    "lid": "192732849020986@lid",
+    "notify": "el.rafael~~~"
+  },
+  "278069336092903@lid": {
+    "id": "278069336092903@lid",
+    "lid": "278069336092903@lid",
+    "imgUrl": "changed"
+  },
+  "53197867589810@lid": {
+    "id": "53197867589810@lid",
+    "lid": "53197867589810@lid",
+    "imgUrl": "changed"
+  },
+  "243829689085972@lid": {
+    "id": "243829689085972@lid",
+    "lid": "243829689085972@lid",
+    "imgUrl": "changed"
+  },
+  "174362988703966@lid": {
+    "id": "174362988703966@lid",
+    "lid": "174362988703966@lid",
+    "imgUrl": "removed"
+  },
+  "113108165095497@lid": {
+    "id": "113108165095497@lid",
+    "lid": "113108165095497@lid",
+    "imgUrl": "removed"
+  },
+  "6287813766619@s.whatsapp.net": {
+    "id": "6287813766619@s.whatsapp.net",
+    "notify": "el.rafael~~~"
+  },
+  "206755447455980@lid": {
+    "id": "206755447455980@lid",
+    "lid": "206755447455980@lid",
+    "imgUrl": "removed"
   }
 }
