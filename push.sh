@@ -4562,21 +4562,47 @@ ${_push_detail}
     return 0
   fi
 
-  # Gagal — kemungkinan non-fast-forward. Coba force push.
-  echo -e "  ${C_YELLOW}⚠️  Push normal gagal (kemungkinan branch divergent), force push...${C_RESET}"
-  local _tg_ts_conflict; _tg_ts_conflict=$(date '+%H:%M:%S %d %b %Y')
-  local _btn_conflict='{"inline_keyboard":[[{"text":"🔀 Compare Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/compare"},{"text":"🌿 Lihat Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/tree/'"${branch}"'"}],[{"text":"📥 Pull Request","url":"https://github.com/'"${USER}"'/'"${REPO}"'/pulls"},{"text":"🔧 Resolve Conflict","url":"https://github.com/'"${USER}"'/'"${REPO}"'/network"}]]}'
-  send_telegram_photo "https://w.wallhaven.cc/full/d5/wallhaven-d5g66j.jpg" "⚠️ <b>KONFLIK BRANCH TERDETEKSI</b>
+  # Gagal — kemungkinan non-fast-forward.
+  # SOLUSI: buat commit baru di atas histori remote (TIDAK timpa histori).
+  echo -e "  ${C_YELLOW}⚠️  Push normal gagal (branch divergent), sambung histori remote...${C_RESET}"
+
+  git fetch origin "$branch" --quiet 2>/dev/null || true
+
+  local _tree _remote_parent _new_commit
+  _tree=$(git rev-parse "HEAD^{tree}" 2>/dev/null)
+  _remote_parent=$(git rev-parse "refs/remotes/origin/${branch}" 2>/dev/null)
+
+  if [ -n "$_tree" ] && [ -n "$_remote_parent" ]; then
+    _new_commit=$(GIT_AUTHOR_NAME="$(git log -1 --format='%an')" \
+                  GIT_AUTHOR_EMAIL="$(git log -1 --format='%ae')" \
+                  GIT_COMMITTER_NAME="$(git log -1 --format='%cn')" \
+                  GIT_COMMITTER_EMAIL="$(git log -1 --format='%ce')" \
+                  git commit-tree "$_tree" -p "$_remote_parent" -m "$_log_msg" 2>/dev/null)
+  fi
+
+  if [ -n "${_new_commit:-}" ] && git push origin "${_new_commit}:refs/heads/${branch}" >"$push_log" 2>&1; then
+    rm -f "$push_log"
+    local _new_sha="${_new_commit:0:7}"
+    echo -e "  ${C_GREEN}🎉 Sukses!${C_RESET} ${C_BOLD}${branch}${C_RESET} ${C_DIM}(${_new_sha} • histori terjaga)${C_RESET}"
+    echo -e "  ${C_BLUE}🔗 https://github.com/${USER}/${REPO}/tree/${branch}${C_RESET}"
+    log_push_event "$branch" "OK(graft)" "$_log_msg" "$_log_files"
+    local _btn_pgraft='{"inline_keyboard":[[{"text":"🔗 Lihat Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/tree/'"${branch}"'"},{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${branch}"'"}],[{"text":"🔀 Compare","url":"https://github.com/'"${USER}"'/'"${REPO}"'/compare"},{"text":"📥 Pull Request","url":"https://github.com/'"${USER}"'/'"${REPO}"'/pulls"}]]}'
+    send_telegram_photo "https://w.wallhaven.cc/full/yj/wallhaven-yje2lk.png" "✅ <b>PUSH BERHASIL</b>
 ━━━━━━━━━━━━━━━━━━━━
 📁 <code>${USER}/${REPO}</code>
 🌿 Branch: <code>${branch}</code>
-🔄 Branch divergent — mencoba force push...
 📝 ${_log_msg}
-━━━━━━━━━━━━━━━━━━━━
-🕐 ${_tg_ts_conflict}" "$_btn_conflict" 2>/dev/null &
-  if git push --force origin "HEAD:refs/heads/${branch}" >"$push_log" 2>&1; then
+${_push_detail}
+✔️ Histori remote tetap terjaga
+🕐 ${_tg_ts}" "$_btn_pgraft"
+    return 0
+  fi
+
+  # Terakhir: force push (hanya kalau graft gagal, misal branch baru/kosong di remote)
+  echo -e "  ${C_YELLOW}⚠️  Coba force push sebagai langkah terakhir...${C_RESET}"
+  if git push --force-with-lease origin "HEAD:refs/heads/${branch}" >"$push_log" 2>&1; then
     rm -f "$push_log"
-    echo -e "  ${C_GREEN}🎉 Sukses (force)!${C_RESET} ${C_BOLD}${branch}${C_RESET} ${C_DIM}(${HEAD_SHA})${C_RESET}"
+    echo -e "  ${C_GREEN}🎉 Sukses (force-with-lease)!${C_RESET} ${C_BOLD}${branch}${C_RESET} ${C_DIM}(${HEAD_SHA})${C_RESET}"
     echo -e "  ${C_BLUE}🔗 https://github.com/${USER}/${REPO}/tree/${branch}${C_RESET}"
     log_push_event "$branch" "OK(force)" "$_log_msg" "$_log_files"
     local _btn_pforce='{"inline_keyboard":[[{"text":"🔗 Lihat Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/tree/'"${branch}"'"},{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${branch}"'"}],[{"text":"⚠️ Security","url":"https://github.com/'"${USER}"'/'"${REPO}"'/security"},{"text":"🔀 Compare","url":"https://github.com/'"${USER}"'/'"${REPO}"'/compare"}]]}'
