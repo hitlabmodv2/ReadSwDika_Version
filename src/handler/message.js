@@ -9546,6 +9546,7 @@ response += `╰═════════════════╯`;
                                                         ...(m.isGroup && quotedKey.participant ? { participant: quotedKey.participant } : {}),
                                                 };
                                                 await hisoka.sendMessage(m.from, { delete: deleteKey });
+                                                try { await hisoka.sendMessage(m.from, { delete: m.key }); } catch (_) {}
                                         } catch (error) {
                                                 await tolak(hisoka, m, `❌ Gagal menghapus pesan: ${error.message}`);
                                         }

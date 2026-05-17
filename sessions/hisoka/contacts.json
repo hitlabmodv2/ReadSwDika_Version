@@ -20814,7 +20814,8 @@
     "name": "Naizo 👍",
     "lid": "168736715731040@lid",
     "jid": "6285711200877@s.whatsapp.net",
-    "notify": "Albiverstappen"
+    "notify": "Albiverstappen",
+    "verifiedName": "Albiverstappen"
   },
   "6285314753030@s.whatsapp.net": {
     "isContact": true,
@@ -31463,5 +31464,50 @@
     "id": "94485052690680@lid",
     "lid": "94485052690680@lid",
     "imgUrl": "changed"
+  },
+  "168736715731040@lid": {
+    "id": "168736715731040@lid",
+    "lid": "168736715731040@lid",
+    "notify": "Albiverstappen"
+  },
+  "82120076693736@lid": {
+    "id": "82120076693736@lid",
+    "lid": "82120076693736@lid",
+    "imgUrl": "changed"
+  },
+  "177326918774950@lid": {
+    "id": "177326918774950@lid",
+    "lid": "177326918774950@lid",
+    "imgUrl": "changed"
+  },
+  "97968623505429@lid": {
+    "id": "97968623505429@lid",
+    "lid": "97968623505429@lid",
+    "imgUrl": "changed"
+  },
+  "166640486477974@lid": {
+    "id": "166640486477974@lid",
+    "lid": "166640486477974@lid",
+    "imgUrl": "removed"
+  },
+  "217364117368884@lid": {
+    "id": "217364117368884@lid",
+    "lid": "217364117368884@lid",
+    "imgUrl": "changed"
+  },
+  "152067947679842@lid": {
+    "id": "152067947679842@lid",
+    "lid": "152067947679842@lid",
+    "imgUrl": "changed"
+  },
+  "204617073864838@lid": {
+    "id": "204617073864838@lid",
+    "lid": "204617073864838@lid",
+    "imgUrl": "changed"
+  },
+  "205591494529108@lid": {
+    "id": "205591494529108@lid",
+    "lid": "205591494529108@lid",
+    "imgUrl": "removed"
   }
 }

@@ -1,6 +1,18 @@
 {
   "terkirim": [
     {
+      "id": "niwatori-fighter::10",
+      "judul": "Niwatori Fighter",
+      "epNum": 10,
+      "waktuKirim": "2026-05-17T08:54:23.627Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": null,
+      "url": "https://alqanime.net/niwatori-fighter/"
+    },
+    {
       "id": "digimon-beatbreak::31",
       "judul": "Digimon Beatbreak",
       "epNum": 31,
