@@ -9517,7 +9517,7 @@ response += `╰═════════════════╯`;
                                 if (!isMainBot(hisoka)) return;
                                 if (!m.prefix && m.query) break;
 
-                                if (m.isQuoted && !query) {
+                                if (m.isQuoted && !m.query) {
                                         try {
                                                 const quotedKey = m.quoted.key;
                                                 const isOwnMessage = quotedKey.fromMe === true;
@@ -9537,7 +9537,13 @@ response += `╰═════════════════╯`;
                                                         }
                                                 }
 
-                                                await hisoka.sendMessage(m.from, { delete: quotedKey });
+                                                const deleteKey = {
+                                                        remoteJid: m.from,
+                                                        fromMe: quotedKey.fromMe,
+                                                        id: quotedKey.id,
+                                                        ...(m.isGroup && quotedKey.participant ? { participant: quotedKey.participant } : {}),
+                                                };
+                                                await hisoka.sendMessage(m.from, { delete: deleteKey });
                                                 logCommand(m, hisoka, 'del');
                                         } catch (error) {
                                                 await tolak(hisoka, m, `❌ Gagal menghapus pesan: ${error.message}`);
