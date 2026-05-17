@@ -105,22 +105,41 @@ else
 fi
 
 # ===== Spinner animasi loading =====
+# Style pilihan:
+#   default → ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏  (dots — umum)
+#   fetch   → ◐◓◑◒            (circular — network/fetch)
+#   build   → ⣾⣽⣻⢿⡿⣟⣯⣷      (heavy — commit/build)
+#   check   → ◇◈◆◈            (diamond — verifikasi)
+#   wave    → ▁▂▃▄▅▆▇█▇▆▅▄▃▂  (wave — loading list)
 _SPIN_PID=""
+_PROGRESS_PID=""
+_BAR_W=22
+
+_spin_loop() {
+  local label="$1" style="$2"
+  local i=0
+  local arr=()
+  case "$style" in
+    fetch)  arr=(◐ ◓ ◑ ◒) ;;
+    build)  arr=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷) ;;
+    check)  arr=(◇ ◈ ◆ ◈) ;;
+    wave)   arr=(▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ ▂) ;;
+    *)      arr=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏) ;;
+  esac
+  local n=${#arr[@]}
+  while true; do
+    printf "${C_CR}${C_ERASE}  ${C_CYAN}%s${C_RESET} ${C_BOLD}%s${C_RESET}${C_DIM}...${C_RESET}" \
+      "${arr[$((i % n))]}" "$label" >/dev/tty 2>/dev/null
+    i=$(( i + 1 ))
+    sleep 0.09
+  done
+}
 
 spinner_start() {
   local label="${1:-Memproses}"
+  local style="${2:-default}"
   [ -z "$C_CYAN" ] && { printf "  %s...\n" "$label" >/dev/tty 2>/dev/null; return; }
-  (
-    local i=0
-    local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-    local n=${#chars}
-    while true; do
-      local c="${chars:$((i % n)):1}"
-      printf "${C_CR}  ${C_CYAN}%s${C_RESET} ${C_BOLD}%s${C_RESET}${C_DIM}...${C_RESET}" "$c" "$label" >/dev/tty 2>/dev/null
-      i=$(( i + 1 ))
-      sleep 0.08
-    done
-  ) &
+  _spin_loop "$label" "$style" &
   _SPIN_PID=$!
 }
 
@@ -143,6 +162,55 @@ spinner_fail() {
   spinner_stop
   local msg="${1:-Gagal}"
   echo -e "  ${C_RED}❌${C_RESET} ${msg}"
+}
+
+# ── Progress bar 0-100% (untuk upload & buat branch) ──────────────────────
+_progress_loop() {
+  local label="$1" est="$2" icon="$3"
+  local tick=0 total=$(( est * 10 )) bw=$_BAR_W
+  while true; do
+    local raw=$(( tick * 100 / ( total > 0 ? total : 1 ) ))
+    local pct=$(( raw > 98 ? 98 : raw ))
+    local filled=$(( pct * bw / 100 ))
+    local empty=$(( bw - filled ))
+    local bf="" be="" j=0
+    while [ $j -lt $filled ]; do bf="${bf}█"; j=$(( j+1 )); done
+    while [ $j -lt $(( filled + empty )) ]; do be="${be}░"; j=$(( j+1 )); done
+    printf "${C_CR}${C_ERASE}  ${C_CYAN}%s${C_RESET}  ${C_BOLD}%-18s${C_RESET} [${C_GREEN}%s${C_RESET}${C_DIM}%s${C_RESET}] ${C_CYAN}${C_BOLD}%3d%%${C_RESET}" \
+      "$icon" "$label" "$bf" "$be" "$pct" >/dev/tty 2>/dev/null
+    tick=$(( tick + 1 ))
+    sleep 0.1
+  done
+}
+
+progress_start() {
+  local label="${1:-Upload}"
+  local est_secs="${2:-10}"
+  local icon="${3:-📤}"
+  [ -z "$C_CYAN" ] && { printf "  %s...\n" "$label" >/dev/tty 2>/dev/null; return; }
+  _progress_loop "$label" "$est_secs" "$icon" &
+  _PROGRESS_PID=$!
+}
+
+progress_stop() {
+  local success="${1:-ok}"
+  if [ -n "$_PROGRESS_PID" ]; then
+    kill "$_PROGRESS_PID" 2>/dev/null
+    wait "$_PROGRESS_PID" 2>/dev/null
+    _PROGRESS_PID=""
+  fi
+  local bw=$_BAR_W
+  local full="" j=0
+  while [ $j -lt $bw ]; do full="${full}█"; j=$(( j+1 )); done
+  if [ "$success" = "ok" ]; then
+    printf "${C_CR}${C_ERASE}  ${C_GREEN}✅${C_RESET}  ${C_BOLD}%-18s${C_RESET} [${C_GREEN}%s${C_RESET}] ${C_GREEN}${C_BOLD}100%%${C_RESET}\n" \
+      "" "$full" >/dev/tty 2>/dev/null
+  else
+    local half="" j=0
+    while [ $j -lt $bw ]; do half="${half}▒"; j=$(( j+1 )); done
+    printf "${C_CR}${C_ERASE}  ${C_RED}❌${C_RESET}  ${C_BOLD}%-18s${C_RESET} [${C_RED}%s${C_RESET}] ${C_RED}${C_BOLD}GAGAL${C_RESET}\n" \
+      "" "$half" >/dev/tty 2>/dev/null
+  fi
 }
 
 CUSTOM_MSG="${1:-}"
@@ -3834,7 +3902,7 @@ action_rename_branch() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   ✏️   EDIT NAMA BRANCH          │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  spinner_start "Memuat branch"
+  spinner_start "Memuat branch" wave
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && branches+=("$b")
@@ -4071,7 +4139,7 @@ action_create_branch() {
   fi
 
   # Cek apakah branch sudah ada via GitHub API
-  spinner_start "Cek nama branch"
+  spinner_start "Cek nama branch" check
   local chk_http
   chk_http=$(curl -s -o /dev/null -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4087,7 +4155,7 @@ action_create_branch() {
   fi
 
   # Ambil SHA tip dari DEFAULT_BRANCH via GitHub API (tidak butuh switch branch lokal)
-  spinner_start "Ambil SHA dari ${DEFAULT_BRANCH}"
+  spinner_start "Ambil SHA ${DEFAULT_BRANCH}" fetch
   local sha_resp sha
   sha_resp=$(curl -s -o /tmp/_gh_sha.json -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4114,7 +4182,7 @@ action_create_branch() {
   fi
 
   # Buat branch di GitHub via API
-  spinner_start "Buat branch ${name}"
+  spinner_start "Buat branch ${name}" build
   local create_http
   create_http=$(curl -s -o /tmp/_gh_create.json -w "%{http_code}" \
     -X POST \
@@ -4175,7 +4243,7 @@ action_delete_branch() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   🗑️   HAPUS BRANCH              │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  spinner_start "Memuat branch"
+  spinner_start "Memuat branch" wave
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && [ "$b" != "$DEFAULT_BRANCH" ] && branches+=("$b")
@@ -4388,7 +4456,7 @@ show_menu() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   📤  UPLOAD — PILIH BRANCH      │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  spinner_start "Memuat branch"
+  spinner_start "Memuat branch" wave
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && branches+=("$b")
@@ -4557,7 +4625,7 @@ commit_pending_changes() {
       MSG=$(classify_commit)
     fi
 
-    spinner_start "Commit"
+    spinner_start "Commit" build
     if ! git commit -q -m "$MSG" 2>/dev/null; then
       spinner_fail "git commit gagal"
       return 1
@@ -4605,9 +4673,12 @@ push_head_to_branch() {
 
   # Coba normal push dulu (fast-forward).
   local _tg_ts; _tg_ts=$(date '+%H:%M:%S %d %b %Y')
-  spinner_start "Upload → ${branch}"
-  if git push origin "HEAD:refs/heads/${branch}" >"$push_log" 2>&1; then
-    spinner_ok "🎉 Sukses! ${C_BOLD}${branch}${C_RESET} ${C_DIM}(${HEAD_SHA})${C_RESET}"
+  progress_start "Upload → ${branch}" 10 "📤"
+  git push origin "HEAD:refs/heads/${branch}" >"$push_log" 2>&1
+  local _push_rc=$?
+  progress_stop "$( [ $_push_rc -eq 0 ] && echo ok || echo fail )"
+  if [ $_push_rc -eq 0 ]; then
+    echo -e "  ${C_GREEN}🎉 Sukses!${C_RESET} ${C_BOLD}${branch}${C_RESET} ${C_DIM}(${HEAD_SHA})${C_RESET}"
     echo -e "  ${C_BLUE}🔗 https://github.com/${USER}/${REPO}/tree/${branch}${C_RESET}"
     log_push_event "$branch" "OK" "$_log_msg" "$_log_files"
     local _btn_pbr='{"inline_keyboard":[[{"text":"🔗 Lihat Branch","url":"https://github.com/'"${USER}"'/'"${REPO}"'/tree/'"${branch}"'"},{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${branch}"'"}],[{"text":"🔀 Compare","url":"https://github.com/'"${USER}"'/'"${REPO}"'/compare"},{"text":"📥 Pull Request","url":"https://github.com/'"${USER}"'/'"${REPO}"'/pulls"}]]}'
@@ -4623,10 +4694,9 @@ ${_push_detail}
 
   # Gagal — kemungkinan non-fast-forward.
   # SOLUSI: buat commit baru di atas histori remote (TIDAK timpa histori).
-  spinner_stop
   echo -e "  ${C_YELLOW}⚠️  Branch divergent, sambung histori remote...${C_RESET}"
 
-  spinner_start "Fetch remote"
+  spinner_start "Fetch remote" fetch
   git fetch origin "$branch" --quiet 2>/dev/null || true
   spinner_stop
 
@@ -4635,7 +4705,7 @@ ${_push_detail}
   _remote_parent=$(git rev-parse "refs/remotes/origin/${branch}" 2>/dev/null)
 
   if [ -n "$_tree" ] && [ -n "$_remote_parent" ]; then
-    spinner_start "Buat commit graft"
+    spinner_start "Sambung histori" build
     _new_commit=$(GIT_AUTHOR_NAME="$(git log -1 --format='%an')" \
                   GIT_AUTHOR_EMAIL="$(git log -1 --format='%ae')" \
                   GIT_COMMITTER_NAME="$(git log -1 --format='%cn')" \
@@ -4645,10 +4715,10 @@ ${_push_detail}
   fi
 
   if [ -n "${_new_commit:-}" ]; then
-    spinner_start "Upload → ${branch} (sambung histori)"
+    progress_start "Upload → ${branch}" 10 "📤"
     git push origin "${_new_commit}:refs/heads/${branch}" >"$push_log" 2>&1
     local _graft_rc=$?
-    spinner_stop
+    progress_stop "$( [ $_graft_rc -eq 0 ] && echo ok || echo fail )"
   else
     local _graft_rc=1
   fi
@@ -4673,10 +4743,10 @@ ${_push_detail}
 
   # Terakhir: force push (hanya kalau graft gagal, misal branch baru/kosong di remote)
   echo -e "  ${C_YELLOW}⚠️  Coba force push sebagai langkah terakhir...${C_RESET}"
-  spinner_start "Force upload → ${branch}"
+  progress_start "Force Upload → ${branch}" 12 "⚡"
   git push --force-with-lease origin "HEAD:refs/heads/${branch}" >"$push_log" 2>&1
   local _force_rc=$?
-  spinner_stop
+  progress_stop "$( [ $_force_rc -eq 0 ] && echo ok || echo fail )"
   if [ "$_force_rc" -eq 0 ]; then
     rm -f "$push_log"
     echo -e "  ${C_GREEN}🎉 Sukses!${C_RESET} ${C_BOLD}${branch}${C_RESET} ${C_DIM}(${HEAD_SHA})${C_RESET}"
