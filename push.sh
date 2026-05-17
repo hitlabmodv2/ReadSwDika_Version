@@ -4591,10 +4591,12 @@ action_delete_branch() {
 }
 
 # ===== Menu pemilih branch (sub-menu dari opsi 1) =====
+# Branch dimuat SEKALI, navigasi n/p/f/l langsung in-place tanpa re-fetch.
 show_menu() {
   local _SM_PAGE="${_SM_PAGE:-1}"
   local _SM_PAGE_SIZE=8
 
+  # ── Load branch hanya sekali di sini ──────────────────────────────────────
   clear >/dev/tty 2>/dev/null || true
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   📤  UPLOAD — PILIH BRANCH      │${C_RESET}"
@@ -4609,86 +4611,111 @@ show_menu() {
   local total=${#branches[@]}
   local total_pages=$(( (total + _SM_PAGE_SIZE - 1) / _SM_PAGE_SIZE ))
   [ "$total_pages" -eq 0 ] && total_pages=1
-  [ "$_SM_PAGE" -gt "$total_pages" ] && _SM_PAGE=$total_pages
-  [ "$_SM_PAGE" -lt 1 ] && _SM_PAGE=1
 
-  local start=$(( (_SM_PAGE - 1) * _SM_PAGE_SIZE ))
-  local end=$(( start + _SM_PAGE_SIZE ))
-  [ "$end" -gt "$total" ] && end="$total"
+  # ── Inner loop: navigasi in-place, TIDAK re-fetch ─────────────────────────
+  local _sm_err=""
+  while true; do
+    [ "$_SM_PAGE" -gt "$total_pages" ] && _SM_PAGE=$total_pages
+    [ "$_SM_PAGE" -lt 1 ]             && _SM_PAGE=1
 
-  clear >/dev/tty 2>/dev/null || true
-  echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
-  echo -e "${C_BOLD}│   📤  UPLOAD — PILIH BRANCH      │${C_RESET}"
-  echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  echo ""
-  echo -e "  ${C_DIM}repo  ${C_RESET}${C_BOLD}${USER}/${REPO}${C_RESET}"
-  if [ "$total_pages" -gt 1 ]; then
-    local _range_end_disp=$(( end ))
-    echo -e "  ${C_DIM}posisi${C_RESET} ${C_BOLD}$(( start + 1 ))–${_range_end_disp}${C_RESET}${C_DIM} dari ${total} branch  •  hal ${_SM_PAGE}/${total_pages}${C_RESET}"
-  else
-    echo -e "  ${C_DIM}total ${C_RESET}${C_BOLD}${total} branch${C_RESET}"
-  fi
-  echo ""
-  echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+    local start=$(( (_SM_PAGE - 1) * _SM_PAGE_SIZE ))
+    local end=$(( start + _SM_PAGE_SIZE ))
+    [ "$end" -gt "$total" ] && end="$total"
 
-  for (( i=start; i<end; i++ )); do
-    local b="${branches[$i]}"
-    local num=$(( i + 1 ))
-    if [ "$b" = "$DEFAULT_BRANCH" ]; then
-      printf "  ${C_GREEN}%2d${C_RESET} ${C_BOLD}›${C_RESET} %s  ${C_DIM}(default)${C_RESET}\n" "$num" "$b"
+    clear >/dev/tty 2>/dev/null || true
+    echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
+    echo -e "${C_BOLD}│   📤  UPLOAD — PILIH BRANCH      │${C_RESET}"
+    echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
+    echo ""
+    echo -e "  ${C_DIM}repo  ${C_RESET}${C_BOLD}${USER}/${REPO}${C_RESET}"
+    if [ "$total_pages" -gt 1 ]; then
+      echo -e "  ${C_DIM}posisi${C_RESET} ${C_BOLD}$(( start + 1 ))–${end}${C_RESET}${C_DIM} dari ${total} branch  •  hal ${_SM_PAGE}/${total_pages}${C_RESET}"
     else
-      printf "  ${C_CYAN}%2d${C_RESET} ${C_BOLD}›${C_RESET} %s\n" "$num" "$b"
+      echo -e "  ${C_DIM}total ${C_RESET}${C_BOLD}${total} branch${C_RESET}"
     fi
+    echo ""
+    echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+
+    local i
+    for (( i=start; i<end; i++ )); do
+      local b="${branches[$i]}"
+      local num=$(( i + 1 ))
+      if [ "$b" = "$DEFAULT_BRANCH" ]; then
+        printf "  ${C_GREEN}%2d${C_RESET} ${C_BOLD}›${C_RESET} %s  ${C_DIM}(default)${C_RESET}\n" "$num" "$b"
+      else
+        printf "  ${C_CYAN}%2d${C_RESET} ${C_BOLD}›${C_RESET} %s\n" "$num" "$b"
+      fi
+    done
+
+    echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+    if [ "$total_pages" -gt 1 ]; then
+      local _nav=""
+      [ "$_SM_PAGE" -lt "$total_pages" ] && _nav="${_nav}  ${C_CYAN}n${C_RESET} › Berikutnya"
+      [ "$_SM_PAGE" -gt 1 ]              && _nav="${_nav}   ${C_CYAN}p${C_RESET} › Sebelumnya"
+      [ -n "$_nav" ] && echo -e "$_nav"
+      echo -e "  ${C_CYAN}f${C_RESET} › Awal   ${C_CYAN}l${C_RESET} › Akhir   ${C_DIM}h<angka> → loncat hal  (mis: h3)${C_RESET}"
+    fi
+    echo -e "  ${C_YELLOW} A${C_RESET} ${C_BOLD}›${C_RESET} Semua branch"
+    echo -e "  ${C_GREEN} D${C_RESET} ${C_BOLD}›${C_RESET} Default  ${C_DIM}(${DEFAULT_BRANCH})${C_RESET}"
+    echo -e "  ${C_RED} 0${C_RESET} ${C_BOLD}›${C_RESET} Kembali"
+    echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+    printf "  ${C_DIM}💡 Ketik nomor atau nama branch langsung${C_RESET}\n"
+    # Tampilkan error (jika ada) tepat di atas prompt, lalu hapus
+    [ -n "$_sm_err" ] && printf "  ${C_RED}✖ %s${C_RESET}\n" "$_sm_err"
+    _sm_err=""
+    printf "  ${C_BOLD}▸ ${C_RESET}"
+
+    local choice
+    read -r choice </dev/tty
+    choice=$(printf '%s' "${choice:-D}" | tr -d '\r\n')
+
+    case "$choice" in
+      n|N)
+        if [ "$_SM_PAGE" -lt "$total_pages" ]; then
+          _SM_PAGE=$(( _SM_PAGE + 1 ))
+        else
+          _sm_err="Sudah di halaman terakhir"
+        fi
+        ;;
+      p|P)
+        if [ "$_SM_PAGE" -gt 1 ]; then
+          _SM_PAGE=$(( _SM_PAGE - 1 ))
+        else
+          _sm_err="Sudah di halaman pertama"
+        fi
+        ;;
+      f|F) _SM_PAGE=1 ;;
+      l|L) _SM_PAGE=$total_pages ;;
+      h*|H*)
+        local _pg_jump="${choice:1}"
+        if echo "$_pg_jump" | grep -qE '^[0-9]+$' && [ "$_pg_jump" -ge 1 ] && [ "$_pg_jump" -le "$total_pages" ]; then
+          _SM_PAGE=$_pg_jump
+        else
+          _sm_err="Halaman tidak valid (1–${total_pages})"
+        fi
+        ;;
+      0|q|Q|exit) goodbye_prompt; return ;;
+      a|A) SELECTED_BRANCHES=("${branches[@]}"); return ;;
+      d|D|"") SELECTED_BRANCHES=("$DEFAULT_BRANCH"); return ;;
+      *)
+        if echo "$choice" | grep -qE '^[0-9]+$' && [ "$choice" -ge 1 ] && [ "$choice" -le "$total" ]; then
+          SELECTED_BRANCHES=("${branches[$((choice - 1))]}")
+          return
+        else
+          # Coba cocokkan nama branch langsung
+          local _found=0 _fb
+          for _fb in "${branches[@]}"; do
+            if [ "$_fb" = "$choice" ]; then
+              SELECTED_BRANCHES=("$_fb"); _found=1; break
+            fi
+          done
+          [ "$_found" -eq 1 ] && return
+          _sm_err="Pilihan tidak valid: '${choice}'"
+        fi
+        ;;
+    esac
+    # n/p/f/l/h/error → ulangi loop (redraw in-place, tidak re-fetch)
   done
-
-  echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
-  if [ "$total_pages" -gt 1 ]; then
-    local _nav_line=""
-    [ "$_SM_PAGE" -lt "$total_pages" ] && _nav_line="${_nav_line}  ${C_CYAN}n${C_RESET} › Berikutnya"
-    [ "$_SM_PAGE" -gt 1 ]              && _nav_line="${_nav_line}   ${C_CYAN}p${C_RESET} › Sebelumnya"
-    [ -n "$_nav_line" ] && echo -e "$_nav_line"
-    echo -e "  ${C_CYAN}f${C_RESET} › Awal   ${C_CYAN}l${C_RESET} › Akhir   ${C_DIM}h<angka> → loncat hal  (mis: h3)${C_RESET}"
-  fi
-  echo -e "  ${C_YELLOW} A${C_RESET} ${C_BOLD}›${C_RESET} Semua branch"
-  echo -e "  ${C_GREEN} D${C_RESET} ${C_BOLD}›${C_RESET} Default  ${C_DIM}(${DEFAULT_BRANCH})${C_RESET}"
-  echo -e "  ${C_RED} 0${C_RESET} ${C_BOLD}›${C_RESET} Kembali"
-  echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
-  printf "  ${C_BOLD}▸ ${C_RESET}"
-
-  local choice
-  read -r choice </dev/tty
-  choice=$(printf '%s' "${choice:-D}" | tr -d '\r\n')
-
-  case "$choice" in
-    n|N) _SM_PAGE=$(( _SM_PAGE < total_pages ? _SM_PAGE + 1 : _SM_PAGE )) show_menu; return ;;
-    p|P) _SM_PAGE=$(( _SM_PAGE > 1 ? _SM_PAGE - 1 : 1 )) show_menu; return ;;
-    f|F) _SM_PAGE=1 show_menu; return ;;
-    l|L) _SM_PAGE=$total_pages show_menu; return ;;
-    h*|H*)
-      local _pg_jump="${choice:1}"
-      if echo "$_pg_jump" | grep -qE '^[0-9]+$' && [ "$_pg_jump" -ge 1 ] && [ "$_pg_jump" -le "$total_pages" ]; then
-        _SM_PAGE=$_pg_jump show_menu
-      else
-        echo -e "  ${C_RED}✖ Halaman tidak valid${C_RESET} ${C_DIM}(1–${total_pages})${C_RESET}"
-        sleep 1
-        _SM_PAGE=$_SM_PAGE show_menu
-      fi
-      return
-      ;;
-    0|q|Q|exit) goodbye_prompt ;;
-    a|A) SELECTED_BRANCHES=("${branches[@]}") ;;
-    d|D|"") SELECTED_BRANCHES=("$DEFAULT_BRANCH") ;;
-    *)
-      if echo "$choice" | grep -qE '^[0-9]+$' && [ "$choice" -ge 1 ] && [ "$choice" -le "$total" ]; then
-        SELECTED_BRANCHES=("${branches[$((choice - 1))]}")
-      else
-        echo -e "  ${C_RED}✖ Pilihan tidak valid: '${choice}'${C_RESET}"
-        sleep 1
-        _SM_PAGE=$_SM_PAGE show_menu
-        return
-      fi
-      ;;
-  esac
 }
 
 # ===== Goodbye prompt (bisa balik cepat dengan ketik 1) =====
@@ -5787,10 +5814,50 @@ prompt_back_or_exit() {
   esac
 }
 
+# ===== Cek token realtime — auto re-login tanpa restart script =====
+check_token_realtime() {
+  local http
+  http=$(curl -s -o /dev/null -w "%{http_code}" \
+    -H "Authorization: token ${TOKEN}" \
+    -H "Accept: application/vnd.github+json" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    "https://api.github.com/user" 2>/dev/null)
+
+  # 200 = valid, 000 = no network (biarkan, bukan salah token)
+  case "$http" in 200|000|"") return 0 ;; esac
+
+  # Token invalid/expired → re-login inline
+  clear >/dev/tty 2>/dev/null || true
+  printf "\n"
+  printf "  \033[1m╔══════════════════════════════════════╗\033[0m\n"
+  printf "  \033[1m║   🔴  TOKEN EXPIRED — LOGIN ULANG    ║\033[0m\n"
+  printf "  \033[1m╚══════════════════════════════════════╝\033[0m\n\n"
+  printf "  \033[31mHTTP %s — Token tidak valid atau sudah kadaluarsa.\033[0m\n" "$http"
+  printf "  \033[33mSilakan paste token baru — tidak perlu restart script.\033[0m\n\n"
+
+  rm -f .token.secret 2>/dev/null
+  _delete_token_backup 2>/dev/null || true
+
+  TOKEN=$(setup_token)
+  while true; do
+    local _vr=0
+    validate_token "$TOKEN" || _vr=$?
+    [ "$_vr" -eq 0 ] || [ "$_vr" -eq 2 ] && break
+    TOKEN=$(setup_token)
+  done
+
+  REMOTE_URL="https://${USER}:${TOKEN}@github.com/${USER}/${REPO}.git"
+  git remote set-url origin "$REMOTE_URL" 2>/dev/null || true
+
+  printf "\n  \033[32m✅ Re-login berhasil! Melanjutkan...\033[0m\n"
+  sleep 0.8
+}
+
 # ===== Loop menu utama =====
 main_loop() {
   while true; do
     SELECTED_BRANCHES=()
+    check_token_realtime
     show_main_menu
   done
 }
