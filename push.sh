@@ -4386,8 +4386,8 @@ show_menu() {
   printf "  ${C_BOLD}▸ ${C_RESET}"
 
   local choice
-  read -r choice
-  choice="${choice:-D}"
+  read -r choice </dev/tty
+  choice=$(printf '%s' "${choice:-D}" | tr -d '\r\n')
 
   case "$choice" in
     n|N) _SM_PAGE=$(( _SM_PAGE < total_pages ? _SM_PAGE + 1 : _SM_PAGE )) show_menu; return ;;
