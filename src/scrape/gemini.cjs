@@ -102,6 +102,44 @@ class Gemini {
         return this._getToken();
     }
 
+    _formatForWhatsApp(text) {
+        if (!text) return text;
+
+        let result = text;
+
+        // Simpan code block triple backtick dulu, biar ga keubah
+        const codeBlocks = [];
+        result = result.replace(/```[\s\S]*?```/g, match => {
+            codeBlocks.push(match);
+            return `%%CODEBLOCK_${codeBlocks.length - 1}%%`;
+        });
+
+        // Header markdown → *bold* WA
+        result = result.replace(/^#{1,6}\s+(.+)$/gm, '*$1*');
+
+        // Bold **text** atau __text__ → *text*
+        result = result.replace(/\*\*(.+?)\*\*/g, '*$1*');
+        result = result.replace(/__(.+?)__/g, '*$1*');
+
+        // Italic *text* (satu bintang) → _text_ WA
+        // Hati-hati jangan nabrak bold yg udah dikonversi
+        result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '_$1_');
+
+        // List unordered - item / * item → • item
+        result = result.replace(/^[ \t]*[-*]\s+(.+)$/gm, '• $1');
+
+        // Horizontal rule --- → garis WA-friendly
+        result = result.replace(/^---+$/gm, '───────────────');
+
+        // Kembalikan code block
+        result = result.replace(/%%CODEBLOCK_(\d+)%%/g, (_, i) => codeBlocks[parseInt(i)]);
+
+        // Bersihkan spasi berlebih di akhir baris
+        result = result.replace(/[ \t]+$/gm, '');
+
+        return result;
+    }
+
     async _callOnce({ token, model, contents, config }) {
         const generationConfig = {
             maxOutputTokens: 8192,
@@ -128,7 +166,7 @@ class Gemini {
         );
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!text) throw new Error('Gemini returned empty response. Raw: ' + JSON.stringify(data).slice(0, 200));
-        return text;
+        return this._formatForWhatsApp(text);
     }
 
     async chat({ contents, model = 'gemini-flash-latest', ...config }) {
