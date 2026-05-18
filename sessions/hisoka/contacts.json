@@ -125,7 +125,8 @@
     "id": "6287852533256@s.whatsapp.net",
     "name": "!!!Raska",
     "lid": "227049553821873@lid",
-    "jid": "6287852533256@s.whatsapp.net"
+    "jid": "6287852533256@s.whatsapp.net",
+    "notify": "‎"
   },
   "6285779255277@s.whatsapp.net": {
     "isContact": true,
@@ -1772,7 +1773,8 @@
     "id": "6288247569901@s.whatsapp.net",
     "name": "🗿 Fariq",
     "lid": "4213446820079@lid",
-    "jid": "6288247569901@s.whatsapp.net"
+    "jid": "6288247569901@s.whatsapp.net",
+    "notify": "Aii_Gntng😎"
   },
   "628127548027@s.whatsapp.net": {
     "isContact": true,
@@ -31528,5 +31530,30 @@
     "id": "276926941929540@lid",
     "lid": "276926941929540@lid",
     "notify": "."
+  },
+  "155297645613058@lid": {
+    "id": "155297645613058@lid",
+    "lid": "155297645613058@lid",
+    "notify": "harisss"
+  },
+  "76790290767977@lid": {
+    "id": "76790290767977@lid",
+    "lid": "76790290767977@lid",
+    "notify": "NAKIRA || VON SARTSZAN"
+  },
+  "77322766037166@lid": {
+    "id": "77322766037166@lid",
+    "lid": "77322766037166@lid",
+    "imgUrl": "removed"
+  },
+  "170459198967907@lid": {
+    "id": "170459198967907@lid",
+    "lid": "170459198967907@lid",
+    "imgUrl": "changed"
+  },
+  "256980946030617@lid": {
+    "id": "256980946030617@lid",
+    "lid": "256980946030617@lid",
+    "imgUrl": "changed"
   }
 }
