@@ -24,7 +24,7 @@ const SIGNUP_HEADERS = {
     'x-firebase-gmpid':    '1:652803432695:android:c4341db6033e62814f33f2',
 };
 
-const FALLBACK_MODELS    = ['gemini-2.5-flash', 'gemini-pro-latest', 'gemini-flash-latest'];
+const FALLBACK_MODELS    = ['gemini-flash-latest', 'gemini-pro-latest', 'gemini-2.5-flash'];
 const MAX_TOKEN_ROTATIONS = 5;
 const POOL_SIZE           = 3;
 
