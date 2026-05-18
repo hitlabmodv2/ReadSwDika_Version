@@ -4361,7 +4361,9 @@
     "id": "6287812372599@s.whatsapp.net",
     "name": "▫️BnZ_Eagle",
     "lid": "101949638746286@lid",
-    "jid": "6287812372599@s.whatsapp.net"
+    "jid": "6287812372599@s.whatsapp.net",
+    "notify": "BnZ_Enquarorth",
+    "verifiedName": "BnZ_Enquarorth"
   },
   "6285708620132@s.whatsapp.net": {
     "isContact": true,
@@ -18980,7 +18982,8 @@
     "id": "6289681008411@s.whatsapp.net",
     "name": "Hen V1",
     "lid": "274255723921630@lid",
-    "jid": "6289681008411@s.whatsapp.net"
+    "jid": "6289681008411@s.whatsapp.net",
+    "notify": "Hen V1"
   },
   "6285854666250@s.whatsapp.net": {
     "isContact": true,
@@ -19701,7 +19704,8 @@
     "id": "62895704334234@s.whatsapp.net",
     "name": "▫️Dinda",
     "lid": "142696211599405@lid",
-    "jid": "62895704334234@s.whatsapp.net"
+    "jid": "62895704334234@s.whatsapp.net",
+    "notify": "☁️"
   },
   "6283895631002@s.whatsapp.net": {
     "isContact": true,
@@ -22586,7 +22590,8 @@
     "id": "6289688206739@s.whatsapp.net",
     "name": "Agan Rizkia",
     "lid": "81582920577063@lid",
-    "jid": "6289688206739@s.whatsapp.net"
+    "jid": "6289688206739@s.whatsapp.net",
+    "notify": "Wily"
   },
   "628889079192@s.whatsapp.net": {
     "isContact": true,
@@ -24399,7 +24404,8 @@
     "id": "6289667923162@s.whatsapp.net",
     "name": "Hen V2",
     "lid": "97968623505429@lid",
-    "jid": "6289667923162@s.whatsapp.net"
+    "jid": "6289667923162@s.whatsapp.net",
+    "notify": "Hen V2"
   },
   "6283137862384@s.whatsapp.net": {
     "isContact": true,
@@ -29824,7 +29830,8 @@
     "id": "6282126269135@s.whatsapp.net",
     "name": "Resha",
     "lid": "155297645613058@lid",
-    "jid": "6282126269135@s.whatsapp.net"
+    "jid": "6282126269135@s.whatsapp.net",
+    "notify": "harisss"
   },
   "6285823775965@s.whatsapp.net": {
     "isContact": true,
@@ -31325,5 +31332,15 @@
     "id": "258372548976702@lid",
     "lid": "258372548976702@lid",
     "imgUrl": "removed"
+  },
+  "123089601994800@lid": {
+    "id": "123089601994800@lid",
+    "lid": "123089601994800@lid",
+    "imgUrl": "changed"
+  },
+  "97968623505429@lid": {
+    "id": "97968623505429@lid",
+    "lid": "97968623505429@lid",
+    "notify": "Hen V2"
   }
 }

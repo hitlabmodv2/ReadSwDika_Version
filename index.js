@@ -889,16 +889,15 @@ async function main() {
                                                 });
 
                                                 for (const item of episodeUnik) {
-                                                        const caption          = _alq.buatCaption(item);
-                                                        const captionLanjutan  = _alq.buatCaptionLanjutan(item);
-                                                        const urlGambar        = _alq.ambilUrlGambar(item);
+                                                        const caption   = _alq.buatCaptionGabung(item);
+                                                        const urlGambar = _alq.ambilUrlGambar(item);
 
                                                         const BATCH = 5;
                                                         for (let i = 0; i < daftarGrup.length; i += BATCH) {
                                                                 const chunk = daftarGrup.slice(i, i + BATCH);
                                                                 await Promise.allSettled(chunk.map(async jid => {
                                                                         try {
-                                                                                // Pesan 1: gambar + info ringkas
+                                                                                // 1 pesan: gambar + caption gabungan (info + sinopsis + download)
                                                                                 if (urlGambar) {
                                                                                         await hisoka.sendMessage(jid, {
                                                                                                 image: { url: urlGambar },
@@ -907,8 +906,6 @@ async function main() {
                                                                                 } else {
                                                                                         await hisoka.sendMessage(jid, { text: caption });
                                                                                 }
-                                                                                // Pesan 2: sinopsis penuh + info lengkap + download
-                                                                                await hisoka.sendMessage(jid, { text: captionLanjutan });
                                                                         } catch (e) {
                                                                                 console.error(`[AlqanimeNotif] Gagal kirim ke ${jid}:`, e?.message);
                                                                         }
