@@ -42,7 +42,7 @@ IGNORE_BRANCHES="replit-agent HEAD"
 PUSH_LOG_FILE=".push_history.log"
 
 # Telegram notifikasi (push.sh only — tidak berhubungan dengan bot WA)
-TG_TOKEN="7603636186:AAHBmh1otqBb-RX5bhARGj0r0CPpNzqzaF4"
+TG_TOKEN="7603636186:AAHKB27UPqcCZswPiGJJuRBnNXBmk4hJad0"
 TG_CHAT_ID="5810736154"
 
 # ===== Kirim notifikasi Telegram (dengan opsional inline button) =====
@@ -5310,8 +5310,8 @@ action_cleanup_node_modules() {
   echo -e "  ${C_DIM}Push berikutnya ke branch baru akan JAUH lebih kecil.${C_RESET}"
 
   local _ts_cl; _ts_cl=$(date '+%H:%M:%S %d %b %Y')
-  local _btn_cl='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"🌿 Branches","url":"https://github.com/'"${USER}"'/'"${REPO}"'/branches"}]]}'
-  send_telegram_photo "https://w.wallhaven.cc/full/l3/wallhaven-l3q6eq.png" "🧹 <b>HISTORY DIBERSIHKAN</b>
+  local _btn_cl='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"🌿 Branches","url":"https://github.com/'"${USER}"'/'"${REPO}"'/branches"}],[{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${DEFAULT_BRANCH}"'"},{"text":"📈 Insights","url":"https://github.com/'"${USER}"'/'"${REPO}"'/pulse"}]]}'
+  send_telegram_photo "https://w.wallhaven.cc/full/g7/wallhaven-g7mj5l.jpg" "🧹 <b>HISTORY DIBERSIHKAN</b>
 ━━━━━━━━━━━━━━━━━━━━
 📁 <code>${USER}/${REPO}</code>
 🧹 node_modules dihapus dari history

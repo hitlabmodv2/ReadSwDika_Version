@@ -865,7 +865,8 @@
     "id": "6281393564657@s.whatsapp.net",
     "name": "Yus ( Donasi Jadi Bot )",
     "lid": "174577888038922@lid",
-    "jid": "6281393564657@s.whatsapp.net"
+    "jid": "6281393564657@s.whatsapp.net",
+    "notify": "γυς ρου"
   },
   "6285229441737@s.whatsapp.net": {
     "isContact": true,
@@ -2125,7 +2126,8 @@
     "id": "62881025542877@s.whatsapp.net",
     "name": "! Rara",
     "lid": "74797375574209@lid",
-    "jid": "62881025542877@s.whatsapp.net"
+    "jid": "62881025542877@s.whatsapp.net",
+    "notify": "🫪"
   },
   "6281548983229@s.whatsapp.net": {
     "isContact": true,
@@ -2916,7 +2918,8 @@
     "id": "6281374976765@s.whatsapp.net",
     "name": "√tita💅",
     "lid": "195713338183899@lid",
-    "jid": "6281374976765@s.whatsapp.net"
+    "jid": "6281374976765@s.whatsapp.net",
+    "notify": "."
   },
   "6287748574387@s.whatsapp.net": {
     "isContact": true,
@@ -11330,7 +11333,8 @@
     "id": "6285752930307@s.whatsapp.net",
     "name": "pushkontakkk 436",
     "lid": "9951875489877@lid",
-    "jid": "6285752930307@s.whatsapp.net"
+    "jid": "6285752930307@s.whatsapp.net",
+    "notify": "Fajar Mekdi"
   },
   "6281549166315@s.whatsapp.net": {
     "isContact": true,
@@ -14425,7 +14429,8 @@
     "id": "6289608959040@s.whatsapp.net",
     "name": "! mil",
     "lid": "176257136341194@lid",
-    "jid": "6289608959040@s.whatsapp.net"
+    "jid": "6289608959040@s.whatsapp.net",
+    "notify": "laa💤"
   },
   "6282393328617@s.whatsapp.net": {
     "isContact": true,
@@ -20851,7 +20856,8 @@
     "id": "6283182665936@s.whatsapp.net",
     "name": "ルトピ",
     "lid": "165536713416760@lid",
-    "jid": "6283182665936@s.whatsapp.net"
+    "jid": "6283182665936@s.whatsapp.net",
+    "notify": "Luthfi (Lui)"
   },
   "601140548413@s.whatsapp.net": {
     "isContact": true,
@@ -31289,5 +31295,35 @@
     "name": "まひろ",
     "lid": "4522617348207@lid",
     "jid": "6287813075380@s.whatsapp.net"
+  },
+  "20500331913406@lid": {
+    "id": "20500331913406@lid",
+    "lid": "20500331913406@lid",
+    "imgUrl": "changed"
+  },
+  "18120534130708@lid": {
+    "id": "18120534130708@lid",
+    "lid": "18120534130708@lid",
+    "imgUrl": "changed"
+  },
+  "260975114629354@lid": {
+    "id": "260975114629354@lid",
+    "lid": "260975114629354@lid",
+    "imgUrl": "changed"
+  },
+  "81488464883801@lid": {
+    "id": "81488464883801@lid",
+    "lid": "81488464883801@lid",
+    "imgUrl": "changed"
+  },
+  "176257136341194@lid": {
+    "id": "176257136341194@lid",
+    "lid": "176257136341194@lid",
+    "notify": "laa💤"
+  },
+  "258372548976702@lid": {
+    "id": "258372548976702@lid",
+    "lid": "258372548976702@lid",
+    "imgUrl": "removed"
   }
 }
