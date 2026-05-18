@@ -49,6 +49,30 @@ const aiToolsError = (...args) => {
     else console.error(...args);
 };
 
+// ── Stiker Cooldown — cegah spam stiker per chat ──────────────────────────
+// Key: sessionKey (jid chat), Value: timestamp ms terakhir stiker dikirim
+const _stickerCooldownMap = new Map();
+const STIKER_COOLDOWN_MS = 3 * 60 * 1000; // 3 menit
+
+function isStickerOnCooldown(sessionKey) {
+    if (!sessionKey) return false;
+    const last = _stickerCooldownMap.get(sessionKey);
+    if (!last) return false;
+    return (Date.now() - last) < STIKER_COOLDOWN_MS;
+}
+
+function markStickerSent(sessionKey) {
+    if (!sessionKey) return;
+    _stickerCooldownMap.set(sessionKey, Date.now());
+    // Bersihkan entry lama (>10 menit) supaya tidak leak memory
+    if (_stickerCooldownMap.size > 500) {
+        const cutoff = Date.now() - 10 * 60 * 1000;
+        for (const [k, v] of _stickerCooldownMap) {
+            if (v < cutoff) _stickerCooldownMap.delete(k);
+        }
+    }
+}
+
 // ════════════════════════════════════════════════════════════
 //  EDGE NEURAL TTS  (free, no API key — Microsoft Azure voices)
 //  Suaranya jauh lebih natural dibanding Google Translate TTS.
@@ -1011,6 +1035,14 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 
     if (matches.length === 0) return { cleanText, stickers };
 
+    // ── Cooldown check: skip kirim stiker jika chat ini masih dalam cooldown ──
+    const sessionKey = opts.sessionKey || '';
+    if (isStickerOnCooldown(sessionKey)) {
+        aiToolsLog(`[AITool/REPLY-STIKER] ⏳ Cooldown aktif untuk "${sessionKey}" — marker dihapus, stiker skip`);
+        cleanText = cleanText.replace(regex, '').replace(/\n{3,}/g, '\n\n').trim();
+        return { cleanText, stickers };
+    }
+
     const packName = opts.pack || 'Honolulu - Azur Lane';
     const packPublish = opts.author || 'Wily Bot';
 
@@ -1068,7 +1100,8 @@ export async function extractReplyStickersFromText(text, opts = {}) {
             }
 
             stickers.push({ buffer, emosi: value, sourceUrl: found.url });
-            aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 70)}" → ${(buffer.length / 1024).toFixed(1)} KB sticker`);
+            markStickerSent(sessionKey);
+            aiToolsLog(`[AITool/REPLY-STIKER] ✅ "${value.substring(0, 70)}" → ${(buffer.length / 1024).toFixed(1)} KB sticker | cooldown dimulai`);
 
             // ── Catat ke ai_sticker_story & ai_sticker_pattern ──
             try {
