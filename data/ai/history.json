@@ -1,0 +1,48 @@
+{
+  "sessions": {},
+  "sticker_pattern": {
+    "https://cdn.ornzora.eu.cc/0e5ac3ba-8326-46ab-947c-fb03374207f6-HONOLULU.webp": {
+      "total_sent": 1,
+      "moods": {},
+      "last_sent": 1779098219
+    },
+    "https://cdn.ornzora.eu.cc/31f63a4b-95a8-440a-9d77-9d634ef2153a-HONOLULU.webp": {
+      "total_sent": 1,
+      "moods": {},
+      "last_sent": 1779098655
+    },
+    "https://cdn.ornzora.eu.cc/85d768a4-fedb-4f1f-8e21-86254fcd6049-HONOLULU.webp": {
+      "total_sent": 1,
+      "moods": {},
+      "last_sent": 1779099967
+    }
+  },
+  "sticker_story": {
+    "6289667923162@s.whatsapp.net_120363419402989015@g.us": [
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/0e5ac3ba-8326-46ab-947c-fb03374207f6-HONOLULU.webp",
+        "mood": "",
+        "context": "H-hei, ya jelas dia kere. Kan sudah kubilang, dia itu *astrolog* yang punya prinsip, Hen V2. Ada beberapa alasan kenapa *Mona Megistus* dari *Genshin Impact* sering nggak punya Mora: • *Idealisme Tin",
+        "was_fallback": 0,
+        "sent_at": 1779098219
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/31f63a4b-95a8-440a-9d77-9d634ef2153a-HONOLULU.webp",
+        "mood": "",
+        "context": "H-hei, ini gampang banget sih. Itu jelas-jelas *Shimakaze* dari *Sakura Empire* di *Azur Lane*, Hen V2. Mukanya kaget gitu kan? Mungkin dia juga _anjir_ lihat sesuatu yang nggak terduga. Ya... bukan",
+        "was_fallback": 0,
+        "sent_at": 1779098655
+      }
+    ],
+    "6289667923162@s.whatsapp.net_120363383540766761@g.us": [
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/85d768a4-fedb-4f1f-8e21-86254fcd6049-HONOLULU.webp",
+        "mood": "",
+        "context": "H-hei, itu *Jarjit Singh* dari serial *Upin & Ipin*, Hen V2. Kamu nggak tahu? 😒 Ekspresinya itu memang khas dia, kayak lagi mikir atau nggak yakin gitu. Nah, tulisan di bawahnya itu `KEBAL WHEN YAH`",
+        "was_fallback": 0,
+        "sent_at": 1779099967
+      }
+    ]
+  },
+  "sticker_memory": {}
+}
