@@ -137,20 +137,33 @@ class Gemini {
         const requestedModel = model;
         const modelChain     = [requestedModel, ...FALLBACK_MODELS.filter(m => m !== requestedModel)];
 
-        let lastErr = null;
+        let lastErr      = null;
+        let usedFallback = false;
 
         for (const m of modelChain) {
+            if (m !== requestedModel) {
+                console.log(`[Gemini] ⚠️ Fallback: "${requestedModel}" gagal → coba "${m}"`);
+                usedFallback = true;
+            }
+
             for (let attempt = 0; attempt < MAX_TOKEN_ROTATIONS; attempt++) {
                 let token;
                 try {
                     token = await this._getToken({ forceFresh: attempt > 0 });
                 } catch (e) {
                     lastErr = e;
+                    console.warn(`[Gemini] ❌ Gagal ambil token untuk "${m}" attempt ${attempt + 1}:`, e?.message);
                     break;
                 }
 
                 try {
-                    return await this._callOnce({ token, model: m, contents, config });
+                    const result = await this._callOnce({ token, model: m, contents, config });
+                    if (usedFallback) {
+                        console.log(`[Gemini] ✅ Berhasil pakai fallback model "${m}" (diminta: "${requestedModel}")`);
+                    } else if (attempt > 0) {
+                        console.log(`[Gemini] ✅ Berhasil pakai "${m}" setelah ${attempt + 1} percobaan`);
+                    }
+                    return result;
                 } catch (err) {
                     lastErr = err;
                     const status  = err.response?.status;
@@ -158,12 +171,14 @@ class Gemini {
                     const bodyStr = body ? (typeof body === 'string' ? body : JSON.stringify(body)) : '';
 
                     if (status === 401 || status === 403 || /UNAUTHENTICATED|invalid.?token|expired/i.test(bodyStr)) {
+                        console.warn(`[Gemini] 🔑 Token invalid untuk "${m}" attempt ${attempt + 1}, rotate token...`);
                         this._invalidateToken(token);
                         await new Promise(r => setTimeout(r, 300));
                         continue;
                     }
 
                     if (status === 429 || /RESOURCE_EXHAUSTED|quota/i.test(bodyStr)) {
+                        console.warn(`[Gemini] 🚦 Rate limit/quota "${m}" attempt ${attempt + 1}, tunggu lalu retry...`);
                         this._invalidateToken(token);
                         const wait = Math.min(500 * (attempt + 1), 2500);
                         await new Promise(r => setTimeout(r, wait));
@@ -171,10 +186,12 @@ class Gemini {
                     }
 
                     if (status === 404 || /NOT_FOUND|not found/i.test(bodyStr)) {
+                        console.warn(`[Gemini] 🔍 Model "${m}" tidak ditemukan (404), skip ke fallback berikutnya`);
                         break;
                     }
 
                     if (status >= 500 || err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ECONNABORTED') {
+                        console.warn(`[Gemini] 🌐 Server error "${m}" attempt ${attempt + 1} (${status || err.code}), retry...`);
                         const wait = Math.min(400 * (attempt + 1), 2000);
                         await new Promise(r => setTimeout(r, wait));
                         continue;
@@ -184,6 +201,8 @@ class Gemini {
                 }
             }
         }
+
+        console.error(`[Gemini] ❌ Semua model gagal. Chain: [${modelChain.join(' → ')}]. Error terakhir:`, lastErr?.message);
 
         if (lastErr?.response?.data) {
             const body = lastErr.response.data;
