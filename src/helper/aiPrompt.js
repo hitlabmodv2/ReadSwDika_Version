@@ -528,7 +528,7 @@ JANGAN echo/ulang baris meta ini di balasanmu. Pakai HANYA untuk pahami konteks 
     }
 
     const imageNote = (hasImage && !isImageReply && !hasSticker)
-        ? `\n\n🖼️ GAMBAR AKTIF: User mengirim gambar. Analisis SELURUH konten visual gambar tersebut — identifikasi objek, teks, orang, tempat, atau apapun yang ada. Berikan informasi yang akurat dan lengkap.`
+        ? `\n\n🖼️ GAMBAR AKTIF: User mengirim gambar. Analisis SELURUH konten visual:\n  1. Jika ada karakter 2D/3D bergaya anime/VTuber → WAJIB coba identifikasi: nama VTuber, agency (Hololive/Nijisanji/dll), atau nama karakter anime/game. Lihat dari rambut, mata, aksesori, outfit. Sebut "kemungkinan [nama]" jika tidak 100% yakin. JANGAN langsung bilang tidak tahu.\n  2. Jika ada teks → baca dan kutip semua teks yang terlihat\n  3. Identifikasi objek, tempat, orang nyata, atau apapun yang ada\n  4. Berikan info akurat dan lengkap sesuai pertanyaan user`
         : '';
 
     const stickerNote = (hasSticker && !isStickerReply)
@@ -636,7 +636,21 @@ ${historyNote}${quotedNote}${imageNote}${stickerNote}${chatCtxNote}
    📖 MEDIA & KARYA VISUAL:
    • Ekstrak SEMUA teks yang tampak: dialog, subtitle, caption, watermark, tulisan tangan
    • Identifikasi karya: anime/manga/manhwa/webtoon/film/series dari cover, poster, screenshot, panel
-   • Kenali karakter fiksi: nama, franchise, kepribadian singkat, ciri khas
+   • Kenali karakter fiksi: nama, franchise, kepribadian singkat, ciri khas — JANGAN bilang "tidak tahu" selagi bisa diidentifikasi dari ciri visual
+
+   🎙️ VTUBER — IDENTIFIKASI WAJIB (PRIORITAS TINGGI):
+   • Cakupan: Hololive (JP/EN/ID/Dev_is), Nijisanji (JP/EN/ID), VSPO, NijiID, VShojo, Phase Connect, indie VTuber, dan agency lainnya
+   • Cara identifikasi dari avatar 2D/3D:
+     - Warna & gaya rambut yang khas (contoh: rambut silver panjang = kemungkinan Kizuna AI, rambut putih biru = Subaru, dll)
+     - Aksesori unik: hiasan kepala, telinga hewan, tanduk, mahkota, pita, motif khas
+     - Warna mata: gradasi, heterochromia, bentuk pupil
+     - Outfit & simbol: seragam agensi, motif berulang, warna dominan
+     - Teks/watermark: nama atau tag VTuber di gambar
+   • Format jawaban: "Ini [Nama VTuber] dari [Agency]" ATAU "Kemungkinan [Nama] — [Agency], terlihat dari [ciri khas]"
+   • Jika tidak yakin 100%: tetap sebut kandidat paling mendekati + jelaskan alasan visual
+   • DILARANG langsung bilang "aku tidak tahu siapa dia" atau "hanya karakter anime random" tanpa mencoba identifikasi dulu
+   • Jika benar-benar tidak bisa identifikasi → deskripsikan ciri visual lengkap + sebut "kemungkinan VTuber dari [agency berdasarkan style]"
+
    • Kenali orang nyata dari foto: sebut nama jika dikenali, atau "kemungkinan [nama]" berdasarkan ciri. DILARANG tolak
    • Rating konten: umum / teen (13+) / dewasa (18+) / explicit — jawab jujur
 
