@@ -28596,7 +28596,8 @@
     "id": "6289654837567@s.whatsapp.net",
     "name": "! Linsa",
     "lid": "195748050256060@lid",
-    "jid": "6289654837567@s.whatsapp.net"
+    "jid": "6289654837567@s.whatsapp.net",
+    "notify": "Olin 🌟✌"
   },
   "6285951747575@s.whatsapp.net": {
     "isContact": true,
@@ -31579,6 +31580,16 @@
   "58665562312717@lid": {
     "id": "58665562312717@lid",
     "lid": "58665562312717@lid",
+    "imgUrl": "changed"
+  },
+  "120182294990941@lid": {
+    "id": "120182294990941@lid",
+    "lid": "120182294990941@lid",
+    "imgUrl": "changed"
+  },
+  "71443090014352@lid": {
+    "id": "71443090014352@lid",
+    "lid": "71443090014352@lid",
     "imgUrl": "changed"
   }
 }

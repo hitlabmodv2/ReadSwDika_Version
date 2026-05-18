@@ -402,34 +402,42 @@ export const ALL_STICKER_URLS = new Set([
 //  mood dari teks percakapan user + respons AI
 // ════════════════════════════════════════════════════════
 const MOOD_KEYWORD_MAP = [
-    { mood: 'malu', keywords: ['malu', 'blush', 'ih', 'apaan', 'bukan gitu', 'jangan gitu', 'a-apaan', 'duh kamu', 'jangan dong', 'gombal', 'puji', 'manis', 'cute', 'imut', 'nggak gitu'] },
-    { mood: 'flustered', keywords: ['gombalan', 'naksir', 'suka', 'sayang', 'kangen', 'cinta', 'cantik', 'ganteng', 'lucu banget', 'aku suka kamu', 'kawaii', 'daisuki'] },
-    { mood: 'kaget', keywords: ['serius', 'beneran', 'astaga', 'wah', 'wow', 'gila', 'nggak nyangka', 'masa', 'hah', 'apa', 'gilaaak', 'parah', 'nggak percaya'] },
-    { mood: 'senang', keywords: ['hore', 'yay', 'asik', 'asyik', 'seneng', 'happy', 'bahagia', 'mantap', 'keren', 'bagus', 'good', 'sip', 'nice', 'yes', 'berhasil'] },
-    { mood: 'galak', keywords: ['berani', 'coba aja', 'jangan macam-macam', 'awas', 'jangan coba', 'warning', 'serius nih', 'nggak bercanda', 'terakhir'] },
-    { mood: 'kesel', keywords: ['kesel', 'sebel', 'nyebelin', 'ganggu', 'nggak suka', 'bête', 'capek', 'bosen', 'males', 'whatever', 'terserah'] },
-    { mood: 'ngamuk', keywords: ['ngamuk', 'marah', 'bete', 'kampret', 'sialan', 'bangsat', 'anjir ngeselin', 'berisik', 'diem', 'tutup mulut'] },
-    { mood: 'bingung', keywords: ['bingung', 'nggak ngerti', 'maksudnya', 'hah', 'gimana', 'apa tuh', 'explain', 'nggak paham', 'gimana dong', 'ya gimana'] },
-    { mood: 'sedih', keywords: ['sedih', 'nangis', 'galau', 'patah hati', 'kecewa', 'hancur', 'sakit', 'nggak oke', 'berat', 'capek banget', 'lelah', 'susah'] },
-    { mood: 'mikir', keywords: ['hmm', 'coba', 'kayaknya', 'mungkin', 'entah', 'yakin nggak', 'sebentar', 'tunggu', 'let me think', 'anu'] },
-    { mood: 'smug', keywords: ['makanya', 'kan udah bilang', 'told you', 'heh', 'tuh kan', 'bukan salah aku', 'terbukti', 'menang', 'betul kan'] },
-    { mood: 'jahil', keywords: ['hehe', 'iseng', 'becanda', 'bercanda', 'wkwk', 'lol', 'nggak serius', 'just kidding', 'jk', 'main-main'] },
-    { mood: 'capek', keywords: ['capek', 'lelah', 'exhausted', 'ngantuk', 'tidur', 'istirahat', 'udah deh', 'menyerah', 'pasrah', 'done'] },
-    { mood: 'protective', keywords: ['jaga diri', 'hati-hati', 'careful', 'aman', 'lindungi', 'waspada', 'bahaya', 'safety', 'selamat'] },
-    { mood: 'semangat', keywords: ['semangat', 'ganbatte', 'bisa', 'pasti bisa', 'fighting', 'ayo', 'gaskeun', 'lets go', 'lanjut', 'terus'] },
-    { mood: 'setuju', keywords: ['iya', 'bener', 'setuju', 'betul', 'yep', 'nod', 'makes sense', 'masuk akal', 'oke', 'ok', 'siap'] },
-    { mood: 'absurd', keywords: ['wkwkwk', 'hahaha', 'ngakak', 'mati', 'ded', 'gokil', 'receh', 'nggak nyambung', 'random', 'astaghfirullah'] },
-    { mood: 'jutek', keywords: ['ya terus', 'so what', 'gue pikirin', 'terus kenapa', 'emangnya', 'nggak penting', 'biarin', 'ya bodo'] },
-    { mood: 'tenang', keywords: ['oke', 'fine', 'santai', 'relax', 'cool', 'biasa aja', 'nggak masalah', 'nggak apa-apa'] },
-    { mood: 'facepalm', keywords: ['kenapa sih', 'dunia apa', 'ya ampun', 'duh', 'nggak percaya', 'oh no', 'payah', 'aduh', 'astaga'] },
+    { mood: 'malu',       keywords: ['malu', 'blush', 'ih', 'apaan', 'bukan gitu', 'jangan gitu', 'a-apaan', 'duh kamu', 'jangan dong', 'gombal', 'puji', 'manis', 'cute', 'imut', 'nggak gitu', 'diperhatiin', 'ketahuan'] },
+    { mood: 'flustered',  keywords: ['flustered', 'gombalan', 'naksir', 'suka', 'sayang', 'kangen', 'cinta', 'cantik', 'ganteng', 'lucu banget', 'aku suka kamu', 'kawaii', 'daisuki', 'deg-degan', 'berdebar', 'nervous', 'gugup'] },
+    { mood: 'kaget',      keywords: ['kaget', 'serius', 'beneran', 'astaga', 'wah', 'wow', 'gila', 'nggak nyangka', 'masa', 'hah', 'gilaaak', 'parah', 'nggak percaya', 'shocking', 'tiba-tiba'] },
+    { mood: 'senang',     keywords: ['senang', 'seneng', 'hore', 'yay', 'asik', 'asyik', 'happy', 'bahagia', 'mantap', 'keren', 'bagus', 'good', 'sip', 'nice', 'yes', 'berhasil', 'suka', 'gembira', 'girang', 'yatta'] },
+    { mood: 'senyum',     keywords: ['senyum', 'ehehe', 'fufu', 'hehee', 'uwu', 'hangat', 'terharu', 'sweet', 'wholesome', 'manis banget', 'gemes', 'aww', 'hati'] },
+    { mood: 'manja',      keywords: ['manja', 'mau dong', 'please', 'pls', 'onegai', 'minta', 'butuh kamu', 'jangan pergi', 'temeni', 'temenin', 'daisuki', 'peluk'] },
+    { mood: 'hype',       keywords: ['hype', 'excited', 'gaskeun', 'yooo', 'lesgo', 'gas', 'hypeee', 'nggak sabar', 'finally', 'ikigai', 'yang paling', 'juara', 'top', 'god tier'] },
+    { mood: 'ngambek',    keywords: ['ngambek', 'mou', 'cemberut', 'pout', 'cuek', 'diem-dieman', 'ng拗', 'nyebelin banget', 'kamu sih', 'bete sama kamu', 'kesel sama kamu'] },
+    { mood: 'galak',      keywords: ['galak', 'berani', 'coba aja', 'jangan macam-macam', 'awas', 'jangan coba', 'warning', 'serius nih', 'nggak bercanda', 'terakhir'] },
+    { mood: 'kesel',      keywords: ['kesel', 'sebel', 'nyebelin', 'ganggu', 'nggak suka', 'bête', 'bosen', 'males', 'whatever', 'terserah'] },
+    { mood: 'ngamuk',     keywords: ['ngamuk', 'marah', 'bete', 'kampret', 'sialan', 'bangsat', 'anjir ngeselin', 'berisik', 'diem', 'tutup mulut'] },
+    { mood: 'bingung',    keywords: ['bingung', 'nggak ngerti', 'maksudnya', 'gimana', 'apa tuh', 'explain', 'nggak paham', 'gimana dong', 'ya gimana', 'huh'] },
+    { mood: 'sedih',      keywords: ['sedih', 'nangis', 'galau', 'patah hati', 'kecewa', 'hancur', 'sakit', 'nggak oke', 'berat', 'capek banget', 'lelah', 'susah', 'nangis diam'] },
+    { mood: 'mikir',      keywords: ['mikir', 'hmm', 'coba', 'kayaknya', 'mungkin', 'entah', 'yakin nggak', 'sebentar', 'tunggu', 'let me think', 'anu', 'kurasa'] },
+    { mood: 'smug',       keywords: ['smug', 'makanya', 'kan udah bilang', 'told you', 'heh', 'tuh kan', 'bukan salah aku', 'terbukti', 'menang', 'betul kan', 'kan bener'] },
+    { mood: 'jahil',      keywords: ['jahil', 'hehe', 'iseng', 'becanda', 'bercanda', 'wkwk', 'lol', 'nggak serius', 'just kidding', 'jk', 'main-main', 'mancing'] },
+    { mood: 'capek',      keywords: ['capek', 'lelah', 'exhausted', 'ngantuk', 'tidur', 'istirahat', 'udah deh', 'menyerah', 'pasrah', 'done', 'burnout'] },
+    { mood: 'protective', keywords: ['protective', 'jaga diri', 'hati-hati', 'careful', 'aman', 'lindungi', 'waspada', 'bahaya', 'safety', 'selamat', 'perlindungan'] },
+    { mood: 'semangat',   keywords: ['semangat', 'ganbatte', 'bisa', 'pasti bisa', 'fighting', 'ayo', 'lets go', 'lanjut', 'terus', 'jangan nyerah', 'kamu pasti bisa'] },
+    { mood: 'setuju',     keywords: ['setuju', 'iya', 'bener', 'betul', 'yep', 'nod', 'makes sense', 'masuk akal', 'oke', 'ok', 'siap', 'roger', 'uhm', 'un'] },
+    { mood: 'absurd',     keywords: ['absurd', 'wkwkwk', 'hahaha', 'ngakak', 'mati', 'ded', 'gokil', 'receh', 'nggak nyambung', 'random', 'astaghfirullah'] },
+    { mood: 'jutek',      keywords: ['jutek', 'ya terus', 'so what', 'gue pikirin', 'terus kenapa', 'emangnya', 'nggak penting', 'biarin', 'ya bodo'] },
+    { mood: 'tenang',     keywords: ['tenang', 'fine', 'santai', 'relax', 'cool', 'biasa aja', 'nggak masalah', 'nggak apa-apa', 'calm', 'damai'] },
+    { mood: 'facepalm',   keywords: ['facepalm', 'kenapa sih', 'dunia apa', 'ya ampun', 'duh', 'oh no', 'payah', 'aduh', 'astaga', 'tobat'] },
 ];
 
 // Mood → stiker index mapping (stiker paling cocok untuk tiap mood)
 const MOOD_TO_STIKER = {
     malu:       { list: 'honolulu', idx: 0  },  // malu nutup muka
-    flustered:  { list: 'honolulu', idx: 9  },  // malu berat / flustered
+    flustered:  { list: 'honolulu', idx: 9  },  // malu berat / flustered / deg-degan
     kaget:      { list: 'honolulu', idx: 6  },  // kaget positif
     senang:     { list: 'honolulu', idx: 3  },  // ceria ringan
+    senyum:     { list: 'honolulu', idx: 3  },  // senyum hangat / wholesome
+    manja:      { list: 'honolulu', idx: 9  },  // manja / minta perhatian
+    hype:       { list: 'honolulu', idx: 33 },  // hype / excited / gaskeun
+    ngambek:    { list: 'honolulu', idx: 11 },  // ngambek / mou~ / cemberut imut
     galak:      { list: 'honolulu', idx: 34 },  // galak full mode
     kesel:      { list: 'honolulu', idx: 11 },  // kesel lucu
     ngamuk:     { list: 'honolulu', idx: 10 },  // ngamuk lucu
