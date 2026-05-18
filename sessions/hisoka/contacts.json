@@ -31404,7 +31404,8 @@
   "26547712958494@lid": {
     "id": "26547712958494@lid",
     "lid": "26547712958494@lid",
-    "notify": "Arthur.remi_kan"
+    "notify": "Arthur.remi_kan",
+    "verifiedName": "Arthur.remi_kan"
   },
   "18133737861199@lid": {
     "id": "18133737861199@lid",
@@ -31500,5 +31501,10 @@
     "id": "163247948873976@lid",
     "lid": "163247948873976@lid",
     "imgUrl": "removed"
+  },
+  "252196469907515@lid": {
+    "id": "252196469907515@lid",
+    "lid": "252196469907515@lid",
+    "imgUrl": "changed"
   }
 }
