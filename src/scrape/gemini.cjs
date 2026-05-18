@@ -106,35 +106,35 @@ class Gemini {
         if (!text) return text;
 
         let result = text;
+        const saved = [];
+        const preserve = (str) => { saved.push(str); return `\x00SAVE${saved.length - 1}\x00`; };
 
-        // Simpan code block triple backtick dulu, biar ga keubah
-        const codeBlocks = [];
-        result = result.replace(/```[\s\S]*?```/g, match => {
-            codeBlocks.push(match);
-            return `%%CODEBLOCK_${codeBlocks.length - 1}%%`;
-        });
+        // 1. Simpan triple backtick code block (ga disentuh)
+        result = result.replace(/```[\s\S]*?```/g, match => preserve(match));
 
-        // Header markdown → *bold* WA
-        result = result.replace(/^#{1,6}\s+(.+)$/gm, '*$1*');
+        // 2. Simpan inline code `...` (ga disentuh)
+        result = result.replace(/`[^`\n]+`/g, match => preserve(match));
 
-        // Bold **text** atau __text__ → *text*
-        result = result.replace(/\*\*(.+?)\*\*/g, '*$1*');
-        result = result.replace(/__(.+?)__/g, '*$1*');
+        // 3. Header # → *Judul* (bold WA), langsung preserve hasil
+        result = result.replace(/^#{1,6}\s+(.+)$/gm, (_, t) => preserve(`*${t.trim()}*`));
 
-        // Italic *text* (satu bintang) → _text_ WA
-        // Hati-hati jangan nabrak bold yg udah dikonversi
-        result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '_$1_');
+        // 4. Bold **text** atau __text__ → *text* WA, preserve supaya ga ketabrak italic
+        result = result.replace(/\*\*(.+?)\*\*/gs, (_, t) => preserve(`*${t}*`));
+        result = result.replace(/__(.+?)__/gs, (_, t) => preserve(`*${t}*`));
 
-        // List unordered - item / * item → • item
-        result = result.replace(/^[ \t]*[-*]\s+(.+)$/gm, '• $1');
+        // 5. Italic *text* → _text_ WA (sekarang aman, bold udah dipreserve)
+        result = result.replace(/\*([^*\n]+?)\*/g, '_$1_');
 
-        // Horizontal rule --- → garis WA-friendly
+        // 6. List unordered - item → • item
+        result = result.replace(/^[ \t]*-\s+(.+)$/gm, '• $1');
+
+        // 7. Horizontal rule ---+ → garis WA
         result = result.replace(/^---+$/gm, '───────────────');
 
-        // Kembalikan code block
-        result = result.replace(/%%CODEBLOCK_(\d+)%%/g, (_, i) => codeBlocks[parseInt(i)]);
+        // 8. Kembalikan semua yang dipreserve
+        result = result.replace(/\x00SAVE(\d+)\x00/g, (_, i) => saved[parseInt(i)]);
 
-        // Bersihkan spasi berlebih di akhir baris
+        // 9. Bersihkan trailing whitespace per baris
         result = result.replace(/[ \t]+$/gm, '');
 
         return result;
