@@ -1,6 +1,102 @@
 {
   "terkirim": [
     {
+      "id": "yowayowa-sensei::0",
+      "judul": "Yowayowa Sensei",
+      "epNum": 6,
+      "waktuKirim": "2026-05-18T05:45:45.866Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1364/155774l.jpg",
+      "url": "https://alqanime.net/yowayowa-sensei/"
+    },
+    {
+      "id": "maid-san-wa-taberu-dake::8",
+      "judul": "Maid-san wa Taberu dake",
+      "epNum": 8,
+      "waktuKirim": "2026-05-18T05:45:42.216Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1175/156007l.jpg",
+      "url": "https://alqanime.net/maid-san-wa-taberu-dake/"
+    },
+    {
+      "id": "ghost-concert-missing-songs::7",
+      "judul": "Ghost Concert: Missing Songs",
+      "epNum": 7,
+      "waktuKirim": "2026-05-18T05:45:38.742Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1489/155658l.jpg",
+      "url": "https://alqanime.net/ghost-concert-missing-songs/"
+    },
+    {
+      "id": "mahou-no-shimai-lulutto-lilly::7",
+      "judul": "Mahou no Shimai Lulutto Lilly",
+      "epNum": 7,
+      "waktuKirim": "2026-05-18T05:45:35.226Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1702/155961l.jpg",
+      "url": "https://alqanime.net/mahou-no-shimai-lulutto-lilly/"
+    },
+    {
+      "id": "kuroneko-to-majo-no-kyoushitsu::6",
+      "judul": "Kuroneko to Majo no Kyoushitsu",
+      "epNum": 6,
+      "waktuKirim": "2026-05-18T05:45:30.482Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1716/153989l.jpg",
+      "url": "https://alqanime.net/kuroneko-to-majo-no-kyoushitsu/"
+    },
+    {
+      "id": "one-piece-2::1162",
+      "judul": "One Piece",
+      "epNum": 1162,
+      "waktuKirim": "2026-05-18T05:45:27.000Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1770/97704l.jpg",
+      "url": "https://alqanime.net/one-piece-2/"
+    },
+    {
+      "id": "ingoku-danchi::7",
+      "judul": "Ingoku Danchi",
+      "epNum": 7,
+      "waktuKirim": "2026-05-18T05:45:23.538Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1373/155741l.jpg",
+      "url": "https://alqanime.net/ingoku-danchi/"
+    },
+    {
+      "id": "ookii-onnanoko-wa-suki-desu-ka::7",
+      "judul": "Ookii Onnanoko wa Suki desu ka?",
+      "epNum": 7,
+      "waktuKirim": "2026-05-18T05:45:20.076Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363192554714254@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1482/155539l.jpg",
+      "url": "https://alqanime.net/ookii-onnanoko-wa-suki-desu-ka/"
+    },
+    {
       "id": "nippon-sangoku::7",
       "judul": "Nippon Sangoku",
       "epNum": 7,
