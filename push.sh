@@ -1709,14 +1709,31 @@ prepare_stage() {
   done
 
   # Force-add node_modules (kecuali folder berat) — bypass global gitignore.
+  # Daftar folder berat di bawah di-skip agar repo tidak terlalu besar.
   if [ -d "node_modules" ]; then
     git add -f node_modules/ 2>>"$err_log" || true
-    # Hapus kembali folder berat dari staging area
-    for heavy in node_modules/@tensorflow \
-                 node_modules/@ffmpeg-installer \
-                 node_modules/nsfwjs \
-                 node_modules/@img \
-                 node_modules/typescript; do
+    # Hapus kembali folder berat dari staging area (>= ~5MB)
+    for heavy in \
+      node_modules/@tensorflow \
+      node_modules/@ffmpeg-installer \
+      node_modules/nsfwjs \
+      node_modules/@img \
+      node_modules/typescript \
+      node_modules/youtubei.js \
+      node_modules/wa-sticker-formatter \
+      node_modules/socketon \
+      node_modules/@google \
+      node_modules/core-js \
+      node_modules/fluent-ffmpeg \
+      node_modules/@ybd-project \
+      node_modules/libphonenumber-js \
+      node_modules/ogg-opus-decoder \
+      node_modules/web-streams-polyfill \
+      node_modules/@wasm-audio-decoders \
+      node_modules/pdfkit \
+      node_modules/node-wav \
+      node_modules/fontkit \
+      node_modules/lodash; do
       git rm -r --cached -q "$heavy" 2>/dev/null || true
     done
   fi

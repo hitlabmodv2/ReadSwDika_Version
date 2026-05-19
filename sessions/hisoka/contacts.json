@@ -2812,7 +2812,8 @@
     "id": "6281243994822@s.whatsapp.net",
     "name": "Lisa",
     "lid": "91371201396894@lid",
-    "jid": "6281243994822@s.whatsapp.net"
+    "jid": "6281243994822@s.whatsapp.net",
+    "notify": "Lisa"
   },
   "6285720790673@s.whatsapp.net": {
     "isContact": true,
