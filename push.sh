@@ -1538,13 +1538,15 @@ count_changes() {
   done <<< "$raw"
 }
 
-# ===== Tampilkan ringkas perubahan ke user (max 8 baris) =====
+# ===== Tampilkan ringkas perubahan ke user (animasi realtime + auto-clear) =====
 print_changes_preview() {
   [ -z "$CH_LIST" ] && return 0
-  echo -e "  ${C_DIM}── perubahan terdeteksi ──${C_RESET}"
-  local shown=0
+  local _shown=0 _flines=0
+
+  # Tampilkan file satu per satu dengan jeda kecil (animasi realtime)
   while IFS='|' read -r code path; do
     [ -z "$path" ] && continue
+    [ "$_shown" -ge 5 ] && break
     local icon
     case "$code" in
       "??"|"A "|" A"|"AM") icon="${C_GREEN}➕${C_RESET}" ;;
@@ -1553,14 +1555,24 @@ print_changes_preview() {
       "M "|" M"|"MM")      icon="${C_YELLOW}✏️ ${C_RESET}" ;;
       *)                    icon="${C_DIM}•${C_RESET}" ;;
     esac
-    if [ "$shown" -lt 8 ]; then
-      echo -e "    ${icon} ${path}"
-      shown=$((shown + 1))
-    fi
+    echo -e "    ${icon} ${path}"
+    _flines=$(( _flines + 1 ))
+    _shown=$(( _shown + 1 ))
+    sleep 0.04
   done <<< "$CH_LIST"
-  if [ "$CH_TOTAL" -gt 8 ]; then
-    echo -e "    ${C_DIM}… +$((CH_TOTAL - 8)) file lain${C_RESET}"
+
+  if [ "$CH_TOTAL" -gt 5 ]; then
+    echo -e "    ${C_DIM}… +$(( CH_TOTAL - 5 )) file lain${C_RESET}"
+    _flines=$(( _flines + 1 ))
   fi
+
+  # Auto-clear semua baris file setelah 0.6 detik
+  sleep 0.6
+  local _i=0
+  while [ $_i -lt $_flines ]; do
+    printf "\033[1A\033[2K"
+    _i=$(( _i + 1 ))
+  done
 }
 
 # ===== Preview file yang di-stage + konfirmasi sebelum commit =====
@@ -1568,10 +1580,7 @@ print_changes_preview() {
 preview_staged_confirm() {
   local _staged_list
   _staged_list=$(git diff --cached --name-status 2>/dev/null)
-
-  if [ -z "$_staged_list" ]; then
-    return 0
-  fi
+  [ -z "$_staged_list" ] && return 0
 
   local _tot _add _mod _del _ren
   _tot=$(echo "$_staged_list" | wc -l | tr -d ' ')
@@ -1581,14 +1590,16 @@ preview_staged_confirm() {
   _ren=$(echo "$_staged_list" | grep -c '^R' 2>/dev/null || echo 0)
 
   echo ""
-  echo -e "  ${C_DIM}── preview staging ────────────────${C_RESET}"
-  echo -e "  ${C_BOLD}${_tot} file akan di-commit${C_RESET}  ${C_DIM}(➕${_add} ✏️${_mod} ❌${_del} ⚙️${_ren})${C_RESET}"
-  echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
+  # Header ringkas — baris ini TETAP ada (tidak di-clear)
+  echo -e "  ${C_DIM}────────────────────────────────${C_RESET}"
+  echo -e "  ${C_BOLD}${_tot} file siap${C_RESET}  ${C_DIM}➕${_add} ✏️${_mod} ❌${_del} ⚙️${_ren}${C_RESET}"
 
-  local _shown=0
+  # Animasi file list (max 5 baris) — akan di-auto-clear setelah 0.8 detik
+  local _shown=0 _flines=0
   while IFS=$'\t' read -r _code _path _path2; do
     [ -z "$_path" ] && continue
-    local _icon _display
+    [ "$_shown" -ge 5 ] && break
+    local _icon
     case "${_code:0:1}" in
       A) _icon="${C_GREEN}➕${C_RESET}" ;;
       M) _icon="${C_YELLOW}✏️ ${C_RESET}" ;;
@@ -1596,24 +1607,31 @@ preview_staged_confirm() {
       R) _icon="${C_CYAN}⚙️ ${C_RESET}"; _path="${_path} → ${_path2}" ;;
       *) _icon="${C_DIM}•${C_RESET}" ;;
     esac
-    if [ "$_shown" -lt 14 ]; then
-      echo -e "    ${_icon} ${_path}"
-      _shown=$(( _shown + 1 ))
-    fi
+    echo -e "    ${_icon} ${_path}"
+    _flines=$(( _flines + 1 ))
+    _shown=$(( _shown + 1 ))
+    sleep 0.04
   done <<< "$_staged_list"
 
-  if [ "$_tot" -gt 14 ]; then
-    echo -e "    ${C_DIM}… +$(( _tot - 14 )) file lain${C_RESET}"
+  if [ "$_tot" -gt 5 ]; then
+    echo -e "    ${C_DIM}… +$(( _tot - 5 )) file lain${C_RESET}"
+    _flines=$(( _flines + 1 ))
   fi
 
-  echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
-  echo -e "  ${C_GREEN}y${C_RESET} ${C_BOLD}›${C_RESET} Commit & push sekarang"
-  echo -e "  ${C_RED}0${C_RESET} ${C_BOLD}›${C_RESET} Batal (tidak ada yang berubah)"
-  echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
-  printf "  ${C_BOLD}▸ ${C_RESET}"
+  # Auto-clear file list setelah 0.8 detik
+  sleep 0.8
+  local _i=0
+  while [ $_i -lt $_flines ]; do
+    printf "\033[1A\033[2K"
+    _i=$(( _i + 1 ))
+  done
+
+  # Prompt compact satu baris langsung setelah header
+  printf "  ${C_GREEN}y${C_RESET} › push  ${C_RED}0${C_RESET} › batal  ${C_DIM}────────────${C_RESET}  ${C_BOLD}▸ ${C_RESET}"
 
   local _ans
   read -r _ans </dev/tty
+  echo ""
   _ans=$(echo "$_ans" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
   if [ "$_ans" != "y" ]; then
     echo -e "  ${C_YELLOW}↩ Dibatalkan — tidak ada yang di-commit.${C_RESET}"
