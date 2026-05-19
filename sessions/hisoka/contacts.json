@@ -2300,7 +2300,8 @@
     "id": "6281358899877@s.whatsapp.net",
     "name": "▫️Not Lucky",
     "lid": "149383375024230@lid",
-    "jid": "6281358899877@s.whatsapp.net"
+    "jid": "6281358899877@s.whatsapp.net",
+    "notify": "Luwakzz"
   },
   "62895326382705@s.whatsapp.net": {
     "isContact": true,
@@ -31412,5 +31413,15 @@
     "id": "237803917017243@lid",
     "lid": "237803917017243@lid",
     "imgUrl": "removed"
+  },
+  "166185354150095@lid": {
+    "id": "166185354150095@lid",
+    "lid": "166185354150095@lid",
+    "imgUrl": "changed"
+  },
+  "76790290767977@lid": {
+    "id": "76790290767977@lid",
+    "lid": "76790290767977@lid",
+    "imgUrl": "changed"
   }
 }
