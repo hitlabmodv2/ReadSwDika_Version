@@ -25456,7 +25456,8 @@
     "id": "6281215324028@s.whatsapp.net",
     "name": "Mang Ai",
     "lid": "176931194552515@lid",
-    "jid": "6281215324028@s.whatsapp.net"
+    "jid": "6281215324028@s.whatsapp.net",
+    "notify": "harisulijar"
   },
   "6282246854858@s.whatsapp.net": {
     "isContact": true,
@@ -31547,6 +31548,11 @@
   "16346662318157@lid": {
     "id": "16346662318157@lid",
     "lid": "16346662318157@lid",
+    "imgUrl": "changed"
+  },
+  "77322766037166@lid": {
+    "id": "77322766037166@lid",
+    "lid": "77322766037166@lid",
     "imgUrl": "changed"
   }
 }
