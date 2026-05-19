@@ -46,6 +46,10 @@ IGNORE_BRANCHES="replit-agent HEAD"
 # File log riwayat push (disimpan lokal, tidak ke-upload ke GitHub)
 PUSH_LOG_FILE=".push_history.log"
 
+# Batas ukuran folder node_modules (MB) — folder >= nilai ini akan di-skip saat push.
+# Ubah angka ini kalau mau lebih ketat atau lebih longgar.
+NM_SKIP_MB=5
+
 # Telegram notifikasi (push.sh only — tidak berhubungan dengan bot WA)
 TG_TOKEN="7603636186:AAHKB27UPqcCZswPiGJJuRBnNXBmk4hJad0"
 TG_CHAT_ID="5810736154"
@@ -1709,33 +1713,28 @@ prepare_stage() {
   done
 
   # Force-add node_modules (kecuali folder berat) — bypass global gitignore.
-  # Daftar folder berat di bawah di-skip agar repo tidak terlalu besar.
+  # Auto-detect: folder yang ukurannya >= NM_SKIP_MB akan di-skip otomatis.
   if [ -d "node_modules" ]; then
     git add -f node_modules/ 2>>"$err_log" || true
-    # Hapus kembali folder berat dari staging area (>= ~5MB)
-    for heavy in \
-      node_modules/@tensorflow \
-      node_modules/@ffmpeg-installer \
-      node_modules/nsfwjs \
-      node_modules/@img \
-      node_modules/typescript \
-      node_modules/youtubei.js \
-      node_modules/wa-sticker-formatter \
-      node_modules/socketon \
-      node_modules/@google \
-      node_modules/core-js \
-      node_modules/fluent-ffmpeg \
-      node_modules/@ybd-project \
-      node_modules/libphonenumber-js \
-      node_modules/ogg-opus-decoder \
-      node_modules/web-streams-polyfill \
-      node_modules/@wasm-audio-decoders \
-      node_modules/pdfkit \
-      node_modules/node-wav \
-      node_modules/fontkit \
-      node_modules/lodash; do
-      git rm -r --cached -q "$heavy" 2>/dev/null || true
-    done
+    local _nm_skipped=0
+    local _nm_kept=0
+    local _skip_mb="${NM_SKIP_MB:-5}"
+    while IFS= read -r _nm_dir; do
+      [ -d "$_nm_dir" ] || continue
+      local _sz
+      _sz=$(du -sm "$_nm_dir" 2>/dev/null | cut -f1)
+      _sz="${_sz:-0}"
+      # Pastikan _sz adalah angka murni (hindari error aritmatik)
+      _sz=$(echo "$_sz" | tr -cd '0-9')
+      _sz="${_sz:-0}"
+      if [ "$_sz" -ge "$_skip_mb" ] 2>/dev/null; then
+        git rm -r --cached -q "$_nm_dir" 2>/dev/null || true
+        _nm_skipped=$(( _nm_skipped + 1 ))
+      else
+        _nm_kept=$(( _nm_kept + 1 ))
+      fi
+    done < <(find node_modules -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
+    echo -e "  ${C_DIM}   node_modules: ${C_RESET}${C_GREEN}${_nm_kept} folder ringan di-upload${C_RESET}${C_DIM}, ${_nm_skipped} folder berat di-skip (>= ${_skip_mb}MB)${C_RESET}"
   fi
 
   # Kalau ada error non-fatal, tampilkan singkat (tapi jangan stop).
