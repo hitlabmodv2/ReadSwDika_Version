@@ -629,112 +629,7 @@ setup_token() {
 
     # ── Pilihan 5: install node_modules ─────────────────────────────────────
     if [ "$_tok_type" = "5" ]; then
-      clear >/dev/tty 2>/dev/null || true
-      echo -e "${C_BOLD}╔══════════════════════════════════════════════════╗${C_RESET}" >&2
-      echo -e "${C_BOLD}║        📦  INSTALL NODE_MODULES — BANG WILY      ║${C_RESET}" >&2
-      echo -e "${C_BOLD}╚══════════════════════════════════════════════════╝${C_RESET}" >&2
-      echo "" >&2
-      echo -e "  ${C_DIM}Menjalankan npm install — harap tunggu...${C_RESET}" >&2
-      echo "" >&2
-      # ── Live display: progress bar + nama paket real-time ─────────────────
-      local _nm_start_ts; _nm_start_ts=$(date '+%s')
-      local _nm_tmplog; _nm_tmplog=$(mktemp)
-      # Jalankan npm install di background, output ke temp file
-      npm install >"$_nm_tmplog" 2>&1 &
-      local _npm_bg_pid=$!
-      # Spinner chars untuk animasi paket
-      local _spin_nm=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
-      local _si=0 _bw=22 _p=0
-      # Print baris kosong untuk area 2-baris (bar + paket)
-      printf "\n" >/dev/tty 2>/dev/null
-      while kill -0 "$_npm_bg_pid" 2>/dev/null; do
-        # Hitung packages yg sudah ada di node_modules (real-time)
-        local _cnt=0
-        [ -d node_modules ] && _cnt=$(ls -1 node_modules 2>/dev/null | grep -c '[^.]' || echo 0)
-        # Ambil nama paket terakhir dari log (baris yg ada @ versi)
-        local _cur_pkg
-        _cur_pkg=$(grep -oE '[a-zA-Z@][a-zA-Z0-9@/_.-]+@[0-9][0-9a-zA-Z._-]*' "$_nm_tmplog" 2>/dev/null | tail -1)
-        [ -z "$_cur_pkg" ] && _cur_pkg=$(tail -1 "$_nm_tmplog" 2>/dev/null | tr -d '\r' | cut -c1-40)
-        [ -z "$_cur_pkg" ] && _cur_pkg="resolving..."
-        # Batasi panjang nama paket
-        local _pkg_display; _pkg_display=$(printf '%.38s' "$_cur_pkg")
-        # Tahan bar di 92% selama masih jalan
-        [ "$_p" -lt 92 ] && _p=$(( _p + 1 ))
-        local _f=$(( _p * _bw / 100 ))
-        local _bf="" _be="" _j=0
-        while [ $_j -lt $_f ];   do _bf="${_bf}█"; _j=$(( _j+1 )); done
-        while [ $_j -lt $_bw ];  do _be="${_be}░"; _j=$(( _j+1 )); done
-        local _sp="${_spin_nm[$(( _si % 10 ))]}"
-        _si=$(( _si + 1 ))
-        # Update 2 baris: naik ke baris bar dulu (cursor up 2)
-        printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2mnpm install\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%-38s\033[0m  \033[1;33m%s pkg\033[0m\n" \
-          "$_bf" "$_be" "$_p" "$_sp" "$_pkg_display" "$_cnt" >/dev/tty 2>/dev/null
-        sleep 0.12
-      done
-      wait "$_npm_bg_pid"
-      local _nm_exit=$?
-      local _nm_log; _nm_log=$(cat "$_nm_tmplog" 2>/dev/null)
-      rm -f "$_nm_tmplog" 2>/dev/null
-      # Tampilkan bar 100% / gagal, bersihkan baris paket
-      local _bw2=22 _full=""
-      local _j2=0; while [ $_j2 -lt $_bw2 ]; do _full="${_full}█"; _j2=$(( _j2+1 )); done
-      if [ "$_nm_exit" = "0" ]; then
-        printf "\033[2A\r\033[K  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ selesai!\033[0m\n\033[K\n" \
-          "$_full" >/dev/tty 2>/dev/null
-      else
-        local _half="" _j3=0
-        while [ $_j3 -lt $_bw2 ]; do _half="${_half}▒"; _j3=$(( _j3+1 )); done
-        printf "\033[2A\r\033[K  [\033[31m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ gagal\033[0m\n\033[K\n" \
-          "$_half" >/dev/tty 2>/dev/null
-      fi
-      local _nm_end_ts; _nm_end_ts=$(date '+%s')
-      local _nm_duration=$(( _nm_end_ts - _nm_start_ts ))
-      local _nm_ts; _nm_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
-      # Hitung jumlah packages terinstall
-      local _nm_pkg_count="?"
-      if [ -d node_modules ]; then
-        _nm_pkg_count=$(ls -1 node_modules | grep -v '^\.' | wc -l | tr -d ' ')
-      fi
-      if [ "$_nm_exit" = "0" ]; then
-        mini_bar_ok "node_modules berhasil diinstall!"
-        echo "" >&2
-        echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}" >&2
-        echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages  •  ⏱ ${_nm_duration}s${C_RESET}" >&2
-        # ── Notif Telegram: sukses ──────────────────────────────────────────
-        local _btn_nm_ok='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Packages","url":"https://www.npmjs.com/"}],[{"text":"🟢 GitHub Actions","url":"https://github.com/'"${USER}"'/'"${REPO}"'/actions"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
-        send_telegram_photo "https://cdn.myanimelist.net/images/anime/1517/100633.jpg" "📦 <b>NODE_MODULES BERHASIL DIINSTALL</b>
-━━━━━━━━━━━━━━━━━━━━
-👤 <code>${USER}</code>
-📁 <code>${USER}/${REPO}</code>
-📦 Packages terinstall : <b>${_nm_pkg_count}</b>
-⏱ Durasi               : <b>${_nm_duration} detik</b>
-✅ Status               : <b>Sukses</b>
-━━━━━━━━━━━━━━━━━━━━
-🕐 ${_nm_ts}" "$_btn_nm_ok" 2>/dev/null &
-      else
-        mini_bar_fail "npm install gagal"
-        echo "" >&2
-        echo -e "  ${C_RED}❌  Error:${C_RESET}" >&2
-        echo "$_nm_log" | tail -10 | while IFS= read -r _line; do
-          echo -e "      ${C_DIM}$_line${C_RESET}" >&2
-        done
-        # ── Notif Telegram: gagal ───────────────────────────────────────────
-        local _nm_err_short; _nm_err_short=$(echo "$_nm_log" | tail -3 | tr '\n' ' ' | cut -c1-120)
-        local _btn_nm_fail='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Docs","url":"https://docs.npmjs.com/"}],[{"text":"🔍 Troubleshoot","url":"https://docs.npmjs.com/common-errors"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
-        send_telegram_photo "https://cdn.myanimelist.net/images/anime/1286/99889.jpg" "📦 <b>NPM INSTALL GAGAL</b>
-━━━━━━━━━━━━━━━━━━━━
-👤 <code>${USER}</code>
-📁 <code>${USER}/${REPO}</code>
-⏱ Durasi : <b>${_nm_duration} detik</b>
-❌ Status : <b>Gagal</b>
-━━━━━━━━━━━━━━━━━━━━
-⚠️ <code>${_nm_err_short}</code>
-━━━━━━━━━━━━━━━━━━━━
-🕐 ${_nm_ts}" "$_btn_nm_fail" 2>/dev/null &
-      fi
-      echo "" >&2
-      printf "  ${C_DIM}Tekan Enter untuk kembali ke menu...${C_RESET}" >&2
-      read -r </dev/tty
+      action_install_node_modules
       tok=""
       continue
     fi
@@ -1951,6 +1846,134 @@ banner() {
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
 }
 
+# ===== Cek koneksi internet (sebelum npm install / download) =====
+_check_internet() {
+  local _hosts=("8.8.8.8" "1.1.1.1" "github.com")
+  for _h in "${_hosts[@]}"; do
+    if ping -c1 -W2 "$_h" >/dev/null 2>&1 || \
+       curl -sf --max-time 3 "https://${_h}" -o /dev/null 2>/dev/null; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# ===== Install node_modules (dipanggil dari token menu [5] dan main menu [n]) =====
+action_install_node_modules() {
+  clear >/dev/tty 2>/dev/null || true
+  echo -e "${C_BOLD}╔══════════════════════════════════════════════════╗${C_RESET}"
+  echo -e "${C_BOLD}║        📦  INSTALL NODE_MODULES — BANG WILY      ║${C_RESET}"
+  echo -e "${C_BOLD}╚══════════════════════════════════════════════════╝${C_RESET}"
+  echo ""
+  # ── Status node_modules sekarang ──────────────────────────────────────
+  if [ -d node_modules ] && [ -d node_modules/.bin ]; then
+    local _cur_count; _cur_count=$(ls -1 node_modules 2>/dev/null | grep -v '^\.' | wc -l | tr -d ' ')
+    echo -e "  ${C_GREEN}📦  node_modules sudah ada${C_RESET}${C_DIM} — ${_cur_count} packages terinstall${C_RESET}"
+    echo -e "  ${C_DIM}   (akan di-reinstall ulang)${C_RESET}"
+  else
+    echo -e "  ${C_YELLOW}📦  node_modules belum ada${C_RESET}${C_DIM} — akan diinstall dari package.json${C_RESET}"
+  fi
+  echo ""
+  # ── Cek koneksi internet dulu ──────────────────────────────────────────
+  printf "  ${C_DIM}Cek koneksi internet...${C_RESET}"
+  if ! _check_internet; then
+    printf "\r${C_RED}  ❌  Tidak ada koneksi internet! npm install membutuhkan koneksi.${C_RESET}\n"
+    echo ""
+    printf "  ${C_DIM}Tekan Enter untuk kembali...${C_RESET}"
+    read -r </dev/tty
+    return 1
+  fi
+  printf "\r  ${C_GREEN}✅  Koneksi internet OK${C_RESET}              \n"
+  echo ""
+  echo -e "  ${C_DIM}Menjalankan npm install — harap tunggu...${C_RESET}"
+  echo ""
+  # ── Live display: progress bar + nama paket real-time ─────────────────
+  local _nm_start_ts; _nm_start_ts=$(date '+%s')
+  local _nm_tmplog; _nm_tmplog=$(mktemp)
+  npm install >"$_nm_tmplog" 2>&1 &
+  local _npm_bg_pid=$!
+  local _spin_nm=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+  local _si=0 _bw=22 _p=0
+  printf "\n"
+  while kill -0 "$_npm_bg_pid" 2>/dev/null; do
+    local _cnt=0
+    [ -d node_modules ] && _cnt=$(ls -1 node_modules 2>/dev/null | grep -c '[^.]' || echo 0)
+    local _cur_pkg
+    _cur_pkg=$(grep -oE '[a-zA-Z@][a-zA-Z0-9@/_.-]+@[0-9][0-9a-zA-Z._-]*' "$_nm_tmplog" 2>/dev/null | tail -1)
+    [ -z "$_cur_pkg" ] && _cur_pkg=$(tail -1 "$_nm_tmplog" 2>/dev/null | tr -d '\r' | cut -c1-40)
+    [ -z "$_cur_pkg" ] && _cur_pkg="resolving..."
+    local _pkg_display; _pkg_display=$(printf '%.38s' "$_cur_pkg")
+    [ "$_p" -lt 92 ] && _p=$(( _p + 1 ))
+    local _f=$(( _p * _bw / 100 ))
+    local _bf="" _be="" _j=0
+    while [ $_j -lt $_f ];  do _bf="${_bf}█"; _j=$(( _j+1 )); done
+    while [ $_j -lt $_bw ]; do _be="${_be}░"; _j=$(( _j+1 )); done
+    local _sp="${_spin_nm[$(( _si % 10 ))]}"
+    _si=$(( _si + 1 ))
+    printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2mnpm install\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%-38s\033[0m  \033[1;33m%s pkg\033[0m\n" \
+      "$_bf" "$_be" "$_p" "$_sp" "$_pkg_display" "$_cnt" >/dev/tty 2>/dev/null
+    sleep 0.12
+  done
+  wait "$_npm_bg_pid"
+  local _nm_exit=$?
+  local _nm_log; _nm_log=$(cat "$_nm_tmplog" 2>/dev/null)
+  rm -f "$_nm_tmplog" 2>/dev/null
+  local _bw2=22 _full=""
+  local _j2=0; while [ $_j2 -lt $_bw2 ]; do _full="${_full}█"; _j2=$(( _j2+1 )); done
+  if [ "$_nm_exit" = "0" ]; then
+    printf "\033[2A\r\033[K  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ selesai!\033[0m\n\033[K\n" \
+      "$_full" >/dev/tty 2>/dev/null
+  else
+    local _half="" _j3=0
+    while [ $_j3 -lt $_bw2 ]; do _half="${_half}▒"; _j3=$(( _j3+1 )); done
+    printf "\033[2A\r\033[K  [\033[31m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ gagal\033[0m\n\033[K\n" \
+      "$_half" >/dev/tty 2>/dev/null
+  fi
+  local _nm_end_ts; _nm_end_ts=$(date '+%s')
+  local _nm_duration=$(( _nm_end_ts - _nm_start_ts ))
+  local _nm_ts; _nm_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
+  local _nm_pkg_count="?"
+  if [ -d node_modules ]; then
+    _nm_pkg_count=$(ls -1 node_modules | grep -v '^\.' | wc -l | tr -d ' ')
+  fi
+  if [ "$_nm_exit" = "0" ]; then
+    echo ""
+    echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}"
+    echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages  •  ⏱ ${_nm_duration}s${C_RESET}"
+    local _btn_nm_ok='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Packages","url":"https://www.npmjs.com/"}],[{"text":"🟢 GitHub Actions","url":"https://github.com/'"${USER}"'/'"${REPO}"'/actions"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
+    send_telegram_photo "https://cdn.myanimelist.net/images/anime/1517/100633.jpg" "📦 <b>NODE_MODULES BERHASIL DIINSTALL</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${REPO}</code>
+📦 Packages terinstall : <b>${_nm_pkg_count}</b>
+⏱ Durasi               : <b>${_nm_duration} detik</b>
+✅ Status               : <b>Sukses</b>
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_nm_ts}" "$_btn_nm_ok" 2>/dev/null &
+  else
+    echo ""
+    echo -e "  ${C_RED}❌  Error:${C_RESET}"
+    echo "$_nm_log" | tail -10 | while IFS= read -r _line; do
+      echo -e "      ${C_DIM}$_line${C_RESET}"
+    done
+    local _nm_err_short; _nm_err_short=$(echo "$_nm_log" | tail -3 | tr '\n' ' ' | cut -c1-120)
+    local _btn_nm_fail='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Docs","url":"https://docs.npmjs.com/"}],[{"text":"🔍 Troubleshoot","url":"https://docs.npmjs.com/common-errors"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
+    send_telegram_photo "https://cdn.myanimelist.net/images/anime/1286/99889.jpg" "📦 <b>NPM INSTALL GAGAL</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${REPO}</code>
+⏱ Durasi : <b>${_nm_duration} detik</b>
+❌ Status : <b>Gagal</b>
+━━━━━━━━━━━━━━━━━━━━
+⚠️ <code>${_nm_err_short}</code>
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_nm_ts}" "$_btn_nm_fail" 2>/dev/null &
+  fi
+  echo ""
+  printf "  ${C_DIM}Tekan Enter untuk kembali ke menu...${C_RESET}"
+  read -r </dev/tty
+}
+
 # ===== Update push.sh dari GitHub =====
 action_self_update() {
   local _new_ver="$1" _raw_url="$2"
@@ -2122,10 +2145,21 @@ show_main_menu() {
   echo -e "  ${C_DIM}  repo   : ${C_RESET}${C_BOLD}${USER}/${REPO}${C_RESET}"
   echo ""
   # ── Grup: Lainnya ─────────────────────
+  # Cek status node_modules untuk label di menu
+  local _nm_label _nm_status_str
+  if [ -d node_modules ] && [ -d node_modules/.bin ]; then
+    local _nm_c; _nm_c=$(ls -1 node_modules 2>/dev/null | grep -v '^\.' | wc -l | tr -d ' ')
+    _nm_label="Install node_modules"
+    _nm_status_str="${C_GREEN}✓ ${_nm_c} pkg${C_RESET}"
+  else
+    _nm_label="Install node_modules"
+    _nm_status_str="${C_RED}⚠ belum ada${C_RESET}"
+  fi
   echo -e "  ${C_DIM}⚡ LAINNYA${C_RESET}"
   echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
   printf "  ${C_GREEN} p${C_RESET} › %-16s  ${C_MAGENTA} l${C_RESET} › %s\n" "Quick Push"     "Riwayat push"
-  printf "  ${C_YELLOW} c${C_RESET} › %-16s\n"                                "Bersihkan history node_modules"
+  printf "  ${C_YELLOW} c${C_RESET} › %-16s  ${C_CYAN} n${C_RESET} › %-16s  %b\n" \
+    "Bersihkan history" "$_nm_label" "$_nm_status_str"
   if [ -n "$_upd_ver" ]; then
     printf "  ${C_GREEN} u${C_RESET} › ${C_BOLD}%-16s${C_RESET}  ${C_DIM}versi sekarang: %s → baru: %s${C_RESET}\n" \
       "Update script" "$SCRIPT_VERSION" "$_upd_ver"
@@ -2156,6 +2190,7 @@ show_main_menu() {
     p|P) action_quick_push ;;
     l|L) action_view_push_log ;;
     c|C) action_cleanup_node_modules ;;
+    n|N) action_install_node_modules ;;
     u|U) action_self_update "$_upd_ver" "$_upd_url" ;;
     0|q|Q|exit) goodbye_prompt ;;
     *)
