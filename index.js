@@ -167,6 +167,22 @@ function saveBotAdminData(data) {
   kvSet('botadmin/botadmin', data);
 }
 
+function autoAddGroupToAntiTagSW(groupId) {
+        try {
+                const config = loadConfig();
+                if (!config.antiTagSW?.enabled) return;
+                const data = kvGet('security/antitagsw', { groups: [], warnings: {} });
+                if (!Array.isArray(data.groups)) data.groups = [];
+                if (!data.groups.includes(groupId)) {
+                        data.groups.push(groupId);
+                        kvSet('security/antitagsw', data);
+                        console.log(`\x1b[32m[AutoAntiTagSW] ✓ Grup ${groupId} otomatis ditambahkan ke Anti Tag SW (global aktif)\x1b[39m`);
+                }
+        } catch (err) {
+                console.error('\x1b[31m[AutoAntiTagSW] Error:\x1b[39m', err?.message);
+        }
+}
+
 function saveBotAdminStatus(hisoka, allGroups) {
   try {
     const botNumber = (hisoka.user?.id || '').split('@')[0].split(':')[0];
@@ -1309,6 +1325,9 @@ setTimeout(() => {
                                 const existingGroup = groups.read(groupId) || {};
                                 groups.write(groupId, { ...existingGroup, ...group });
 
+                                // Auto-add ke Anti Tag SW jika global aktif
+                                autoAddGroupToAntiTagSW(groupId);
+
                                 if (process.env.BOT_AUTO_UPSWGC === 'true') {
                                         try {
                                                 await delay(2000);
@@ -1357,9 +1376,17 @@ setTimeout(() => {
                 const botNumber = (hisoka.user?.id || '').split('@')[0].split(':')[0];
 
                 switch (action) {
-                        case 'add':
+                        case 'add': {
                                 existingGroup.participants = [...(existingGroup.participants || []), ...participants];
+                                // Jika bot sendiri yang di-add ke grup, auto-add ke Anti Tag SW
+                                const botAdded = participants.some(p => {
+                                        const rawJid = p.jid || p.phoneNumber || p.id || '';
+                                        const pNum = rawJid.split('@')[0].split(':')[0];
+                                        return pNum === botNumber;
+                                });
+                                if (botAdded) autoAddGroupToAntiTagSW(id);
                                 break;
+                        }
                         case 'remove':
                                 existingGroup.participants = (existingGroup.participants || []).filter(p => {
                                         const existId = p.phoneNumber || p.id;
