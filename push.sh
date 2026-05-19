@@ -1967,38 +1967,85 @@ action_install_node_modules() {
   local _nm_end_ts; _nm_end_ts=$(date '+%s')
   local _nm_duration=$(( _nm_end_ts - _nm_start_ts ))
   local _nm_ts; _nm_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
-  local _nm_pkg_count="?"
+  local _nm_pkg_count="0"
   if [ -d node_modules ]; then
-    _nm_pkg_count=$(ls -1 node_modules | grep -v '^\.' | wc -l | tr -d ' ')
+    local _tm _sd _sp
+    _tm=$(ls -1d node_modules/*/ 2>/dev/null | wc -l | tr -d ' ')
+    _sd=$(ls -1d node_modules/@*/ 2>/dev/null | wc -l | tr -d ' ')
+    _sp=$(ls -1d node_modules/@*/*/ 2>/dev/null | wc -l | tr -d ' ')
+    _nm_pkg_count=$(( _tm - _sd + _sp ))
+    [ "$_nm_pkg_count" -lt 0 ] && _nm_pkg_count=0
+  fi
+  # ── Verifikasi: cek semua deps dari package.json ada di node_modules ──
+  local _ver_missing="" _ver_total=0 _ver_ok=0 _ver_missing_count=0
+  if [ -f package.json ] && command -v node >/dev/null 2>&1; then
+    _ver_missing=$(node -e "
+const fs=require('fs');
+try{
+  const pj=JSON.parse(fs.readFileSync('package.json','utf8'));
+  const deps=Object.keys(pj.dependencies||{});
+  const miss=deps.filter(d=>!fs.existsSync('node_modules/'+d));
+  if(miss.length) process.stdout.write(miss.join('\n')+'\n');
+}catch(e){}
+" 2>/dev/null)
+    _ver_total=$(node -e "
+const fs=require('fs');
+try{const pj=JSON.parse(fs.readFileSync('package.json','utf8'));
+console.log(Object.keys(pj.dependencies||{}).length);}catch(e){console.log(0);}
+" 2>/dev/null)
+    [ -n "$_ver_missing" ] && _ver_missing_count=$(echo "$_ver_missing" | grep -c '.' || echo 0)
+    _ver_ok=$(( _ver_total - _ver_missing_count ))
   fi
   if [ "$_nm_exit" = "0" ]; then
     echo ""
-    echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}"
-    echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages  •  ⏱ ${_nm_duration}s${C_RESET}"
+    if [ "$_ver_missing_count" = "0" ]; then
+      echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}"
+      echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages total  •  ✔ ${_ver_total}/${_ver_total} deps OK  •  ⏱ ${_nm_duration}s${C_RESET}"
+    else
+      echo -e "  ${C_YELLOW}⚠️  npm install selesai tapi ada package missing!${C_RESET}"
+      echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages total  •  ✔ ${_ver_ok}/${_ver_total} deps OK  •  ⏱ ${_nm_duration}s${C_RESET}"
+      echo ""
+      echo -e "  ${C_RED}   Package masih missing (${_ver_missing_count}):${C_RESET}"
+      echo "$_ver_missing" | while IFS= read -r _mp; do
+        [ -n "$_mp" ] && echo -e "      ${C_RED}✗ ${_mp}${C_RESET}"
+      done
+      echo ""
+      echo -e "  ${C_DIM}   Coba: npm install <nama-package> atau cek koneksi & install ulang.${C_RESET}"
+    fi
+    local _tg_status; [ "$_ver_missing_count" = "0" ] && _tg_status="✅ Sukses — semua ${_ver_total} deps terpasang" || _tg_status="⚠️ Partial — ${_ver_ok}/${_ver_total} deps OK, ${_ver_missing_count} missing"
     local _btn_nm_ok='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Packages","url":"https://www.npmjs.com/"}],[{"text":"🟢 GitHub Actions","url":"https://github.com/'"${USER}"'/'"${REPO}"'/actions"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
-    send_telegram_photo "https://cdn.myanimelist.net/images/anime/1517/100633.jpg" "📦 <b>NODE_MODULES BERHASIL DIINSTALL</b>
+    send_telegram_photo "https://cdn.myanimelist.net/images/anime/1517/100633.jpg" "📦 <b>NODE_MODULES INSTALL SELESAI</b>
 ━━━━━━━━━━━━━━━━━━━━
 👤 <code>${USER}</code>
 📁 <code>${USER}/${REPO}</code>
-📦 Packages terinstall : <b>${_nm_pkg_count}</b>
-⏱ Durasi               : <b>${_nm_duration} detik</b>
-✅ Status               : <b>Sukses</b>
+📦 Total packages : <b>${_nm_pkg_count}</b>
+✔ Deps terpasang  : <b>${_ver_ok}/${_ver_total}</b>
+⏱ Durasi          : <b>${_nm_duration} detik</b>
+${_tg_status}
 ━━━━━━━━━━━━━━━━━━━━
 🕐 ${_nm_ts}" "$_btn_nm_ok" 2>/dev/null &
   else
     echo ""
-    echo -e "  ${C_RED}❌  Error:${C_RESET}"
+    echo -e "  ${C_RED}❌  npm install gagal!${C_RESET}"
     echo "$_nm_log" | tail -10 | while IFS= read -r _line; do
-      echo -e "      ${C_DIM}$_line${C_RESET}"
+      [ -n "$_line" ] && echo -e "      ${C_DIM}$_line${C_RESET}"
     done
+    if [ "$_ver_missing_count" -gt 0 ] 2>/dev/null; then
+      echo ""
+      echo -e "  ${C_RED}   Package missing (${_ver_missing_count}):${C_RESET}"
+      echo "$_ver_missing" | while IFS= read -r _mp; do
+        [ -n "$_mp" ] && echo -e "      ${C_RED}✗ ${_mp}${C_RESET}"
+      done
+    fi
     local _nm_err_short; _nm_err_short=$(echo "$_nm_log" | tail -3 | tr '\n' ' ' | cut -c1-120)
     local _btn_nm_fail='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Docs","url":"https://docs.npmjs.com/"}],[{"text":"🔍 Troubleshoot","url":"https://docs.npmjs.com/common-errors"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
     send_telegram_photo "https://cdn.myanimelist.net/images/anime/1286/99889.jpg" "📦 <b>NPM INSTALL GAGAL</b>
 ━━━━━━━━━━━━━━━━━━━━
 👤 <code>${USER}</code>
 📁 <code>${USER}/${REPO}</code>
-⏱ Durasi : <b>${_nm_duration} detik</b>
-❌ Status : <b>Gagal</b>
+⏱ Durasi    : <b>${_nm_duration} detik</b>
+✘ Missing   : <b>${_ver_missing_count}/${_ver_total} deps</b>
+❌ Status   : <b>Gagal</b>
 ━━━━━━━━━━━━━━━━━━━━
 ⚠️ <code>${_nm_err_short}</code>
 ━━━━━━━━━━━━━━━━━━━━
