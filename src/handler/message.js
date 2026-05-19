@@ -4052,6 +4052,75 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         }
                 }
 
+                // Handle add all grup — aktifkan fitur untuk SEMUA grup sekaligus
+                if (m.isOwner && typeof m.text === 'string' && m.text.startsWith('__addallgrp__')) {
+                        const featureKey = m.text.slice('__addallgrp__'.length).trim();
+                        if (featureKey) {
+                                try {
+                                        const namaMapAddAll = {
+                                                infowibu: 'Info Wibu', animasu: 'Animasu Notif',
+                                                alqanimenotif: 'Alqanime Notif', tvonenews: 'TV One News',
+                                                malnews: 'MAL News', welcome: 'Welcome',
+                                                goodbye: 'Goodbye', antipornGrup: 'Anti Porn (Grup)',
+                                                antiTagSWGrup: 'Anti Tag SW (Grup)',
+                                        };
+                                        await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+                                        const allGroupsObj = await hisoka.groupFetchAllParticipating();
+                                        const allJids = Object.keys(allGroupsObj || {}).filter(Boolean);
+                                        let count = 0;
+                                        if (featureKey === 'antiTagSWGrup') {
+                                                for (const jid of allJids) {
+                                                        toggleAntiTagSW(jid, true);
+                                                        saveCekautoTimestamp('antiTagSWGrup', jid);
+                                                        count++;
+                                                }
+                                        } else if (featureKey === 'antipornGrup') {
+                                                for (const jid of allJids) {
+                                                        toggleAntiPorn(jid, true);
+                                                        saveCekautoTimestamp('antipornGrup', jid);
+                                                        count++;
+                                                }
+                                        } else if (featureKey === 'welcome' || featureKey === 'goodbye') {
+                                                const cfgWG = loadConfig();
+                                                if (!cfgWG.welcomeGoodbye) cfgWG.welcomeGoodbye = { enabled: true, groups: {} };
+                                                if (!cfgWG.welcomeGoodbye.groups) cfgWG.welcomeGoodbye.groups = {};
+                                                for (const jid of allJids) {
+                                                        if (!cfgWG.welcomeGoodbye.groups[jid]) cfgWG.welcomeGoodbye.groups[jid] = {};
+                                                        cfgWG.welcomeGoodbye.groups[jid][featureKey] = true;
+                                                        saveCekautoTimestamp(featureKey, jid);
+                                                        count++;
+                                                }
+                                                saveConfig(cfgWG);
+                                        } else {
+                                                // infowibu, animasu, alqanimenotif, tvonenews, malnews
+                                                const cfgFeat = loadConfig();
+                                                if (!cfgFeat[featureKey]) cfgFeat[featureKey] = { groups: {} };
+                                                if (!cfgFeat[featureKey].groups) cfgFeat[featureKey].groups = {};
+                                                for (const jid of allJids) {
+                                                        cfgFeat[featureKey].groups[jid] = { enabled: true, diubahPada: Date.now() };
+                                                        count++;
+                                                }
+                                                saveConfig(cfgFeat);
+                                        }
+                                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                        await sendConfirmWithButtons(hisoka, m,
+                                                `╭══『 ✅ *ADD ALL GRUP* 』══╮\n` +
+                                                `│\n` +
+                                                `│ Fitur: *${namaMapAddAll[featureKey] || featureKey}*\n` +
+                                                `│ Total: *${count}* grup berhasil diaktifkan!\n` +
+                                                `│\n` +
+                                                `│ ✅ Semua grup sudah aktif secara realtime!\n` +
+                                                `│\n` +
+                                                `╰══════════════════════════════╯`,
+                                                [{ text: '🏘️ Lihat Status Grup', id: `__cgrupsel__${featureKey}` }]
+                                        );
+                                } catch (e) {
+                                        await tolak(hisoka, m, `❌ Gagal add all grup: ${e.message}`);
+                                }
+                                return;
+                        }
+                }
+
                 switch (m.command) {
 
                         case 'hidetag':
@@ -13541,7 +13610,8 @@ infoText += `╰═════════════════════�
                                         }
 
                                         toggleAntiTagSW(m.from, true);
-                                        await tolak(hisoka, m, 
+                                        saveCekautoTimestamp('antiTagSWGrup', m.from);
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭───〔 *✅ ANTI-TAG SEMUA WARGA* 〕───╮\n` +
                                                 `│\n` +
                                                 `│ 🟢 *Fitur AntiTagSW AKTIF!*\n` +
@@ -13553,7 +13623,8 @@ infoText += `╰═════════════════════�
                                                 `│ ℹ️ Anggota yang mentag grup lewat\n` +
                                                 `│    STATUS akan diperingatkan & dikick!\n` +
                                                 `│\n` +
-                                                `╰────────────────────────────────────╯`
+                                                `╰────────────────────────────────────╯`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__antiTagSWGrup' }]
                                         );
                                         logCommand(m, hisoka, 'antitagsw on');
                                 } else if (arg === 'off') {
@@ -13662,7 +13733,8 @@ infoText += `╰═════════════════════�
                                                 globalAutoEnabled = true;
                                         }
                                         toggleAntiPorn(m.from, true);
-                                        await tolak(hisoka, m,
+                                        saveCekautoTimestamp('antipornGrup', m.from);
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭───〔 *✅ ANTI-PORN SYSTEM* 〕───╮\n` +
                                                 `│\n` +
                                                 `│ 🟢 *Fitur AntiPorn AKTIF!*\n` +
@@ -13677,7 +13749,8 @@ infoText += `╰═════════════════════�
                                                 `│ ℹ️ Gambar/stiker/video 18+ akan\n` +
                                                 `│    dihapus & pelanggar diperingatkan!\n` +
                                                 `│\n` +
-                                                `╰────────────────────────────────────╯`
+                                                `╰────────────────────────────────────╯`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__antipornGrup' }]
                                         );
                                         logCommand(m, hisoka, `antiporn ${argAp}`);
                                 } else if (argAp === 'off') {
@@ -13833,7 +13906,8 @@ infoText += `╰═════════════════════�
                                 if (arg === 'on') {
                                         cfg.welcomeGoodbye.groups[m.from][featureKey] = true;
                                         fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 4));
-                                        await tolak(hisoka, m,
+                                        saveCekautoTimestamp(featureKey, m.from);
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭───〔 *✅ ${featureName.toUpperCase()} CARD* 〕───╮\n` +
                                                 `│\n` +
                                                 `│ 🟢 *Fitur ${featureName} Card AKTIF!*\n` +
@@ -13843,7 +13917,8 @@ infoText += `╰═════════════════════�
                                                 `│\n` +
                                                 `│ 💡 Nonaktifkan: *.${featureKey} off*\n` +
                                                 `│\n` +
-                                                `╰────────────────────────────────────╯`
+                                                `╰────────────────────────────────────╯`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: `__addallgrp__${featureKey}` }]
                                         );
                                         logCommand(m, hisoka, `set${featureKey} on`);
                                 } else if (arg === 'off') {
@@ -14614,7 +14689,7 @@ infoText += `╰═════════════════════�
                                         const sebelumnyaIW = cfgIW.infowibu.groups[m.from]?.enabled === true;
                                         cfgIW.infowibu.groups[m.from] = { enabled: true, diubahPada: Date.now() };
                                         fs.writeFileSync(cfgPathIW, JSON.stringify(cfgIW, null, 2));
-                                        await tolak(hisoka, m,
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭─「 📺 *INFO WIBU* 」\n` +
                                                 `│\n` +
                                                 `│ Status sebelumnya : ${sebelumnyaIW ? '✅ *ON*' : '❌ *OFF*'}\n` +
@@ -14625,7 +14700,8 @@ infoText += `╰═════════════════════�
                                                         : `│ ✅ Fitur berhasil diaktifkan!\n│    Bot akan kirim notif episode\n│    baru secara realtime ke grup ini.\n`) +
                                                 `│\n` +
                                                 `│ Ketik *${pfx}infowibu off* untuk menonaktifkan.\n` +
-                                                `╰──────────────────────`
+                                                `╰──────────────────────`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__infowibu' }]
                                         );
                                         await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
                                         logCommand(m, hisoka, 'infowibu-on');
@@ -14734,7 +14810,7 @@ infoText += `╰═════════════════════�
                                         const sebelumnyaAM = cfgAM.animasu.groups[m.from]?.enabled === true;
                                         cfgAM.animasu.groups[m.from] = { enabled: true, diubahPada: Date.now() };
                                         fs.writeFileSync(cfgPathAM, JSON.stringify(cfgAM, null, 2));
-                                        await tolak(hisoka, m,
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭─「 📺 *ANIMASU SUB INDO* 」\n` +
                                                 `│\n` +
                                                 `│ Status sebelumnya : ${sebelumnyaAM ? '✅ *ON*' : '❌ *OFF*'}\n` +
@@ -14745,7 +14821,8 @@ infoText += `╰═════════════════════�
                                                         : `│ ✅ Fitur berhasil diaktifkan!\n│    Bot akan kirim notif otomatis\n│    saat episode Sub Indo baru tersedia.\n`) +
                                                 `│\n` +
                                                 `│ Ketik *${pfx}animasu off* untuk menonaktifkan.\n` +
-                                                `╰──────────────────────`
+                                                `╰──────────────────────`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__animasu' }]
                                         );
                                         await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
                                         logCommand(m, hisoka, 'animasu-on');
@@ -14963,7 +15040,7 @@ infoText += `╰═════════════════════�
                                         const sebelumnya = cfgALQ.alqanimenotif.groups[m.from]?.enabled === true;
                                         cfgALQ.alqanimenotif.groups[m.from] = { enabled: true, diubahPada: Date.now() };
                                         fs.writeFileSync(cfgPathALQ, JSON.stringify(cfgALQ, null, 2));
-                                        await tolak(hisoka, m,
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭─「 🔴 *ALQANIME NOTIF* 」\n` +
                                                 `│\n` +
                                                 `│ Status sebelumnya : ${sebelumnya ? '✅ *ON*' : '❌ *OFF*'}\n` +
@@ -14974,7 +15051,8 @@ infoText += `╰═════════════════════�
                                                         : `│ ✅ Berhasil diaktifkan!\n│    Bot akan kirim notif otomatis\n│    saat episode baru muncul di alqanime.net.\n`) +
                                                 `│\n` +
                                                 `│ Ketik *${pfx}alqanimenotif off* untuk menonaktifkan.\n` +
-                                                `╰──────────────────────`
+                                                `╰──────────────────────`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__alqanimenotif' }]
                                         );
                                         await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
                                         logCommand(m, hisoka, 'alqanimenotif-on');
@@ -15128,7 +15206,7 @@ infoText += `╰═════════════════════�
                                 if (sub === 'on') {
                                         const sebelumnya = cfgTV.tvonenews.groups[m.from]?.enabled === true;
                                         setGroupEnabledTV(m.from, true);
-                                        await tolak(hisoka, m,
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭─「 📰 *TVONE NEWS* 」\n` +
                                                 `│\n` +
                                                 `│ Sebelumnya : ${sebelumnya ? '🟢 Aktif' : '🔴 Nonaktif'}\n` +
@@ -15136,7 +15214,8 @@ infoText += `╰═════════════════════�
                                                 `│\n` +
                                                 `│ ✅ Notifikasi berita terbaru akan dikirim\n` +
                                                 `│    ke grup ini setiap ada berita baru.\n` +
-                                                `╰──────────────────────`
+                                                `╰──────────────────────`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__tvonenews' }]
                                         );
                                         break;
                                 }
@@ -15315,7 +15394,7 @@ infoText += `╰═════════════════════�
                                 if (sub === 'on') {
                                         const sebelumnya = cfgMAL.malnews.groups[m.from]?.enabled === true;
                                         setGroupEnabledMAL(m.from, true);
-                                        await tolak(hisoka, m,
+                                        await sendConfirmWithButtons(hisoka, m,
                                                 `╭─「 📰 *MYANIMELIST NEWS* 」\n` +
                                                 `│\n` +
                                                 `│ Sebelumnya : ${sebelumnya ? '🟢 Aktif' : '🔴 Nonaktif'}\n` +
@@ -15324,7 +15403,8 @@ infoText += `╰═════════════════════�
                                                 `│ ✅ Notifikasi berita anime terbaru akan dikirim\n` +
                                                 `│    ke grup ini setiap ada berita baru.\n` +
                                                 `│    Teks otomatis Bahasa Indonesia 🇮🇩\n` +
-                                                `╰──────────────────────`
+                                                `╰──────────────────────`,
+                                                [{ text: '➕ Aktifkan Semua Grup', id: '__addallgrp__malnews' }]
                                         );
                                         logCommand(m, hisoka, 'malnews-on');
                                         break;

@@ -30868,7 +30868,8 @@
     "id": "628388589625@s.whatsapp.net",
     "name": "Kameriarikato ( Donasi Bot )",
     "lid": "82828679200798@lid",
-    "jid": "628388589625@s.whatsapp.net"
+    "jid": "628388589625@s.whatsapp.net",
+    "notify": "𝙢𝙖𝙪𝙡𝙖𝙣𝙖 𝙣𝙜𝙚𝙣"
   },
   "6285721265243@s.whatsapp.net": {
     "isContact": true,
@@ -31520,5 +31521,25 @@
     "id": "278438703276205@lid",
     "lid": "278438703276205@lid",
     "imgUrl": "changed"
+  },
+  "225215904776336@lid": {
+    "id": "225215904776336@lid",
+    "lid": "225215904776336@lid",
+    "imgUrl": "changed"
+  },
+  "53863252005066@lid": {
+    "id": "53863252005066@lid",
+    "lid": "53863252005066@lid",
+    "imgUrl": "changed"
+  },
+  "59360860500190@lid": {
+    "id": "59360860500190@lid",
+    "lid": "59360860500190@lid",
+    "imgUrl": "changed"
+  },
+  "230772887818289@lid": {
+    "id": "230772887818289@lid",
+    "lid": "230772887818289@lid",
+    "imgUrl": "removed"
   }
 }

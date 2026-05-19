@@ -139,8 +139,8 @@
   "alqanimenotif": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": false,
-        "diubahPada": 1779176472900
+        "enabled": true,
+        "diubahPada": 1779182266881
       },
       "120363383540766761@g.us": {
         "enabled": false,
