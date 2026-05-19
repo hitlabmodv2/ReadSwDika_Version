@@ -2111,7 +2111,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 'tt', 'ig', 'fb', 'ytmp3', 'ytmp4', 'play',
                                 'sticker', 's',
                                 'toimg',
-                                'hd'
+                                'hd',
+                                'upswgc', 'swgc', 'swgrup', 'swgroup', 'statusgrup', 'statusgroup'
                             ]);
                             if (!jadibotAllowedCommands.has(m.command)) {
                                 return;
@@ -6300,6 +6301,9 @@ ${masaAktifLine}
 ├➤ *.toimg* — Sticker → Gambar
 ╰➤ *.hd / .remini* — Perjelas foto blur
 
+╭─「 📡 *STATUS & STORY* 」
+╰➤ *.upswgc [caption]* — Upload status ke semua grup
+
 ╭─「 📥 *DOWNLOAD* 」
 ├➤ *.tt [link]* — Download TikTok
 ├➤ *.ig [link]* — Download Instagram
@@ -6310,7 +6314,7 @@ ${masaAktifLine}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 _⚙️ Setting tersimpan per-jadibot realtime_
-_📦 Powered by Wily Bot V16_ 🤖`;
+_📦 Powered by Wily Bot V17_ 🤖`;
                                                 await hisoka.sendMessage(m.from, { text: menuTeks }, { quoted: m });
                                                 logCommand(m, hisoka, 'menu');
                                                 break;
@@ -13118,7 +13122,8 @@ infoText += `╰═════════════════════�
                         case 'swgroup':
                         case 'statusgrup':
                         case 'statusgroup': {
-                                if (!m.isOwner) return tolak(hisoka, m, '❌ Fitur ini hanya untuk owner!');
+                                const isJadibotUser = hisoka?.isMainBot === false;
+                                if (!m.isOwner && !isJadibotUser) return tolak(hisoka, m, '❌ Fitur ini hanya untuk owner!');
 
                                 const swgcCaption = query ? query.trim() : '';
                                 let swgcMeta = {};
