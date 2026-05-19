@@ -1890,20 +1890,55 @@ action_install_node_modules() {
   # ── Live display: progress bar + nama paket real-time ─────────────────
   local _nm_start_ts; _nm_start_ts=$(date '+%s')
   local _nm_tmplog; _nm_tmplog=$(mktemp)
-  npm install >"$_nm_tmplog" 2>&1 &
+  # --verbose agar log punya output untuk fallback parsing
+  npm install --verbose >"$_nm_tmplog" 2>&1 &
   local _npm_bg_pid=$!
   local _spin_nm=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
   local _si=0 _bw=22 _p=0
   printf "\n"
   while kill -0 "$_npm_bg_pid" 2>/dev/null; do
+    # ── Hitung packages dari disk (folder non-hidden di node_modules) ────
     local _cnt=0
-    [ -d node_modules ] && _cnt=$(ls -1 node_modules 2>/dev/null | grep -c '[^.]' || echo 0)
-    local _cur_pkg
-    _cur_pkg=$(grep -oE '[a-zA-Z@][a-zA-Z0-9@/_.-]+@[0-9][0-9a-zA-Z._-]*' "$_nm_tmplog" 2>/dev/null | tail -1)
-    [ -z "$_cur_pkg" ] && _cur_pkg=$(tail -1 "$_nm_tmplog" 2>/dev/null | tr -d '\r' | cut -c1-40)
+    if [ -d node_modules ]; then
+      local _top _scoped_dirs _scoped_pkgs
+      _top=$(ls -1d node_modules/*/ 2>/dev/null | wc -l | tr -d ' ')
+      _scoped_dirs=$(ls -1d node_modules/@*/ 2>/dev/null | wc -l | tr -d ' ')
+      _scoped_pkgs=$(ls -1d node_modules/@*/*/ 2>/dev/null | wc -l | tr -d ' ')
+      # top sudah include @scope-dirs → kurang @scope-dirs + tambah @scope/pkg-dirs
+      _cnt=$(( _top - _scoped_dirs + _scoped_pkgs ))
+      [ "$_cnt" -lt 0 ] && _cnt=0
+    fi
+    # ── Nama paket terbaru: ambil dari ls -t node_modules (real from disk) ─
+    local _cur_pkg=""
+    if [ -d node_modules ]; then
+      local _last; _last=$(ls -t1 node_modules/ 2>/dev/null | grep -v '^\.' | head -1)
+      if [ -n "$_last" ]; then
+        if [ "${_last:0:1}" = "@" ] && [ -d "node_modules/${_last}" ]; then
+          # Paket scoped: ambil sub-folder terbaru di dalamnya
+          local _sub; _sub=$(ls -t1 "node_modules/${_last}/" 2>/dev/null | head -1)
+          [ -n "$_sub" ] && _cur_pkg="${_last}/${_sub}" || _cur_pkg="$_last"
+        else
+          _cur_pkg="$_last"
+        fi
+      fi
+    fi
+    # ── Fallback 1: parse verbose log (npm verb fetch GET) ────────────────
+    if [ -z "$_cur_pkg" ]; then
+      _cur_pkg=$(grep 'npm verb fetch GET' "$_nm_tmplog" 2>/dev/null | tail -1 | \
+        sed 's|.*registry.npmjs.org/||; s|/-/.*||; s|%2F|/|g' | cut -c1-38)
+    fi
+    # ── Fallback 2: parse "added X packages" di akhir ────────────────────
+    if [ -z "$_cur_pkg" ]; then
+      _cur_pkg=$(grep -oE 'added [0-9]+ package' "$_nm_tmplog" 2>/dev/null | tail -1)
+    fi
     [ -z "$_cur_pkg" ] && _cur_pkg="resolving..."
     local _pkg_display; _pkg_display=$(printf '%.38s' "$_cur_pkg")
-    [ "$_p" -lt 92 ] && _p=$(( _p + 1 ))
+    # ── Progress bar: naikkan pelan-pelan, sesuaikan dengan jumlah pkg ────
+    local _speed_p=1
+    [ "$_cnt" -gt 50 ]  && _speed_p=2
+    [ "$_cnt" -gt 200 ] && _speed_p=3
+    [ "$_p" -lt 92 ] && _p=$(( _p + _speed_p ))
+    [ "$_p" -gt 92 ] && _p=92
     local _f=$(( _p * _bw / 100 ))
     local _bf="" _be="" _j=0
     while [ $_j -lt $_f ];  do _bf="${_bf}█"; _j=$(( _j+1 )); done
@@ -1912,7 +1947,7 @@ action_install_node_modules() {
     _si=$(( _si + 1 ))
     printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2mnpm install\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%-38s\033[0m  \033[1;33m%s pkg\033[0m\n" \
       "$_bf" "$_be" "$_p" "$_sp" "$_pkg_display" "$_cnt" >/dev/tty 2>/dev/null
-    sleep 0.12
+    sleep 0.15
   done
   wait "$_npm_bg_pid"
   local _nm_exit=$?
