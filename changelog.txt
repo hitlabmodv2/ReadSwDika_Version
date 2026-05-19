@@ -9,22 +9,22 @@ _📅 15 Mei 2026_
 > 🔞 *Anti-Porn* — Deteksi & hapus otomatis konten 18+ di grup
 > Pakai AI lokal (nsfwjs), tanpa API key, deteksi gambar/stiker/video
 > Sistem warning bertahap, auto-kick saat limit, owner bypass
->
+
 > 🌐 *Speedtest* — Test kecepatan internet bot realtime
 > Ukur Download, Upload, Ping, Jitter + info ISP & IP
 > Alias: `.speedtest` `.speed` `.cekspeed` `.testnet`
->
+
 > 📰 *MAL News* — Notifikasi berita anime dari MyAnimeList ke grup WA
 > Ambil via RSS feed myanimelist.net, judul & ringkasan auto-translate ke Indonesia
 > Aktifkan per grup lewat command `.malnews`
->
+
 > 📺 *TVOne News* — Notifikasi berita terkini dari tvonenews.com ke grup WA
 > Scraping otomatis setiap 5 menit, kirim ke grup saat ada berita baru
 > Lengkap dengan gambar, kategori, dan link artikel
 > Aktifkan per grup lewat command `.tvone`
->
+
 > 🖼️ *Command .hd / .remini* — Kini bisa dipakai user Jadibot
->
+
 > 🤖 *AI Format WA* — Respons Gemini otomatis pakai simbol WA
 > Bold, italic, bullet, header, garis — rapi tanpa format markdown
 
@@ -34,17 +34,17 @@ _📅 15 Mei 2026_
 
 > 🎯 *No-Prefix Command* — Tidak lagi respons kalau ada kata tambahan
 > 29 command standalone dilindungi guard extra words
->
+
 > 🎌 *Animasu* — URL season 2/3 selalu 404 → fallback URL dari halaman episode
 > 🔁 *Animasu* — `simulasi()` crash saat slug 404 → pakai fallback URL
 > 📊 *Animasu* — `getAiringStatus()` silent drop season lanjutan → diperbaiki
 > 📨 *Animasu* — Notifikasi episode sama muncul 2x → dedup by slug + epNum
->
+
 > 🎌 *Alqanime Notif* — Post gagal-fetch tidak dicoba ulang → retry TTL 30 menit
 > Post yang terbit tepat di batas window sering terlewat → buffer waktu +3 menit
->
+
 > ⚡ *Speedtest* — `require is not defined` di ES module → ganti ke `_require()`
->
+
 > 🛡️ *Anti Call Jadibot* — Tidak bisa tolak panggilan di mode QR → diperbaiki
 > 🔕 *Anti Call Jadibot* — Command `ac` / `acv` tidak direspons → whitelist ditambah
 > 🚧 *Anti Call* — Diblock guard saat kirim ke bot utama → guard diperbarui
