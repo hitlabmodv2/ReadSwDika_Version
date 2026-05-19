@@ -104,7 +104,7 @@
       },
       "120363192554714254@g.us": {
         "welcome": false,
-        "goodbye": true
+        "goodbye": false
       },
       "120363383540766761@g.us": {
         "welcome": false
@@ -115,8 +115,8 @@
     "enabled": true,
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": true,
-        "diubahPada": 1779184250373
+        "enabled": false,
+        "diubahPada": 1779186158817
       }
     }
   },
@@ -124,7 +124,7 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": false,
-        "diubahPada": 1779185690582
+        "diubahPada": 1779186158817
       }
     }
   },
@@ -132,15 +132,15 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": false,
-        "diubahPada": 1779185025939
+        "diubahPada": 1779186158817
       }
     }
   },
   "alqanimenotif": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": true,
-        "diubahPada": 1779184250375
+        "enabled": false,
+        "diubahPada": 1779186158817
       },
       "120363383540766761@g.us": {
         "enabled": false,
@@ -156,7 +156,7 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": false,
-        "diubahPada": 1779185907505
+        "diubahPada": 1779186158817
       }
     }
   },

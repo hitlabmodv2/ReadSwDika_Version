@@ -1713,6 +1713,10 @@ async function sendCekautoGrupMsg(hisoka, m) {
                                                         nativeFlowMessage: {
                                                                 buttons: [
                                                                         {
+                                                                                name: 'quick_reply',
+                                                                                buttonParamsJson: JSON.stringify({ display_text: '❌ Matikan Semua GC', id: '__cgrup_alloff__' })
+                                                                        },
+                                                                        {
                                                                                 name: 'single_select',
                                                                                 buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle Fitur Grup', sections: filteredRows })
                                                                         },
@@ -3996,6 +4000,38 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 await sendCekautoGrupMsg(hisoka, m);
                         } catch (e) {
                                 await tolak(hisoka, m, `❌ Gagal aktifkan semua fitur: ${e.message}`);
+                        }
+                        return;
+                }
+
+                // Handle cekauto grup — matikan SEMUA fitur untuk grup ini sekaligus
+                if (m.isOwner && m.isGroup && typeof m.text === 'string' && m.text === '__cgrup_alloff__') {
+                        try {
+                                const cfgOff = loadConfig();
+                                const jidOff = m.from;
+
+                                for (const f of CEKAUTO_GROUP_FITUR_LIST) {
+                                        if (!f.toggleable) continue;
+                                        if (f.key === 'welcome' || f.key === 'goodbye') {
+                                                if (cfgOff.welcomeGoodbye?.groups?.[jidOff]) {
+                                                        cfgOff.welcomeGoodbye.groups[jidOff][f.key] = false;
+                                                }
+                                        } else if (f.key === 'antipornGrup') {
+                                                toggleAntiPorn(jidOff, false);
+                                        } else if (f.key === 'antiTagSWGrup') {
+                                                toggleAntiTagSW(jidOff, false);
+                                        } else {
+                                                if (cfgOff[f.key]?.groups?.[jidOff]) {
+                                                        cfgOff[f.key].groups[jidOff] = { enabled: false, diubahPada: Date.now() };
+                                                }
+                                        }
+                                }
+                                saveConfig(cfgOff);
+
+                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                await sendCekautoGrupMsg(hisoka, m);
+                        } catch (e) {
+                                await tolak(hisoka, m, `❌ Gagal matikan semua fitur: ${e.message}`);
                         }
                         return;
                 }
