@@ -1,7 +1,7 @@
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
 
-✨ *7 Fitur Baru*
+✨ *8 Fitur Baru*
 🔧 *11 Bug Fix*
 🚀 *5 Improvement*
 
@@ -36,6 +36,12 @@ _📅 15 Mei 2026_
 > Upload status/story ke semua grup langsung dari jadibot
 > Support kirim gambar, video, audio, atau teks biasa
 > Muncul di menu jadibot seksi STATUS & STORY
+
+> ⚙️ *Command .cekauto*
+> Cek status semua fitur auto bot dalam 1 pesan
+> Tampilkan mana yang aktif 🟢 dan nonaktif 🔴
+> Mencakup 21 fitur: AI, notif, anti-call, cleaner, dll
+> Alias: `.cekauto` `.cekfitur` `.autolist`
 
 > 🤖 *AI Format WA*
 > Respons Gemini otomatis diformat pakai simbol WA
