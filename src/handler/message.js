@@ -1654,23 +1654,15 @@ async function sendCekautoGrupMsg(hisoka, m) {
                 `║  ✅ Aktif: ${String(totalAktif).padStart(2)}  ❌ Mati: ${String(totalMati).padStart(2)}  │ Total: ${CEKAUTO_GROUP_FITUR_LIST.length}\n` +
                 `╚══════════════════════════════╝`;
 
-        const sortToggle = (list, emoji) => {
-                const toggleable = list.filter(f => f.toggleable);
-                const onList  = toggleable.filter(f =>  f.checkFn(cfg, jid)).map(f => makeRow(f, emoji));
-                const offList = toggleable.filter(f => !f.checkFn(cfg, jid)).map(f => makeRow(f, emoji));
-                return [...onList, ...offList];
-        };
+        const getEmoji = (f) => SECURITY_KEYS.includes(f.key) ? '🛡️' : '📺';
+        const allToggleable = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.toggleable);
+        const aktifRows   = allToggleable.filter(f =>  f.checkFn(cfg, jid)).map(f => makeRow(f, getEmoji(f)));
+        const nonaktifRows = allToggleable.filter(f => !f.checkFn(cfg, jid)).map(f => makeRow(f, getEmoji(f)));
 
         const cgrupRows = [
-                {
-                        title: '🛡️ KEAMANAN & MEMBER — Ketuk untuk toggle',
-                        rows: sortToggle(secFitur, '🛡️'),
-                },
-                {
-                        title: '📺 NOTIFIKASI OTOMATIS — Ketuk untuk toggle',
-                        rows: sortToggle(notifFitur, '📺'),
-                },
-        ].filter(s => s.rows.length > 0);
+                ...(aktifRows.length   ? [{ title: `✅ FITUR AKTIF (${aktifRows.length}) — Ketuk untuk nonaktifkan`,    rows: aktifRows   }] : []),
+                ...(nonaktifRows.length ? [{ title: `❌ FITUR NONAKTIF (${nonaktifRows.length}) — Ketuk untuk aktifkan`, rows: nonaktifRows }] : []),
+        ];
 
         let botPpMedia = {};
         try {
