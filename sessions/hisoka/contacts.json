@@ -6392,7 +6392,8 @@
     "id": "6282139672290@s.whatsapp.net",
     "name": "Ananda",
     "lid": "164746439479432@lid",
-    "jid": "6282139672290@s.whatsapp.net"
+    "jid": "6282139672290@s.whatsapp.net",
+    "notify": "Nixel"
   },
   "6282332478213@s.whatsapp.net": {
     "isContact": true,
@@ -31620,5 +31621,19 @@
     "id": "176549462564879@lid",
     "lid": "176549462564879@lid",
     "notify": "Cosmouz"
+  },
+  "218489281364223@lid": {
+    "id": "218489281364223@lid",
+    "lid": "218489281364223@lid",
+    "imgUrl": "changed"
+  },
+  "212712552036@s.whatsapp.net": {
+    "id": "212712552036@s.whatsapp.net",
+    "notify": "~ Fiora Sylvie"
+  },
+  "237477700849919@lid": {
+    "id": "237477700849919@lid",
+    "lid": "237477700849919@lid",
+    "imgUrl": "changed"
   }
 }
