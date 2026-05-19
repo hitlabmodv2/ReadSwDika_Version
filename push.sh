@@ -4029,15 +4029,43 @@ action_import_repo() {
 ⏳ ${imp_status:-importing}
 🕐 ${_ts_ir}" "$_btn_ir" 2>/dev/null &
     echo ""
-    # ── Polling status sampai selesai atau error ─────────────────────────
-    echo -e "  ${C_DIM}▸ Memantau progress import...${C_RESET}"
-    echo -e "  ${C_DIM}  (Ctrl+C untuk berhenti pantau, import tetap berjalan)${C_RESET}"
+    echo -e "  ${C_DIM}Memantau progress import...${C_RESET}"
+    echo -e "  ${C_DIM}(Ctrl+C untuk berhenti pantau, import tetap berjalan di GitHub)${C_RESET}"
     echo ""
-    local poll_count=0 poll_max=30
+    # ── Polling real-time dengan animasi bar ─────────────────────────────
+    local _poll_sf; _poll_sf=$(mktemp)
+    local _poll_pf; _poll_pf=$(mktemp)
+    printf "Memulai import..." > "$_poll_sf"
+    printf "0"                 > "$_poll_pf"
+    local _poll_bw=22
+
+    # Background: spinner + bar animasi terus, baca status dari temp file
+    {
+      local _psi=0
+      local _pspin=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+      printf "\n" >/dev/tty 2>/dev/null
+      while true; do
+        local _ppct _pst _pbf="" _pbe="" _pj=0
+        _ppct=$(cat "$_poll_pf" 2>/dev/null); echo "$_ppct" | grep -qE '^[0-9]+$' || _ppct=0
+        _pst=$(tr -d '\n' < "$_poll_sf" 2>/dev/null | cut -c1-50)
+        local _pf=$(( _ppct * _poll_bw / 100 ))
+        while [ $_pj -lt $_pf ];       do _pbf="${_pbf}█"; _pj=$(( _pj+1 )); done
+        while [ $_pj -lt $_poll_bw ]; do _pbe="${_pbe}░"; _pj=$(( _pj+1 )); done
+        local _psp="${_pspin[$(( _psi % 10 ))]}"
+        printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2mImport berjalan...\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%s\033[0m\n" \
+          "$_pbf" "$_pbe" "$_ppct" "$_psp" "$_pst" >/dev/tty 2>/dev/null
+        _psi=$(( _psi + 1 ))
+        sleep 0.15
+      done
+    } &
+    local _poll_spin_pid=$!
+
+    local poll_count=0 poll_max=75   # 75 × 4s = 5 menit
+    local _poll_final="" poll_text="" poll_status=""
     while [ "$poll_count" -lt "$poll_max" ]; do
       sleep 4
       poll_count=$(( poll_count + 1 ))
-      local poll_raw poll_status poll_text poll_pct
+      local poll_raw poll_pct
       poll_raw=$(curl -s \
         -H "Authorization: token ${TOKEN}" \
         -H "Accept: application/vnd.github+json" \
@@ -4053,55 +4081,59 @@ action_import_repo() {
         | grep -oE '"percent"[[:space:]]*:[[:space:]]*[0-9]+' | head -1 \
         | grep -oE '[0-9]+$')
 
-      # Tampilkan baris status
-      local bar=""
-      if [ -n "$poll_pct" ] && [ "$poll_pct" -ge 0 ] 2>/dev/null; then
-        local filled=$(( poll_pct / 5 ))   # bar 20 karakter
-        local empty=$(( 20 - filled ))
-        bar="["
-        for (( _i=0; _i<filled; _i++ )); do bar="${bar}█"; done
-        for (( _i=0; _i<empty;  _i++ )); do bar="${bar}░"; done
-        bar="${bar}] ${poll_pct}%"
-      fi
+      # Update file untuk spinner
+      printf '%s' "${poll_text:-${poll_status:-importing}}" > "$_poll_sf"
+      [ -n "$poll_pct" ] && printf '%s' "$poll_pct" > "$_poll_pf"
 
       case "$poll_status" in
         complete)
-          echo -e "  ${C_GREEN}✅ Import selesai!${C_RESET}"
-          echo ""
-          printf "  ${C_DIM}URL    ${C_RESET}${C_CYAN}https://github.com/%s/%s${C_RESET}\n" \
-            "$USER" "$imp_repo_name"
-          echo ""
-          break
-          ;;
-        error|authentication_failed|error_stash_import)
-          echo -e "  ${C_RED}❌ Import gagal: ${poll_status}${C_RESET}"
-          [ -n "$poll_text" ] && echo -e "  ${C_RED}   ${poll_text}${C_RESET}"
-          echo ""
-          break
-          ;;
-        auth_failed)
-          echo -e "  ${C_RED}❌ Autentikasi sumber gagal.${C_RESET}"
-          echo -e "  ${C_YELLOW}💡 Coba lagi dengan username/password yang benar.${C_RESET}"
-          echo ""
-          break
-          ;;
-        *)
-          # Masih berjalan — tampilkan satu baris progress
-          local st_disp="${poll_status:-importing}"
-          [ -n "$poll_text" ] && st_disp="$poll_text"
-          if [ -n "$bar" ]; then
-            printf "  ${C_CYAN}%s${C_RESET}  %s\n" "$bar" "$st_disp"
-          else
-            printf "  ${C_DIM}[%2d]${C_RESET} ${C_CYAN}%s${C_RESET}\n" "$poll_count" "$st_disp"
-          fi
-          ;;
+          _poll_final="complete"; break ;;
+        error|authentication_failed|error_stash_import|auth_failed)
+          _poll_final="$poll_status"; break ;;
       esac
     done
-    if [ "$poll_count" -ge "$poll_max" ]; then
-      echo -e "  ${C_YELLOW}⚠️  Import masih berjalan di background.${C_RESET}"
-      printf "  ${C_DIM}Cek di  ${C_RESET}${C_CYAN}https://github.com/%s/%s${C_RESET}\n" \
-        "$USER" "$imp_repo_name"
+
+    # Hentikan spinner background
+    kill "$_poll_spin_pid" 2>/dev/null; wait "$_poll_spin_pid" 2>/dev/null
+
+    # Gambar state akhir in-place
+    if [ "$_poll_final" = "complete" ]; then
+      local _pfull="" _pj2=0
+      while [ $_pj2 -lt $_poll_bw ]; do _pfull="${_pfull}█"; _pj2=$(( _pj2+1 )); done
+      printf "\033[2A\r\033[K  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ Import selesai!\033[0m\n\033[K  \033[32m   https://github.com/%s/%s\033[0m\n" \
+        "$_pfull" "$USER" "$imp_repo_name" >/dev/tty 2>/dev/null
+      echo ""
+      local _ts_ir2; _ts_ir2=$(date '+%H:%M:%S %d %b %Y')
+      local _btn_ir2='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${imp_repo_name}"'"},{"text":"📋 Issues","url":"https://github.com/'"${USER}"'/'"${imp_repo_name}"'/issues"}],[{"text":"🌿 Branches","url":"https://github.com/'"${USER}"'/'"${imp_repo_name}"'/branches"},{"text":"📊 Commits","url":"https://github.com/'"${USER}"'/'"${imp_repo_name}"'/commits"}]]}'
+      send_telegram_photo "https://cdn.myanimelist.net/images/anime/1517/100633.jpg" "📥 <b>IMPORT REPO SELESAI</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${imp_repo_name}</code>
+🔗 github.com/${USER}/${imp_repo_name}
+✅ Import berhasil 100%
+🕐 ${_ts_ir2}" "$_btn_ir2" 2>/dev/null &
+    elif [ -n "$_poll_final" ]; then
+      local _phalf="" _phbe="" _pj3=0
+      while [ $_pj3 -lt $(( _poll_bw * 9 / 10 )) ]; do _phalf="${_phalf}▒"; _pj3=$(( _pj3+1 )); done
+      while [ $_pj3 -lt $_poll_bw ]; do _phbe="${_phbe}░"; _pj3=$(( _pj3+1 )); done
+      printf "\033[2A\r\033[K  [\033[31m%s\033[0m\033[2m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ Import gagal: %s\033[0m\n\033[K  \033[31m   %s\033[0m\n" \
+        "$_phalf" "$_phbe" "$_poll_final" "${poll_text:-cek repo di GitHub}" >/dev/tty 2>/dev/null
+      echo ""
+      [ "$_poll_final" = "auth_failed" ] || [ "$_poll_final" = "authentication_failed" ] && \
+        echo -e "  ${C_YELLOW}💡 Coba lagi dengan username/password sumber yang benar.${C_RESET}"
+    else
+      # Timeout — import masih jalan tapi pantau dihentikan
+      local _ptpct; _ptpct=$(cat "$_poll_pf" 2>/dev/null || echo "0")
+      echo "$_ptpct" | grep -qE '^[0-9]+$' || _ptpct=0
+      local _ptbf="" _ptbe="" _ptj=0
+      local _ptf=$(( _ptpct * _poll_bw / 100 ))
+      while [ $_ptj -lt $_ptf ];       do _ptbf="${_ptbf}█"; _ptj=$(( _ptj+1 )); done
+      while [ $_ptj -lt $_poll_bw ]; do _ptbe="${_ptbe}░"; _ptj=$(( _ptj+1 )); done
+      printf "\033[2A\r\033[K  [\033[33m%s\033[0m\033[2m%s\033[0m] \033[1;33m%3d%%\033[0m  \033[33m⚠️  Timeout pantau (5 menit)\033[0m\n\033[K  \033[33m   Cek manual: github.com/%s/%s\033[0m\n" \
+        "$_ptbf" "$_ptbe" "$_ptpct" "$USER" "$imp_repo_name" >/dev/tty 2>/dev/null
+      echo ""
     fi
+    rm -f "$_poll_sf" "$_poll_pf" 2>/dev/null
   else
     local ierr
     ierr=$(printf '%s' "$imp_body" \
