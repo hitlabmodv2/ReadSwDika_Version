@@ -1934,6 +1934,7 @@ action_self_update() {
   mini_bar_start "Mengunduh push.sh versi ${_new_ver}" 0.05
   local _tmp_dl
   _tmp_dl=$(mktemp)
+  local _upd_ts; _upd_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
   if curl -sf --max-time 20 "$_raw_url" -o "$_tmp_dl" 2>/dev/null; then
     mini_bar_ok "Download selesai!"
     cp push.sh push.sh.bak 2>/dev/null
@@ -1946,6 +1947,17 @@ action_self_update() {
     echo ""
     echo -e "  ${C_YELLOW}🔄  Jalankan ulang script:  ${C_BOLD}bash push.sh${C_RESET}"
     echo ""
+    # ── Notif Telegram: update sukses ────────────────────────────────────
+    local _btn_upd_ok='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"🔄 Lihat Commits","url":"https://github.com/'"${USER}"'/'"${REPO}"'/commits/'"${DEFAULT_BRANCH}"'"}],[{"text":"📝 push.sh Baru","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/push.sh"},{"text":"🚀 Releases","url":"https://github.com/'"${USER}"'/'"${REPO}"'/releases"}]]}'
+    send_telegram_photo "https://cdn.myanimelist.net/images/anime/1337/99013.jpg" "🔄 <b>PUSH SCRIPT BERHASIL DIUPDATE</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${REPO}</code>
+📌 Versi lama : <b>${SCRIPT_VERSION}</b>
+🆕 Versi baru : <b>${_new_ver}</b>
+✅ Status     : <b>Update Sukses</b>
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_upd_ts}" "$_btn_upd_ok" 2>/dev/null &
     printf "  ${C_DIM}Tekan Enter untuk keluar...${C_RESET}"
     read -r </dev/tty
     exit 0
@@ -1954,6 +1966,17 @@ action_self_update() {
     mini_bar_fail "Download gagal"
     echo ""
     echo -e "  ${C_RED}❌  Gagal mengunduh update. Coba lagi nanti.${C_RESET}"
+    # ── Notif Telegram: update gagal ─────────────────────────────────────
+    local _btn_upd_fail='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"🔄 Coba Lagi","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/push.sh"}],[{"text":"🌐 GitHub Status","url":"https://githubstatus.com/"}]]}'
+    send_telegram_photo "https://cdn.myanimelist.net/images/anime/1286/99889.jpg" "🔄 <b>UPDATE PUSH SCRIPT GAGAL</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${REPO}</code>
+📌 Versi lama : <b>${SCRIPT_VERSION}</b>
+🆕 Versi target : <b>${_new_ver}</b>
+❌ Status     : <b>Download Gagal</b>
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_upd_ts}" "$_btn_upd_fail" 2>/dev/null &
     sleep 2
   fi
 }

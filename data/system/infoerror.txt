@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 19/05/2026, 13.39.49  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 19/05/2026, 13.41.49  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 6
-  Total Kejadian Error       : 47
+  Total Kejadian Error       : 49
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [6 jenis, 47 kejadian total]
+  DAFTAR ERROR LENGKAP  [6 jenis, 49 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -129,9 +129,9 @@ Require stack:
 │
 │  DETAIL
 │  Sumber      : AlqanimeNotif
-│  Frekuensi   : 22x (duplikat digabung)
+│  Frekuensi   : 24x (duplikat digabung)
 │  Pertama     : 17/05/2026, 11.46.31
-│  Terakhir    : 19/05/2026, 13.39.49
+│  Terakhir    : 19/05/2026, 13.41.49
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [AlqanimeNotif] Error scheduler: Cannot find module 'axios'
@@ -140,6 +140,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 6 jenis, 47 kejadian
-  Terakhir diperbarui: 19/05/2026, 13.39.49
+  End of Report  —  Total: 6 jenis, 49 kejadian
+  Terakhir diperbarui: 19/05/2026, 13.41.49
 ════════════════════════════════════════════════════════════════════════
