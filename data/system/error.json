@@ -5,9 +5,9 @@
       "source": "Animasu",
       "message": "[Animasu] ❌ Gagal fetch API posts: Request failed with status code 403",
       "stack": "Error: [Animasu] ❌ Gagal fetch API posts: Request failed with status code 403\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at Object.cariEpisodeBaru (/home/runner/workspace/src/scrape/animasu.cjs:421:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async runAnimasu (file:///home/runner/workspace/index.js:815:69)",
-      "count": 1,
+      "count": 2,
       "firstSeen": "2026-05-19T09:51:13.431Z",
-      "lastSeen": "2026-05-19T09:51:13.431Z"
+      "lastSeen": "2026-05-19T09:54:20.702Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[HotReload] ✗ Gagal reload 'src/handler/message.js', pakai versi lama.\u001b[Nm",

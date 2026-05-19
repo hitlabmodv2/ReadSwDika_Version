@@ -1695,6 +1695,14 @@ async function sendCekautoGrupMsg(hisoka, m) {
         } : {};
 
         const filteredRows = cgrupRows.filter(s => s.rows.length > 0);
+
+        // Flat list semua fitur (aktif di atas, nonaktif di bawah) untuk button kedua
+        const GC_SEC_KEYS_BTN = ['antipornGrup', 'antiTagSWGrup', 'welcome', 'goodbye'];
+        const allToggleable = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.toggleable);
+        const allOnRows  = allToggleable.filter(f =>  f.checkFn(cfg, jid)).map(f => makeRow(f, GC_SEC_KEYS_BTN.includes(f.key) ? '🛡️' : '📺'));
+        const allOffRows = allToggleable.filter(f => !f.checkFn(cfg, jid)).map(f => makeRow(f, GC_SEC_KEYS_BTN.includes(f.key) ? '🛡️' : '📺'));
+        const flatAllRows = [{ title: '⚡ Semua Fitur Grup — Aktif di atas, mati di bawah', rows: [...allOnRows, ...allOffRows] }];
+
         if (filteredRows.length) {
                 const cgrupMsg = generateWAMessageFromContent(
                         m.from,
@@ -1712,11 +1720,11 @@ async function sendCekautoGrupMsg(hisoka, m) {
                                                                 buttons: [
                                                                         {
                                                                                 name: 'single_select',
-                                                                                buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle Fitur Grup', sections: filteredRows })
+                                                                                buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle per Kategori', sections: filteredRows })
                                                                         },
                                                                         {
-                                                                                name: 'quick_reply',
-                                                                                buttonParamsJson: JSON.stringify({ display_text: '✅ Auto Semua ON', id: '__cgrup_allon__' })
+                                                                                name: 'single_select',
+                                                                                buttonParamsJson: JSON.stringify({ title: '⚡ Lihat Semua Fitur', sections: flatAllRows })
                                                                         }
                                                                 ]
                                                         }
