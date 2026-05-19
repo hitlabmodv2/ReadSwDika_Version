@@ -1308,6 +1308,8 @@ const CEKAUTO_FITUR_LIST = [
         { key: 'telegram',       nama: 'Telegram Bridge',  cmd: '.telegram on/off',        type: 'global', toggleKey: 'telegram',       toggleable: true  },
         { key: 'welcomeGoodbye', nama: 'Welcome/Goodbye',  cmd: '.welcome on/off',         type: 'global', toggleable: false             },
         { key: 'wilyAI',         nama: 'Wily AI',          cmd: '.wilyai on/off',          type: 'global', toggleKey: 'wilyAI',         toggleable: true  },
+        { key: 'antiPorn',       nama: 'Anti Porn',        cmd: '.antiporn global on/off', type: 'global', toggleKey: 'antiPorn',       toggleable: true  },
+        { key: 'cekswTracking',  nama: 'Cek SW Tracking',  cmd: '.ceksw on/off',           type: 'custom', toggleKey: 'cekswTracking',  toggleable: true,  checkFn: (cfg) => cfg.cekswTracking !== false },
         { key: 'alqanimenotif',  nama: 'Alqanime Notif',   cmd: '.alqanimenotif on/off',   type: 'group',  toggleable: false             },
         { key: 'animasu',        nama: 'Animasu Notif',    cmd: '.animasu on/off',         type: 'group',  toggleable: false             },
         { key: 'malnews',        nama: 'MAL News',         cmd: '.malnews on/off',         type: 'group',  toggleable: false             },
@@ -1322,7 +1324,9 @@ async function sendCekautoMsg(hisoka, m) {
         for (const f of CEKAUTO_FITUR_LIST) {
                 const val = cfg[f.key];
                 let isOn = false;
-                if (f.type === 'global') {
+                if (f.checkFn) {
+                        isOn = f.checkFn(cfg);
+                } else if (f.type === 'global') {
                         isOn = val?.enabled === true;
                 } else {
                         const groups = val?.groups || {};
@@ -3365,14 +3369,19 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 if ((action === 'on' || action === 'off') && configKey) {
                                         try {
                                                 const cfgToggle = loadConfig();
-                                                const currentVal = cfgToggle[configKey] || {};
-                                                cfgToggle[configKey] = { ...currentVal, enabled: action === 'on' };
 
-                                                if (configKey === 'autoCleaner') {
+                                                if (configKey === 'cekswTracking') {
+                                                        cfgToggle.cekswTracking = action === 'on';
+                                                        saveConfig(cfgToggle);
+                                                } else if (configKey === 'autoCleaner') {
+                                                        const currentVal = cfgToggle[configKey] || {};
+                                                        cfgToggle[configKey] = { ...currentVal, enabled: action === 'on' };
                                                         saveConfig(cfgToggle);
                                                         if (action === 'on') restartAutoCleaner();
                                                         else stopAutoCleaner();
                                                 } else if (configKey === 'autoOnline') {
+                                                        const currentVal = cfgToggle[configKey] || {};
+                                                        cfgToggle[configKey] = { ...currentVal, enabled: action === 'on' };
                                                         saveConfig(cfgToggle);
                                                         if (global.startAutoOnline) {
                                                                 global.startAutoOnline();
@@ -3386,6 +3395,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 global.hisokaClient.sendPresenceUpdate('available');
                                                         }
                                                 } else {
+                                                        const currentVal = cfgToggle[configKey] || {};
+                                                        cfgToggle[configKey] = { ...currentVal, enabled: action === 'on' };
                                                         saveConfig(cfgToggle);
                                                 }
 
@@ -3397,6 +3408,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         autoSimi: 'Auto Simi', autoTyping: 'Auto Typing',
                                                         reactApi: 'React API', sessionCleaner: 'Session Cleaner',
                                                         telegram: 'Telegram Bridge', wilyAI: 'Wily AI',
+                                                        antiPorn: 'Anti Porn', cekswTracking: 'Cek SW Tracking',
                                                 };
                                                 const nama = namaMap[configKey] || configKey;
                                                 const icon = action === 'on' ? '✅' : '❌';
