@@ -1,6 +1,18 @@
 {
   "terkirim": [
     {
+      "id": "hyakki-yakoushou::7",
+      "judul": "Hyakki Yakoushou",
+      "epNum": 7,
+      "waktuKirim": "2026-05-19T14:05:39.484Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1589/156720l.jpg",
+      "url": "https://alqanime.net/hyakki-yakoushou/"
+    },
+    {
       "id": "iya-na-kao-sare-nagara-opantsu-misete-moraitai-ver-3-0::0",
       "judul": "Iya na Kao sare nagara Opantsu Misete Moraitai ver 3.0(BD)",
       "epNum": 0,

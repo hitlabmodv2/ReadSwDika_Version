@@ -270,6 +270,65 @@ mini_bar_fail() {
     "$half" "$be" "$label" >/dev/tty 2>/dev/null
 }
 
+# ── Varian 2-baris: bar (baris 1) + spinner & info kontekstual (baris 2) ──────
+# _MB_SUB_FILE : opsional — kalau di-set, baris 2 dibaca live dari file ini
+_MB_SUB_FILE=""
+
+mini_bar2_start() {
+  local label="$1" sub="${2:-}" delay="${3:-0.04}"
+  _MB_BG_PID=""
+  local _sf="$_MB_SUB_FILE"          # tangkap path file sebelum fork
+  printf "\n" >/dev/tty 2>/dev/null  # baris kosong untuk area baris-2
+  {
+    local p=0 si=0
+    local spin=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+    while [ "$p" -le 92 ]; do
+      local f=$(( p * _MB_W / 100 )) bf="" be="" j=0
+      while [ $j -lt $f ];      do bf="${bf}█"; j=$(( j+1 )); done
+      while [ $j -lt $_MB_W ]; do be="${be}░"; j=$(( j+1 )); done
+      local sp="${spin[$(( si % 10 ))]}"
+      local _s="$sub"
+      [ -n "$_sf" ] && [ -f "$_sf" ] && _s=$(tr -d '\n' < "$_sf" 2>/dev/null | cut -c1-50)
+      printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2m%s\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%s\033[0m\n" \
+        "$bf" "$be" "$p" "$label" "$sp" "$_s" >/dev/tty 2>/dev/null
+      p=$(( p+1 )); si=$(( si+1 ))
+      sleep "$delay"
+    done
+    local bf92="" j=0
+    while [ $j -lt $(( 92 * _MB_W / 100 )) ]; do bf92="${bf92}█"; j=$(( j+1 )); done
+    local be92="" ; while [ $j -lt $_MB_W ]; do be92="${be92}░"; j=$(( j+1 )); done
+    while true; do
+      local sp="${spin[$(( si % 10 ))]}"
+      local _s="$sub"
+      [ -n "$_sf" ] && [ -f "$_sf" ] && _s=$(tr -d '\n' < "$_sf" 2>/dev/null | cut -c1-50)
+      printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m 92%%\033[0m  \033[2m%s\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%s\033[0m\n" \
+        "$bf92" "$be92" "$label" "$sp" "$_s" >/dev/tty 2>/dev/null
+      si=$(( si+1 ))
+      sleep 0.15
+    done
+  } &
+  _MB_BG_PID=$!
+}
+
+mini_bar2_ok() {
+  local label="${1:-Selesai}" sub="${2:-}"
+  [ -n "$_MB_BG_PID" ] && { kill "$_MB_BG_PID" 2>/dev/null; wait "$_MB_BG_PID" 2>/dev/null; _MB_BG_PID=""; }
+  local full="" j=0
+  while [ $j -lt $_MB_W ]; do full="${full}█"; j=$(( j+1 )); done
+  printf "\033[2A\r\033[K  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ %s\033[0m            \n\033[K  \033[32m   %s\033[0m\n" \
+    "$full" "$label" "$sub" >/dev/tty 2>/dev/null
+}
+
+mini_bar2_fail() {
+  local label="${1:-Gagal}" sub="${2:-}"
+  [ -n "$_MB_BG_PID" ] && { kill "$_MB_BG_PID" 2>/dev/null; wait "$_MB_BG_PID" 2>/dev/null; _MB_BG_PID=""; }
+  local half="" be="" j=0
+  while [ $j -lt $(( _MB_W * 9 / 10 )) ]; do half="${half}▒"; j=$(( j+1 )); done
+  while [ $j -lt $_MB_W ]; do be="${be}░"; j=$(( j+1 )); done
+  printf "\033[2A\r\033[K  [\033[31m%s\033[0m\033[2m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ %s\033[0m            \n\033[K  \033[31m   %s\033[0m\n" \
+    "$half" "$be" "$label" "$sub" >/dev/tty 2>/dev/null
+}
+
 CUSTOM_MSG="${1:-}"
 
 # ===== Startup loading — realtime step-by-step (0–100%) =====
@@ -4620,12 +4679,18 @@ action_rename_branch() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   ✏️   EDIT NAMA BRANCH          │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  mini_bar_start "Memuat daftar branch ..." 0.06
+  _MB_SUB_FILE=$(mktemp)
+  printf "Menghubungi GitHub API..." > "$_MB_SUB_FILE"
+  mini_bar2_start "Memuat daftar branch ..." "Menghubungi GitHub API..." 0.06
   local branches=()
   while IFS= read -r b; do
-    [ -n "$b" ] && branches+=("$b")
+    if [ -n "$b" ]; then
+      branches+=("$b")
+      printf "${#branches[@]} branch ditemukan..." > "$_MB_SUB_FILE"
+    fi
   done < <(fetch_branches_recent)
-  mini_bar_ok "Daftar branch siap"
+  rm -f "$_MB_SUB_FILE" 2>/dev/null; _MB_SUB_FILE=""
+  mini_bar2_ok "Daftar branch siap" "${#branches[@]} branch tersedia ✓"
 
   local total=${#branches[@]}
   if [ "$total" -eq 0 ]; then
@@ -4857,7 +4922,7 @@ action_create_branch() {
   fi
 
   # Cek apakah branch sudah ada via GitHub API
-  mini_bar_start "Cek nama branch ..." 0.01
+  mini_bar2_start "Cek nama branch ..." "Verifikasi ke GitHub API..." 0.015
   local chk_http
   chk_http=$(curl -s -o /dev/null -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4865,15 +4930,15 @@ action_create_branch() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/git/ref/heads/${name}" \
     2>/dev/null)
-  mini_bar_ok "Cek selesai"
   if [ "$chk_http" = "200" ]; then
-    echo -e "  ${C_RED}✖ Branch '${name}' sudah ada di GitHub.${C_RESET}"
+    mini_bar2_fail "Branch sudah ada" "Branch '${name}' sudah exist di GitHub"
     sleep 2
     return
   fi
+  mini_bar2_ok "Nama tersedia" "Branch '${name}' belum ada ✓"
 
   # Ambil SHA tip dari DEFAULT_BRANCH via GitHub API (tidak butuh switch branch lokal)
-  mini_bar_start "Ambil SHA ${DEFAULT_BRANCH} ..." 0.01
+  mini_bar2_start "Ambil SHA ${DEFAULT_BRANCH} ..." "Fetch commit terbaru dari remote..." 0.015
   local sha_resp sha
   sha_resp=$(curl -s -o /tmp/_gh_sha.json -w "%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4881,26 +4946,23 @@ action_create_branch() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${USER}/${REPO}/git/ref/heads/${DEFAULT_BRANCH}" \
     2>/dev/null)
-  mini_bar_ok "SHA didapat"
-
   if [ "$sha_resp" != "200" ]; then
-    echo -e "  ${C_RED}✖ Gagal ambil SHA branch ${DEFAULT_BRANCH} (HTTP ${sha_resp})${C_RESET}"
+    mini_bar2_fail "Gagal ambil SHA" "HTTP ${sha_resp} dari GitHub"
     rm -f /tmp/_gh_sha.json
     sleep 2
     return
   fi
-
   sha=$(grep -o '"sha": *"[^"]*"' /tmp/_gh_sha.json | head -1 | sed 's/"sha": *"//;s/"//')
   rm -f /tmp/_gh_sha.json
-
   if [ -z "$sha" ]; then
-    echo -e "  ${C_RED}✖ SHA tidak ditemukan dari response GitHub${C_RESET}"
+    mini_bar2_fail "Gagal ambil SHA" "SHA tidak ada di response GitHub"
     sleep 2
     return
   fi
+  mini_bar2_ok "SHA didapat" "${sha:0:7} ← ${DEFAULT_BRANCH}"
 
   # Buat branch di GitHub via API
-  mini_bar_start "Buat branch ${name} ..." 0.02
+  mini_bar2_start "Buat branch ${name} ..." "Kirim POST ke GitHub API..." 0.02
   local create_http
   create_http=$(curl -s -o /tmp/_gh_create.json -w "%{http_code}" \
     -X POST \
@@ -4910,21 +4972,15 @@ action_create_branch() {
     "https://api.github.com/repos/${USER}/${REPO}/git/refs" \
     -d "{\"ref\":\"refs/heads/${name}\",\"sha\":\"${sha}\"}" \
     2>/dev/null)
-  if [ "$create_http" = "201" ]; then
-    mini_bar_ok "Branch dibuat"
-  else
-    mini_bar_fail "Gagal buat branch"
-  fi
-
   if [ "$create_http" != "201" ]; then
     local api_msg
     api_msg=$(grep -o '"message": *"[^"]*"' /tmp/_gh_create.json 2>/dev/null | head -1 | sed 's/"message": *"//;s/"//')
-    echo -e "  ${C_RED}❌ Gagal buat branch (HTTP ${create_http})${C_RESET}"
-    [ -n "$api_msg" ] && echo -e "  ${C_DIM}   GitHub: ${api_msg}${C_RESET}"
+    mini_bar2_fail "Gagal buat branch" "HTTP ${create_http}${api_msg:+ — ${api_msg}}"
     rm -f /tmp/_gh_create.json
     prompt_back_or_exit
     return
   fi
+  mini_bar2_ok "Branch dibuat" "${USER}/${REPO} → ${name} ✓"
 
   rm -f /tmp/_gh_create.json
   echo -e "  ${C_GREEN}✅ Branch '${C_BOLD}${name}${C_RESET}${C_GREEN}' berhasil dibuat!${C_RESET}"
@@ -5180,12 +5236,18 @@ show_menu() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   📤  UPLOAD — PILIH BRANCH      │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  mini_bar_start "Memuat daftar branch ..." 0.06
+  _MB_SUB_FILE=$(mktemp)
+  printf "Menghubungi GitHub API..." > "$_MB_SUB_FILE"
+  mini_bar2_start "Memuat daftar branch ..." "Menghubungi GitHub API..." 0.06
   local branches=()
   while IFS= read -r b; do
-    [ -n "$b" ] && branches+=("$b")
+    if [ -n "$b" ]; then
+      branches+=("$b")
+      printf "${#branches[@]} branch ditemukan..." > "$_MB_SUB_FILE"
+    fi
   done < <(fetch_branches_recent)
-  mini_bar_ok "Daftar branch siap"
+  rm -f "$_MB_SUB_FILE" 2>/dev/null; _MB_SUB_FILE=""
+  mini_bar2_ok "Daftar branch siap" "${#branches[@]} branch tersedia ✓"
 
   local total=${#branches[@]}
   local total_pages=$(( (total + _SM_PAGE_SIZE - 1) / _SM_PAGE_SIZE ))
