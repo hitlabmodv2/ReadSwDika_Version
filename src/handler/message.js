@@ -1695,7 +1695,20 @@ async function sendCekautoGrupMsg(hisoka, m) {
                 quotedMessage: m.message || {},
         } : {};
 
-        const filteredRows = cgrupRows.filter(s => s.rows.length > 0);
+        const allOffRow = {
+                header: '❌ Matikan Semua Fitur GC',
+                title: 'Nonaktifkan semua',
+                description: 'Matikan semua fitur grup sekaligus dalam satu ketukan',
+                id: '__cgrup_alloff__',
+        };
+        const allOnRow = {
+                header: '✅ Aktifkan Semua Fitur GC',
+                title: 'Aktifkan semua',
+                description: 'Nyalakan semua fitur grup sekaligus dalam satu ketukan',
+                id: '__cgrup_allon__',
+        };
+        const actionSection = { title: '⚡ AKSI CEPAT — Terapkan ke semua fitur', rows: [allOffRow, allOnRow] };
+        const filteredRows = [actionSection, ...cgrupRows.filter(s => s.rows.length > 0)];
 
         if (filteredRows.length) {
                 const cgrupMsg = generateWAMessageFromContent(
@@ -1712,10 +1725,6 @@ async function sendCekautoGrupMsg(hisoka, m) {
                                                         body: { text: txt },
                                                         nativeFlowMessage: {
                                                                 buttons: [
-                                                                        {
-                                                                                name: 'quick_reply',
-                                                                                buttonParamsJson: JSON.stringify({ display_text: '❌ Matikan Semua GC', id: '__cgrup_alloff__' })
-                                                                        },
                                                                         {
                                                                                 name: 'single_select',
                                                                                 buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle Fitur Grup', sections: filteredRows })
