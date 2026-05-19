@@ -1853,10 +1853,16 @@ async function sendCekautoMsg(hisoka, m) {
                                                         } : {}),
                                                         body: { text: txt },
                                                         nativeFlowMessage: {
-                                                                buttons: [{
-                                                                        name: 'single_select',
-                                                                        buttonParamsJson: JSON.stringify({ title: '⚙️ Pilih & Toggle Fitur Bot', sections: cautoRows })
-                                                                }]
+                                                                buttons: [
+                                                                        {
+                                                                                name: 'single_select',
+                                                                                buttonParamsJson: JSON.stringify({ title: '⚙️ Pilih & Toggle Fitur Bot', sections: cautoRows })
+                                                                        },
+                                                                        ...(m.isGroup ? [{
+                                                                                name: 'quick_reply',
+                                                                                buttonParamsJson: JSON.stringify({ display_text: '🏘️ Lihat Fitur Grup', id: '__cekauto_gc__' })
+                                                                        }] : [])
+                                                                ]
                                                         }
                                                 }
                                         }
