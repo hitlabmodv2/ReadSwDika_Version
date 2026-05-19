@@ -2915,14 +2915,22 @@ action_switch_default() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   🔀  GANTI DEFAULT BRANCH       │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  mini_bar_start "Memuat daftar branch ..." 0.06
-
+  _MB_SUB_FILE=$(mktemp)
+  printf "Menghubungi GitHub API..." > "$_MB_SUB_FILE"
+  mini_bar2_start "Memuat daftar branch ..." "Menghubungi GitHub API..." 0.06
   local branches=()
   while IFS= read -r b; do
-    [ -n "$b" ] && [ "$b" != "$DEFAULT_BRANCH" ] && branches+=("$b")
+    if [ -n "$b" ] && [ "$b" != "$DEFAULT_BRANCH" ]; then
+      branches+=("$b")
+      printf "${#branches[@]} branch ditemukan..." > "$_MB_SUB_FILE"
+    fi
   done < <(fetch_branches_recent)
-
-  if [ "${#branches[@]}" -eq 0 ]; then mini_bar_fail "Tidak ada branch"; else mini_bar_ok "${#branches[@]} branch dimuat"; fi
+  rm -f "$_MB_SUB_FILE" 2>/dev/null; _MB_SUB_FILE=""
+  if [ "${#branches[@]}" -eq 0 ]; then
+    mini_bar2_fail "Tidak ada branch lain" "Hanya ada default branch (${DEFAULT_BRANCH})"
+  else
+    mini_bar2_ok "Daftar branch siap" "${#branches[@]} branch tersedia ✓"
+  fi
 
   local total=${#branches[@]}
   local total_pages=$(( (total + _GD_PAGE_SIZE - 1) / _GD_PAGE_SIZE ))
@@ -3053,7 +3061,7 @@ action_switch_default() {
   local old_default="$DEFAULT_BRANCH"
 
   echo ""
-  echo -e "  ${C_CYAN}▸${C_RESET} Menghubungi GitHub API untuk ganti default branch..."
+  mini_bar2_start "Ganti default branch ..." "Kirim PATCH ke GitHub API..." 0.05
 
   # Panggil GitHub API untuk benar-benar ganti default branch di remote
   local api_resp api_http
@@ -3067,6 +3075,7 @@ action_switch_default() {
   api_http="${api_resp}"
 
   if [ "$api_http" = "200" ]; then
+    mini_bar2_ok "Default branch diubah" "${old_default} → ${new_default} ✓"
     # Sukses — update variabel lokal & simpan ke push.sh
     DEFAULT_BRANCH="$new_default"
     sed -i "s|^DEFAULT_BRANCH=.*|DEFAULT_BRANCH=\"${new_default}\"|" "$0" 2>/dev/null || true
@@ -3088,6 +3097,7 @@ action_switch_default() {
     # Gagal — tampilkan error dari API
     local api_msg
     api_msg=$(grep -o '"message":"[^"]*"' /tmp/_gh_switch.json 2>/dev/null | head -1 | sed 's/"message":"//;s/"//')
+    mini_bar2_fail "Gagal HTTP ${api_http}" "${api_msg:-error dari GitHub API}"
     echo ""
     echo -e "  ${C_RED}❌ Gagal ubah default branch di GitHub (HTTP ${api_http})${C_RESET}"
     [ -n "$api_msg" ] && echo -e "  ${C_DIM}   GitHub: ${api_msg}${C_RESET}"
@@ -4900,14 +4910,14 @@ action_rename_branch() {
   echo -e "  ${C_DIM}${old_name}${C_RESET} ${C_BOLD}→${C_RESET} ${C_GREEN}${new_name}${C_RESET}"
   echo ""
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
-  echo -e "  ${C_GREEN}1${C_RESET} ${C_BOLD}›${C_RESET} Lanjut rename"
-  echo -e "  ${C_RED}0${C_RESET} ${C_BOLD}›${C_RESET} Batal"
+  echo -e "  ${C_GREEN}y${C_RESET} ${C_BOLD}›${C_RESET} Lanjut rename      ${C_RED}n${C_RESET} ${C_BOLD}›${C_RESET} Batal"
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
   printf "  ${C_BOLD}▸ ${C_RESET}"
 
   local confirm
-  read -r confirm
-  if [ "$confirm" != "1" ]; then
+  read -r confirm </dev/tty
+  confirm=$(printf '%s' "$confirm" | tr '[:upper:]' '[:lower:]' | tr -d ' \r\n')
+  if [ "$confirm" != "y" ]; then
     echo -e "  ${C_YELLOW}↩ Dibatalkan.${C_RESET}"
     sleep 1
     return
@@ -4915,7 +4925,7 @@ action_rename_branch() {
 
   # ── Panggil GitHub API: POST /repos/{owner}/{repo}/branches/{branch}/rename ──
   echo ""
-  echo -e "  ${C_CYAN}▸${C_RESET} Menghubungi GitHub API untuk rename branch..."
+  mini_bar2_start "Rename branch ..." "Kirim POST ke GitHub API..." 0.05
 
   local api_http
   api_http=$(curl -s -o /tmp/_gh_renbranch.json -w "%{http_code}" \
@@ -4927,6 +4937,7 @@ action_rename_branch() {
     -d "{\"new_name\":\"${new_name}\"}" 2>/dev/null)
 
   if [ "$api_http" = "201" ]; then
+    mini_bar2_ok "Branch di-rename" "${old_name} → ${new_name} ✓"
     echo ""
     echo -e "  ${C_GREEN}✅ Branch berhasil di-rename di GitHub!${C_RESET}"
     echo -e "  ${C_DIM}${old_name}${C_RESET} ${C_BOLD}→${C_RESET} ${C_GREEN}${new_name}${C_RESET}"
@@ -4950,6 +4961,7 @@ action_rename_branch() {
     local api_msg
     api_msg=$(grep -o '"message": *"[^"]*"' /tmp/_gh_renbranch.json 2>/dev/null \
       | head -1 | sed 's/"message": *"//;s/"//')
+    mini_bar2_fail "Gagal HTTP ${api_http}" "${api_msg:-error dari GitHub API}"
     echo ""
     echo -e "  ${C_RED}❌ Gagal rename branch (HTTP ${api_http})${C_RESET}"
     [ -n "$api_msg" ] && echo -e "  ${C_DIM}   GitHub: ${api_msg}${C_RESET}"
