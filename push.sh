@@ -636,12 +636,57 @@ setup_token() {
       echo "" >&2
       echo -e "  ${C_DIM}Menjalankan npm install — harap tunggu...${C_RESET}" >&2
       echo "" >&2
-      # Progress bar animasi selama npm install
+      # ── Live display: progress bar + nama paket real-time ─────────────────
       local _nm_start_ts; _nm_start_ts=$(date '+%s')
-      mini_bar_start "npm install" 0.06
-      local _nm_log _nm_exit
-      _nm_log=$(npm install 2>&1)
-      _nm_exit=$?
+      local _nm_tmplog; _nm_tmplog=$(mktemp)
+      # Jalankan npm install di background, output ke temp file
+      npm install >"$_nm_tmplog" 2>&1 &
+      local _npm_bg_pid=$!
+      # Spinner chars untuk animasi paket
+      local _spin_nm=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+      local _si=0 _bw=22 _p=0
+      # Print baris kosong untuk area 2-baris (bar + paket)
+      printf "\n" >/dev/tty 2>/dev/null
+      while kill -0 "$_npm_bg_pid" 2>/dev/null; do
+        # Hitung packages yg sudah ada di node_modules (real-time)
+        local _cnt=0
+        [ -d node_modules ] && _cnt=$(ls -1 node_modules 2>/dev/null | grep -c '[^.]' || echo 0)
+        # Ambil nama paket terakhir dari log (baris yg ada @ versi)
+        local _cur_pkg
+        _cur_pkg=$(grep -oE '[a-zA-Z@][a-zA-Z0-9@/_.-]+@[0-9][0-9a-zA-Z._-]*' "$_nm_tmplog" 2>/dev/null | tail -1)
+        [ -z "$_cur_pkg" ] && _cur_pkg=$(tail -1 "$_nm_tmplog" 2>/dev/null | tr -d '\r' | cut -c1-40)
+        [ -z "$_cur_pkg" ] && _cur_pkg="resolving..."
+        # Batasi panjang nama paket
+        local _pkg_display; _pkg_display=$(printf '%.38s' "$_cur_pkg")
+        # Tahan bar di 92% selama masih jalan
+        [ "$_p" -lt 92 ] && _p=$(( _p + 1 ))
+        local _f=$(( _p * _bw / 100 ))
+        local _bf="" _be="" _j=0
+        while [ $_j -lt $_f ];   do _bf="${_bf}█"; _j=$(( _j+1 )); done
+        while [ $_j -lt $_bw ];  do _be="${_be}░"; _j=$(( _j+1 )); done
+        local _sp="${_spin_nm[$(( _si % 10 ))]}"
+        _si=$(( _si + 1 ))
+        # Update 2 baris: naik ke baris bar dulu (cursor up 2)
+        printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2mnpm install\033[0m\n\033[K  \033[36m%s\033[0m \033[2m%-38s\033[0m  \033[1;33m%s pkg\033[0m\n" \
+          "$_bf" "$_be" "$_p" "$_sp" "$_pkg_display" "$_cnt" >/dev/tty 2>/dev/null
+        sleep 0.12
+      done
+      wait "$_npm_bg_pid"
+      local _nm_exit=$?
+      local _nm_log; _nm_log=$(cat "$_nm_tmplog" 2>/dev/null)
+      rm -f "$_nm_tmplog" 2>/dev/null
+      # Tampilkan bar 100% / gagal, bersihkan baris paket
+      local _bw2=22 _full=""
+      local _j2=0; while [ $_j2 -lt $_bw2 ]; do _full="${_full}█"; _j2=$(( _j2+1 )); done
+      if [ "$_nm_exit" = "0" ]; then
+        printf "\033[2A\r\033[K  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ selesai!\033[0m\n\033[K\n" \
+          "$_full" >/dev/tty 2>/dev/null
+      else
+        local _half="" _j3=0
+        while [ $_j3 -lt $_bw2 ]; do _half="${_half}▒"; _j3=$(( _j3+1 )); done
+        printf "\033[2A\r\033[K  [\033[31m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ gagal\033[0m\n\033[K\n" \
+          "$_half" >/dev/tty 2>/dev/null
+      fi
       local _nm_end_ts; _nm_end_ts=$(date '+%s')
       local _nm_duration=$(( _nm_end_ts - _nm_start_ts ))
       local _nm_ts; _nm_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
