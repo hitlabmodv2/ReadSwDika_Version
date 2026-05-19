@@ -1,64 +1,74 @@
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
-📦 22 Update | 🔧 11 Bug Fix | ✨ 6 Fitur Baru | 🚀 7 Improvement
+✨ 6 Fitur Baru  |  🔧 11 Bug Fix  |  🚀 5 Improvement
 
 ━━━━━━━━━━━━━━━━━━━━━━
-
 ✨ *FITUR BARU*
+━━━━━━━━━━━━━━━━━━━━━━
 
-> 🔞 *Anti-Porn* — Deteksi & hapus otomatis konten 18+ di grup
-> Pakai AI lokal (nsfwjs), tanpa API key, deteksi gambar/stiker/video
-> Sistem warning bertahap, auto-kick saat limit, owner bypass
+> 🔞 *Anti-Porn*
+> Deteksi & hapus otomatis konten 18+ di grup
+> Pakai AI lokal, tanpa API key — gambar, stiker, video
+> Warning bertahap → auto-kick saat limit, owner bypass
 
-> 🌐 *Speedtest* — Test kecepatan internet bot realtime
-> Ukur Download, Upload, Ping, Jitter + info ISP & IP
+> 🌐 *Speedtest*
+> Test kecepatan internet bot secara realtime
+> Download, Upload, Ping, Jitter + info ISP & IP
 > Alias: `.speedtest` `.speed` `.cekspeed` `.testnet`
 
-> 📰 *MAL News* — Notifikasi berita anime dari MyAnimeList ke grup WA
-> Ambil via RSS feed myanimelist.net, judul & ringkasan auto-translate ke Indonesia
-> Aktifkan per grup lewat command `.malnews`
+> 📰 *MAL News*
+> Notifikasi berita anime dari MyAnimeList ke grup WA
+> Auto-translate judul & ringkasan ke Bahasa Indonesia
+> Aktifkan per grup: `.malnews`
 
-> 📺 *TVOne News* — Notifikasi berita terkini dari tvonenews.com ke grup WA
-> Scraping otomatis setiap 5 menit, kirim ke grup saat ada berita baru
-> Lengkap dengan gambar, kategori, dan link artikel
-> Aktifkan per grup lewat command `.tvone`
+> 📺 *TVOne News*
+> Notifikasi berita terkini dari TVOne ke grup WA
+> Update otomatis, lengkap gambar, kategori & link
+> Aktifkan per grup: `.tvone`
 
-> 🖼️ *Command .hd / .remini* — Kini bisa dipakai user Jadibot
+> 🖼️ *Command .hd / .remini*
+> Perjelas foto blur — kini bisa dipakai user Jadibot
 
-> 🤖 *AI Format WA* — Respons Gemini otomatis pakai simbol WA
-> Bold, italic, bullet, header, garis — rapi tanpa format markdown
+> 🤖 *AI Format WA*
+> Respons Gemini otomatis diformat pakai simbol WA
+> Bold, italic, bullet, header — rapi tanpa markdown
 
 ━━━━━━━━━━━━━━━━━━━━━━
-
 🔧 *BUG FIX*
-
-> 🎯 *No-Prefix Command* — Tidak lagi respons kalau ada kata tambahan
-> 29 command standalone dilindungi guard extra words
-
-> 🎌 *Animasu* — URL season 2/3 selalu 404 → fallback URL dari halaman episode
-> 🔁 *Animasu* — `simulasi()` crash saat slug 404 → pakai fallback URL
-> 📊 *Animasu* — `getAiringStatus()` silent drop season lanjutan → diperbaiki
-> 📨 *Animasu* — Notifikasi episode sama muncul 2x → dedup by slug + epNum
-
-> 🎌 *Alqanime Notif* — Post gagal-fetch tidak dicoba ulang → retry TTL 30 menit
-> Post yang terbit tepat di batas window sering terlewat → buffer waktu +3 menit
-
-> ⚡ *Speedtest* — `require is not defined` di ES module → ganti ke `_require()`
-
-> 🛡️ *Anti Call Jadibot* — Tidak bisa tolak panggilan di mode QR → diperbaiki
-> 🔕 *Anti Call Jadibot* — Command `ac` / `acv` tidak direspons → whitelist ditambah
-> 🚧 *Anti Call* — Diblock guard saat kirim ke bot utama → guard diperbarui
-> 💾 *Anti Call* — Setting tersimpan ke config bot utama → kini per nomor jadibot
-
 ━━━━━━━━━━━━━━━━━━━━━━
 
+> 🎯 *No-Prefix Command*
+> Bot tidak lagi respons kalau ada kata tambahan di belakang
+> 29 command standalone kini dilindungi guard extra words
+
+> 🎌 *Animasu — URL Season 2/3*
+> Slug tidak konsisten → fallback ambil URL dari halaman episode
+> `simulasi()` crash saat 404 → pakai fallback URL
+> `getAiringStatus()` diam-diam drop season lanjutan → diperbaiki
+> Notifikasi episode sama muncul 2x → dedup by slug + epNum
+
+> 🎌 *Alqanime Notif*
+> Post gagal-fetch tidak dicoba ulang → retry TTL 30 menit
+> Post di batas window sering terlewat → buffer waktu +3 menit
+
+> ⚡ *Speedtest*
+> `require is not defined` di ES module → diganti `_require()`
+
+> 🛡️ *Anti Call Jadibot*
+> Tidak bisa tolak panggilan di mode QR → diperbaiki
+> Command `ac` / `acv` tidak direspons → whitelist ditambah
+> Diblock guard saat kirim ke bot utama → guard diperbarui
+> Setting tersimpan ke bot utama → kini per nomor jadibot
+
+━━━━━━━━━━━━━━━━━━━━━━
 🚀 *IMPROVEMENT*
+━━━━━━━━━━━━━━━━━━━━━━
 
 > 🎯 *`.ceksw`* — Tampilan diringkas, 1 baris per orang
 > 🎯 *`push.sh`* — Nomor menu diurutkan ulang per group
-> 📡 *Notif Grup* — Kirim parallel (batch 5), dari ~20 detik → ~2 detik
-> 📋 *Menu Bot* — 8 command aktif ditambahkan ke kategori yang tepat
-> 📋 *Menu Jadibot* — Diperbarui, seksi Sticker & Gambar ditambah `.hd`
+> 📡 *Notif Grup* — Kirim parallel, dari ~20 detik jadi ~2 detik
+> 📋 *Menu Bot* — 8 command aktif ditambah ke kategori yang tepat
+> 📋 *Menu Jadibot* — Seksi Sticker & Gambar diperbarui + `.hd`
 
 ━━━━━━━━━━━━━━━━━━━━━━
 🤖 *Wily-Bot* | *V17* | _15 Mei 2026_
