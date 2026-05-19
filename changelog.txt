@@ -1,6 +1,9 @@
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
-✨ 6 Fitur Baru  |  🔧 11 Bug Fix  |  🚀 5 Improvement
+
+✨ *6 Fitur Baru*
+🔧 *11 Bug Fix*
+🚀 *5 Improvement*
 
 ━━━━━━━━━━━━━━━━━━━━━━
 ✨ *FITUR BARU*
