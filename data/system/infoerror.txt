@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 19/05/2026, 09.55.51  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 19/05/2026, 10.10.53  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 6
-  Total Kejadian Error       : 32
+  Total Kejadian Error       : 35
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [6 jenis, 32 kejadian total]
+  DAFTAR ERROR LENGKAP  [6 jenis, 35 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -30,9 +30,9 @@
 │
 │  DETAIL
 │  Sumber      : Animasu
-│  Frekuensi   : 3x (duplikat digabung)
+│  Frekuensi   : 6x (duplikat digabung)
 │  Pertama     : 19/05/2026, 09.51.13
-│  Terakhir    : 19/05/2026, 09.55.51
+│  Terakhir    : 19/05/2026, 10.10.53
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [Animasu] ❌ Gagal fetch API posts: Request failed with status code 403
@@ -140,6 +140,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 6 jenis, 32 kejadian
-  Terakhir diperbarui: 19/05/2026, 09.55.51
+  End of Report  —  Total: 6 jenis, 35 kejadian
+  Terakhir diperbarui: 19/05/2026, 10.10.53
 ════════════════════════════════════════════════════════════════════════

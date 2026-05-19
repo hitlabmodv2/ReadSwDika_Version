@@ -51,7 +51,7 @@
     "whitelist": []
   },
   "antiTagSW": {
-    "enabled": true,
+    "enabled": false,
     "maxWarnings": 10
   },
   "autoCleaner": {
@@ -131,8 +131,8 @@
   "tvonenews": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": true,
-        "diubahPada": 1779184250376
+        "enabled": false,
+        "diubahPada": 1779185025939
       }
     }
   },
