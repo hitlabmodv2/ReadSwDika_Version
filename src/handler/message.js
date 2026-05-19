@@ -6338,7 +6338,7 @@ _📦 Powered by Wily Bot V17_ 🤖`;
                                         const teks =
 `╔══════════════════════════════╗
 ║  🤖  *${botName.toUpperCase()}*  🤖  ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 👤 *${m.pushName || 'User'}*
@@ -6347,7 +6347,7 @@ _📦 Powered by Wily Bot V17_ 🤖`;
 ⏱️ *Uptime   :* ${uptimeStr}
 📦 *Fitur    :* ${totalCmd} fitur aktif
 🌐 *Status   :* Online 🟢
-🔖 *Versi    :* Readswdika V16
+🔖 *Versi    :* Wily Bot V17
 ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 
 ▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
@@ -6568,7 +6568,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
                                 const allTeks =
 `╔══════════════════════════════╗
 ║  📋  *SEMUA PERINTAH*  📋  ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 「 🤖 *AUTO FITUR* 」
@@ -6658,7 +6658,7 @@ cekerror | cekerror reset | contact
                                 const settingTeks =
 `╔══════════════════════════════╗
 ║  ⚙️  *SETTING MENU*  ⚙️  ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 ╭─「 🤖 *AUTO FITUR* 」
@@ -6731,7 +6731,7 @@ cekerror | cekerror reset | contact
                                 const groupTeks =
 `╔══════════════════════════════╗
 ║  👥  *GRUP & PESAN MENU*  👥 ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 ╭─「 👥 *FITUR GRUP* 」
@@ -6796,7 +6796,7 @@ cekerror | cekerror reset | contact
                                 const statusTeks =
 `╔══════════════════════════════╗
 ║  📡  *STATUS & STORY MENU*  📡║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 ╭─「 📡 *STATUS & STORY* 」
@@ -6851,7 +6851,7 @@ cekerror | cekerror reset | contact
                                 const dlTeks =
 `╔══════════════════════════════╗
 ║  📥  *DOWNLOAD MENU*  📥  ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 ╭─「 📥 *SOSMED & MUSIK* 」
@@ -6920,7 +6920,7 @@ cekerror | cekerror reset | contact
                                 const jadibotTeks =
 `╔══════════════════════════════╗
 ║  🤖  *JADIBOT MENU*  🤖  ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 
 ╭─「 🤖 *JADIBOT* 」
@@ -6963,7 +6963,7 @@ cekerror | cekerror reset | contact
                                 const ownerTeks =
 `╔══════════════════════════════╗
 ║  👑  *OWNER MENU*  👑  ║
-║      _Readswdika V16_        ║
+║      _Wily Bot V17_        ║
 ╚══════════════════════════════╝
 🔒 _Khusus pemilik bot_
 
