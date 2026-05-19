@@ -1316,6 +1316,117 @@ const CEKAUTO_FITUR_LIST = [
         { key: 'tvonenews',      nama: 'TV One News',      cmd: '.tvone on/off',           type: 'group',  toggleable: false             },
 ];
 
+const CEKAUTO_GROUP_FITUR_LIST = [
+        { key: 'infowibu',     nama: 'Info Wibu',        cmd: '.infowibu on/off',      toggleable: true,  checkFn: (cfg, jid) => cfg.infowibu?.groups?.[jid]?.enabled === true },
+        { key: 'animasu',      nama: 'Animasu Notif',    cmd: '.animasu on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.animasu?.groups?.[jid]?.enabled === true },
+        { key: 'alqanimenotif',nama: 'Alqanime Notif',   cmd: '.alqanimenotif on/off', toggleable: true,  checkFn: (cfg, jid) => cfg.alqanimenotif?.groups?.[jid]?.enabled === true },
+        { key: 'tvonenews',    nama: 'TV One News',      cmd: '.tvone on/off',         toggleable: true,  checkFn: (cfg, jid) => cfg.tvonenews?.groups?.[jid]?.enabled === true },
+        { key: 'malnews',      nama: 'MAL News',         cmd: '.malnews on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.malnews?.groups?.[jid]?.enabled === true },
+        { key: 'welcome',      nama: 'Welcome',          cmd: '.welcome on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.welcome === true },
+        { key: 'goodbye',      nama: 'Goodbye',          cmd: '.goodbye on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.goodbye === true },
+        { key: 'antipornGrup', nama: 'Anti Porn (Grup)', cmd: '.antiporn on/off',      toggleable: true,  checkFn: (cfg, jid) => Array.isArray(cfg.antiPorn?.groups) && cfg.antiPorn.groups.includes(jid) },
+];
+
+async function sendCekautoGrupMsg(hisoka, m) {
+        if (!m.isGroup) return m.reply('❌ Perintah ini hanya bisa digunakan di dalam grup!');
+        const cfg = loadConfig();
+        const jid = m.from;
+        const aktif = [];
+        const nonaktif = [];
+
+        for (const f of CEKAUTO_GROUP_FITUR_LIST) {
+                const isOn = f.checkFn(cfg, jid);
+                (isOn ? aktif : nonaktif).push(f);
+        }
+
+        aktif.sort((a, b) => a.nama.localeCompare(b.nama));
+        nonaktif.sort((a, b) => a.nama.localeCompare(b.nama));
+
+        let txt =
+                `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n` +
+                `✦ 🏘️ *STATUS FITUR GRUP* ✦\n` +
+                `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n\n`;
+        txt += `◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ✅ *AKTIF* (${aktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
+        txt += aktif.length ? aktif.map(f => `🟢 *${f.nama}*`).join('\n') + '\n' : `_Tidak ada fitur yang aktif_\n`;
+        txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ❌ *NONAKTIF* (${nonaktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
+        txt += nonaktif.length ? nonaktif.map(f => `🔴 *${f.nama}*`).join('\n') + '\n' : `_Semua fitur aktif_\n`;
+        txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar`;
+
+        const cgrupRows = [];
+        if (aktif.length) {
+                cgrupRows.push({
+                        title: '🟢 AKTIF — Klik untuk matikan',
+                        rows: aktif.filter(f => f.toggleable).map(f => ({
+                                header: f.nama, title: '🔴 Nonaktifkan', description: f.cmd,
+                                id: `__cgrup__${f.key}__off`
+                        }))
+                });
+        }
+        if (nonaktif.length) {
+                cgrupRows.push({
+                        title: '🔴 NONAKTIF — Klik untuk aktifkan',
+                        rows: nonaktif.filter(f => f.toggleable).map(f => ({
+                                header: f.nama, title: '🟢 Aktifkan', description: f.cmd,
+                                id: `__cgrup__${f.key}__on`
+                        }))
+                });
+        }
+
+        let botPpMedia = {};
+        try {
+                const botJid = hisoka.user?.id;
+                if (botJid) {
+                        const ppUrl = await hisoka.profilePictureUrl(botJid, 'image');
+                        if (ppUrl) {
+                                botPpMedia = await prepareWAMessageMedia(
+                                        { image: { url: ppUrl } },
+                                        { upload: hisoka.waUploadToServer }
+                                );
+                        }
+                }
+        } catch (_) {}
+
+        const hasPp = Object.keys(botPpMedia).length > 0;
+
+        const replyCtx = m.key?.id ? {
+                stanzaId: m.key.id,
+                participant: m.sender || m.key?.participant || '',
+                quotedMessage: m.message || {},
+        } : {};
+
+        const filteredRows = cgrupRows.filter(s => s.rows.length > 0);
+        if (filteredRows.length) {
+                const cgrupMsg = generateWAMessageFromContent(
+                        m.from,
+                        {
+                                viewOnceMessage: {
+                                        message: {
+                                                messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                interactiveMessage: {
+                                                        contextInfo: replyCtx,
+                                                        ...(hasPp ? {
+                                                                header: { hasMediaAttachment: true, ...botPpMedia }
+                                                        } : {}),
+                                                        body: { text: txt },
+                                                        nativeFlowMessage: {
+                                                                buttons: [{
+                                                                        name: 'single_select',
+                                                                        buttonParamsJson: JSON.stringify({ title: '⚙️ PILIH FITUR GRUP', sections: filteredRows })
+                                                                }]
+                                                        }
+                                                }
+                                        }
+                                }
+                        },
+                        {},
+                        {}
+                );
+                await hisoka.relayMessage(cgrupMsg.key.remoteJid, cgrupMsg.message, { messageId: cgrupMsg.key.id });
+        } else {
+                await m.reply(txt);
+        }
+}
+
 async function sendCekautoMsg(hisoka, m) {
         const cfg = loadConfig();
         const aktif = [];
@@ -3416,6 +3527,50 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 await sendCekautoMsg(hisoka, m);
                                         } catch (cautoErr) {
                                                 await tolak(hisoka, m, `❌ Gagal toggle fitur: ${cautoErr.message}`);
+                                        }
+                                        return;
+                                }
+                        }
+                }
+
+                // Handle cekauto grup interactive list toggle
+                if (m.isOwner && m.isGroup && typeof m.text === 'string' && m.text.startsWith('__cgrup__')) {
+                        const parts = m.text.split('__').filter(Boolean);
+                        if (parts.length === 3 && parts[0] === 'cgrup') {
+                                const featureKey = parts[1];
+                                const action = parts[2];
+                                if ((action === 'on' || action === 'off') && featureKey) {
+                                        try {
+                                                const cfgGrup = loadConfig();
+                                                const jidGrup = m.from;
+                                                const enable = action === 'on';
+
+                                                if (featureKey === 'welcome' || featureKey === 'goodbye') {
+                                                        if (!cfgGrup.welcomeGoodbye) cfgGrup.welcomeGoodbye = { enabled: true, groups: {} };
+                                                        if (!cfgGrup.welcomeGoodbye.groups) cfgGrup.welcomeGoodbye.groups = {};
+                                                        if (!cfgGrup.welcomeGoodbye.groups[jidGrup]) cfgGrup.welcomeGoodbye.groups[jidGrup] = {};
+                                                        cfgGrup.welcomeGoodbye.groups[jidGrup][featureKey] = enable;
+                                                        saveConfig(cfgGrup);
+                                                } else if (featureKey === 'antipornGrup') {
+                                                        toggleAntiPorn(jidGrup, enable);
+                                                } else {
+                                                        if (!cfgGrup[featureKey]) cfgGrup[featureKey] = {};
+                                                        if (!cfgGrup[featureKey].groups) cfgGrup[featureKey].groups = {};
+                                                        cfgGrup[featureKey].groups[jidGrup] = { enabled: enable, diubahPada: Date.now() };
+                                                        saveConfig(cfgGrup);
+                                                }
+
+                                                const namaMapGrup = {
+                                                        infowibu: 'Info Wibu', animasu: 'Animasu Notif',
+                                                        alqanimenotif: 'Alqanime Notif', tvonenews: 'TV One News',
+                                                        malnews: 'MAL News', welcome: 'Welcome',
+                                                        goodbye: 'Goodbye', antipornGrup: 'Anti Porn (Grup)',
+                                                };
+                                                const icon = enable ? '✅' : '❌';
+                                                await hisoka.sendMessage(m.from, { react: { text: icon, key: m.key } });
+                                                await sendCekautoGrupMsg(hisoka, m);
+                                        } catch (cgrupErr) {
+                                                await tolak(hisoka, m, `❌ Gagal toggle fitur grup: ${cgrupErr.message}`);
                                         }
                                         return;
                                 }
@@ -9227,8 +9382,14 @@ if (isJadibot) text += jadibotNote;
                         case 'cekfitur':
                         case 'autolist': {
                                 if (!m.isOwner) return tolak(hisoka, m, '❌ Fitur ini hanya untuk owner!');
-                                await sendCekautoMsg(hisoka, m);
-                                logCommand(m, hisoka, 'cekauto');
+                                const subCekauto = (query || '').trim().toLowerCase();
+                                if (subCekauto === 'grup' || subCekauto === 'group') {
+                                        await sendCekautoGrupMsg(hisoka, m);
+                                        logCommand(m, hisoka, 'cekauto grup');
+                                } else {
+                                        await sendCekautoMsg(hisoka, m);
+                                        logCommand(m, hisoka, 'cekauto');
+                                }
                                 break;
                         }
 
