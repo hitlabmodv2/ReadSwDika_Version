@@ -1353,18 +1353,6 @@ async function sendCekautoGrupMsg(hisoka, m) {
         txt += nonaktif.length ? nonaktif.map(f => `🔴 *${f.nama}*`).join('\n') + '\n' : `_Semua fitur aktif_\n`;
         txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar`;
 
-        // Warning jika ada fitur yang global-nya dimatikan owner
-        const globalWarnings = [];
-        if (!(cfg.antiPorn?.enabled === true)) {
-                globalWarnings.push('⚠️ *Anti Porn* — global *OFF* (aktifkan dulu: `.antiporn global on`)');
-        }
-        if (!(cfg.antiTagSW?.enabled === true)) {
-                globalWarnings.push('⚠️ *Anti Tag SW* — global *OFF* (aktifkan dulu: `.antitagsw global on`)');
-        }
-        if (globalWarnings.length) {
-                txt += `\n\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ⚠️ *PERINGATAN GLOBAL*\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n_Fitur berikut tidak akan berjalan di grup ini meski diaktifkan, karena global-nya dinonaktifkan owner:_\n` + globalWarnings.join('\n');
-        }
-
         const cgrupRows = [];
         if (aktif.length) {
                 cgrupRows.push({
