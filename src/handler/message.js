@@ -6829,7 +6829,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 ├➤ *.tvone*
 ├➤ *.alqanimenotif*
 ├➤ *.malnews*
-├➤ *.cekauto*
+├➤ *.cekauto* / *.cekauto gc*
 ├➤ *.ceksw on/off/reset*
 ├➤ *.wilyai on/off*
 ├➤ *.wily / .simi*
@@ -6980,7 +6980,7 @@ jadibot [nomor] [durasi] | stopbot | listbot
 
 「 👑 *OWNER ONLY* 」
 listowner | addowner | delowner
-all | swgrup/statusgroup | infowibu | animasu | tvone | alqanimenotif | malnews | ceksw | cekauto
+all | swgrup/statusgroup | infowibu | animasu | tvone | alqanimenotif | malnews | ceksw | cekauto | cekauto gc
 wily | simi | wilyai on/off | wilyai pm/gc/all | wilyai reset
 setreactapi | addemoji | delemoji | listemoji
 upbot | backup | ceksesi | eval | bash
@@ -7165,8 +7165,10 @@ cekerror | cekerror reset | contact
 │   _Auto baca & reaksi story kontak_
 ├➤ *.ceksw on/off/reset*
 │   _Statistik & tracking story WA kontak_
-╰➤ *.cekauto*
-   _Cek status semua fitur auto (aktif/nonaktif)_
+├➤ *.cekauto*
+│   _Cek status semua fitur auto (aktif/nonaktif)_
+╰➤ *.cekauto gc*
+   _Cek & toggle fitur per-grup ini_
 
 ╭─「 🛡️ *ANTI TAG STORY* 」
 │  _Khusus admin & owner grup_
@@ -7359,8 +7361,10 @@ cekerror | cekerror reset | contact
 │   _Auto notif episode Sub Indo dari Alqanime_
 ├➤ *.ceksw on/off/reset*
 │   _Statistik & tracking story WA kontak_
-╰➤ *.cekauto*
-   _Cek status semua fitur auto (aktif/nonaktif)_
+├➤ *.cekauto*
+│   _Cek status semua fitur auto (aktif/nonaktif)_
+╰➤ *.cekauto gc*
+   _Cek & toggle fitur per-grup ini_
 
 ╭─「 🛠️ *TOOLS TEKNIS* 」
 │
@@ -9383,9 +9387,9 @@ if (isJadibot) text += jadibotNote;
                         case 'autolist': {
                                 if (!m.isOwner) return tolak(hisoka, m, '❌ Fitur ini hanya untuk owner!');
                                 const subCekauto = (query || '').trim().toLowerCase();
-                                if (subCekauto === 'grup' || subCekauto === 'group') {
+                                if (subCekauto === 'gc' || subCekauto === 'grup' || subCekauto === 'group') {
                                         await sendCekautoGrupMsg(hisoka, m);
-                                        logCommand(m, hisoka, 'cekauto grup');
+                                        logCommand(m, hisoka, 'cekauto gc');
                                 } else {
                                         await sendCekautoMsg(hisoka, m);
                                         logCommand(m, hisoka, 'cekauto');
