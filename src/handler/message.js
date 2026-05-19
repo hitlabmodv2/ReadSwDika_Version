@@ -1344,30 +1344,40 @@ async function sendCekautoGrupMsg(hisoka, m) {
         nonaktif.sort((a, b) => a.nama.localeCompare(b.nama));
 
         let txt =
-                `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n` +
-                `✦ 🏘️ *STATUS FITUR GRUP* ✦\n` +
-                `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n\n`;
-        txt += `◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ✅ *AKTIF* (${aktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
-        txt += aktif.length ? aktif.map(f => `🟢 *${f.nama}*`).join('\n') + '\n' : `_Tidak ada fitur yang aktif_\n`;
-        txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ❌ *NONAKTIF* (${nonaktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
-        txt += nonaktif.length ? nonaktif.map(f => `🔴 *${f.nama}*`).join('\n') + '\n' : `_Semua fitur aktif_\n`;
-        txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar`;
+                `╔══════════════════════════╗\n` +
+                `║  🏘️  *FITUR GRUP*  ║\n` +
+                `╚══════════════════════════╝\n\n`;
+        txt += `┌─────────────────────────────┐\n`;
+        txt += `│  ✅ *AKTIF*  ·  ${aktif.length} fitur aktif\n`;
+        txt += `└─────────────────────────────┘\n`;
+        txt += aktif.length
+                ? aktif.map(f => `  🟢  *${f.nama}*`).join('\n') + '\n'
+                : `  _Tidak ada fitur yang aktif_\n`;
+        txt += `\n┌─────────────────────────────┐\n`;
+        txt += `│  ❌ *NONAKTIF*  ·  ${nonaktif.length} fitur mati\n`;
+        txt += `└─────────────────────────────┘\n`;
+        txt += nonaktif.length
+                ? nonaktif.map(f => `  🔴  *${f.nama}*`).join('\n') + '\n'
+                : `  _Semua fitur aktif_ ✨\n`;
+        txt += `\n╔══════════════════════════╗\n`;
+        txt += `║  📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar\n`;
+        txt += `╚══════════════════════════╝`;
 
         const cgrupRows = [];
         if (aktif.length) {
                 cgrupRows.push({
-                        title: '🟢 AKTIF — Klik untuk matikan',
+                        title: '✅ FITUR AKTIF — Ketuk untuk nonaktifkan',
                         rows: aktif.filter(f => f.toggleable).map(f => ({
-                                header: f.nama, title: '🔴 Nonaktifkan', description: f.cmd,
+                                header: `🟢 ${f.nama}`, title: '❌ Nonaktifkan sekarang', description: `Perintah: ${f.cmd}`,
                                 id: `__cgrup__${f.key}__off`
                         }))
                 });
         }
         if (nonaktif.length) {
                 cgrupRows.push({
-                        title: '🔴 NONAKTIF — Klik untuk aktifkan',
+                        title: '❌ FITUR NONAKTIF — Ketuk untuk aktifkan',
                         rows: nonaktif.filter(f => f.toggleable).map(f => ({
-                                header: f.nama, title: '🟢 Aktifkan', description: f.cmd,
+                                header: `🔴 ${f.nama}`, title: '✅ Aktifkan sekarang', description: `Perintah: ${f.cmd}`,
                                 id: `__cgrup__${f.key}__on`
                         }))
                 });
@@ -1412,7 +1422,7 @@ async function sendCekautoGrupMsg(hisoka, m) {
                                                         nativeFlowMessage: {
                                                                 buttons: [{
                                                                         name: 'single_select',
-                                                                        buttonParamsJson: JSON.stringify({ title: '⚙️ PILIH FITUR GRUP', sections: filteredRows })
+                                                                        buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle Fitur Grup', sections: filteredRows })
                                                                 }]
                                                         }
                                                 }
@@ -1451,14 +1461,24 @@ async function sendCekautoMsg(hisoka, m) {
         nonaktif.sort((a, b) => a.nama.localeCompare(b.nama));
 
         let txt =
-                `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n` +
-                `✦ ⚙️ *STATUS AUTO FITUR* ✦\n` +
-                `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n\n`;
-        txt += `◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ✅ *AKTIF* (${aktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
-        txt += aktif.length ? aktif.map(f => `🟢 *${f.nama}*`).join('\n') + '\n' : `_Tidak ada fitur yang aktif_\n`;
-        txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ❌ *NONAKTIF* (${nonaktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
-        txt += nonaktif.length ? nonaktif.map(f => `🔴 *${f.nama}*`).join('\n') + '\n' : `_Semua fitur aktif_\n`;
-        txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n📦 *Total* : ${CEKAUTO_FITUR_LIST.length} fitur terdaftar`;
+                `╔══════════════════════════╗\n` +
+                `║  ⚙️  *AUTO FITUR BOT*  ║\n` +
+                `╚══════════════════════════╝\n\n`;
+        txt += `┌─────────────────────────────┐\n`;
+        txt += `│  ✅ *AKTIF*  ·  ${aktif.length} fitur aktif\n`;
+        txt += `└─────────────────────────────┘\n`;
+        txt += aktif.length
+                ? aktif.map(f => `  🟢  *${f.nama}*`).join('\n') + '\n'
+                : `  _Tidak ada fitur yang aktif_\n`;
+        txt += `\n┌─────────────────────────────┐\n`;
+        txt += `│  ❌ *NONAKTIF*  ·  ${nonaktif.length} fitur mati\n`;
+        txt += `└─────────────────────────────┘\n`;
+        txt += nonaktif.length
+                ? nonaktif.map(f => `  🔴  *${f.nama}*`).join('\n') + '\n'
+                : `  _Semua fitur aktif_ ✨\n`;
+        txt += `\n╔══════════════════════════╗\n`;
+        txt += `║  📦 *Total* : ${CEKAUTO_FITUR_LIST.length} fitur terdaftar\n`;
+        txt += `╚══════════════════════════╝`;
 
         const namaToKey = {};
         for (const f of CEKAUTO_FITUR_LIST) { if (f.toggleable && f.toggleKey) namaToKey[f.nama] = f.toggleKey; }
@@ -1469,14 +1489,14 @@ async function sendCekautoMsg(hisoka, m) {
         const cautoRows = [];
         if (tAktif.length) {
                 cautoRows.push({
-                        title: '🟢 AKTIF — Klik untuk matikan',
-                        rows: tAktif.map(f => ({ header: f.nama, title: '🔴 Nonaktifkan', description: f.cmd, id: `__cauto__${namaToKey[f.nama]}__off` }))
+                        title: '✅ FITUR AKTIF — Ketuk untuk nonaktifkan',
+                        rows: tAktif.map(f => ({ header: `🟢 ${f.nama}`, title: '❌ Nonaktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__off` }))
                 });
         }
         if (tNonaktif.length) {
                 cautoRows.push({
-                        title: '🔴 NONAKTIF — Klik untuk aktifkan',
-                        rows: tNonaktif.map(f => ({ header: f.nama, title: '🟢 Aktifkan', description: f.cmd, id: `__cauto__${namaToKey[f.nama]}__on` }))
+                        title: '❌ FITUR NONAKTIF — Ketuk untuk aktifkan',
+                        rows: tNonaktif.map(f => ({ header: `🔴 ${f.nama}`, title: '✅ Aktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__on` }))
                 });
         }
 
@@ -1523,7 +1543,7 @@ async function sendCekautoMsg(hisoka, m) {
                                                         nativeFlowMessage: {
                                                                 buttons: [{
                                                                         name: 'single_select',
-                                                                        buttonParamsJson: JSON.stringify({ title: '⚙️ PILIH FITUR', sections: cautoRows })
+                                                                        buttonParamsJson: JSON.stringify({ title: '⚙️ Pilih & Toggle Fitur Bot', sections: cautoRows })
                                                                 }]
                                                         }
                                                 }
