@@ -103,8 +103,8 @@
         "goodbye": false
       },
       "120363192554714254@g.us": {
-        "welcome": false,
-        "goodbye": false
+        "welcome": true,
+        "goodbye": true
       },
       "120363383540766761@g.us": {
         "welcome": false
@@ -115,24 +115,24 @@
     "enabled": true,
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": false,
-        "diubahPada": 1779172927111
+        "enabled": true,
+        "diubahPada": 1779184250373
       }
     }
   },
   "animasu": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": false,
-        "diubahPada": 1778838728294
+        "enabled": true,
+        "diubahPada": 1779184250373
       }
     }
   },
   "tvonenews": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": false,
-        "diubahPada": 1778734847132
+        "enabled": true,
+        "diubahPada": 1779184250376
       }
     }
   },
@@ -140,7 +140,7 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": true,
-        "diubahPada": 1779182266881
+        "diubahPada": 1779184250375
       },
       "120363383540766761@g.us": {
         "enabled": false,
@@ -155,8 +155,8 @@
   "malnews": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": false,
-        "diubahPada": 1778857985017
+        "enabled": true,
+        "diubahPada": 1779184250377
       }
     }
   },

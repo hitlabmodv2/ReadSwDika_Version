@@ -1702,10 +1702,16 @@ async function sendCekautoGrupMsg(hisoka, m) {
                                                         } : {}),
                                                         body: { text: txt },
                                                         nativeFlowMessage: {
-                                                                buttons: [{
-                                                                        name: 'single_select',
-                                                                        buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle Fitur Grup', sections: filteredRows })
-                                                                }]
+                                                                buttons: [
+                                                                        {
+                                                                                name: 'single_select',
+                                                                                buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih & Toggle Fitur Grup', sections: filteredRows })
+                                                                        },
+                                                                        {
+                                                                                name: 'quick_reply',
+                                                                                buttonParamsJson: JSON.stringify({ display_text: '✅ Auto Semua ON', id: '__cgrup_allon__' })
+                                                                        }
+                                                                ]
                                                         }
                                                 }
                                         }
@@ -3934,6 +3940,40 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 }
                                 return;
                         }
+                }
+
+                // Handle cekauto grup — aktifkan SEMUA fitur untuk grup ini sekaligus
+                if (m.isOwner && m.isGroup && typeof m.text === 'string' && m.text === '__cgrup_allon__') {
+                        try {
+                                const cfgAll = loadConfig();
+                                const jidAll = m.from;
+
+                                for (const f of CEKAUTO_GROUP_FITUR_LIST) {
+                                        if (!f.toggleable) continue;
+                                        if (f.key === 'welcome' || f.key === 'goodbye') {
+                                                if (!cfgAll.welcomeGoodbye) cfgAll.welcomeGoodbye = { enabled: true, groups: {} };
+                                                if (!cfgAll.welcomeGoodbye.groups) cfgAll.welcomeGoodbye.groups = {};
+                                                if (!cfgAll.welcomeGoodbye.groups[jidAll]) cfgAll.welcomeGoodbye.groups[jidAll] = {};
+                                                cfgAll.welcomeGoodbye.groups[jidAll][f.key] = true;
+                                        } else if (f.key === 'antipornGrup') {
+                                                toggleAntiPorn(jidAll, true);
+                                        } else if (f.key === 'antiTagSWGrup') {
+                                                toggleAntiTagSW(jidAll, true);
+                                        } else {
+                                                if (!cfgAll[f.key]) cfgAll[f.key] = {};
+                                                if (!cfgAll[f.key].groups) cfgAll[f.key].groups = {};
+                                                cfgAll[f.key].groups[jidAll] = { enabled: true, diubahPada: Date.now() };
+                                        }
+                                        saveCekautoTimestamp(f.key, jidAll);
+                                }
+                                saveConfig(cfgAll);
+
+                                await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                await sendCekautoGrupMsg(hisoka, m);
+                        } catch (e) {
+                                await tolak(hisoka, m, `❌ Gagal aktifkan semua fitur: ${e.message}`);
+                        }
+                        return;
                 }
 
                 // Handle cekauto grup — off fitur untuk grup tertentu
