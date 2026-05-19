@@ -34,6 +34,11 @@ REPO="ReadSwDika_Version"
 # Nilai di sini cuma fallback kalau koneksi ke GitHub bermasalah.
 DEFAULT_BRANCH="ReadswDika-V18.2"
 
+# Versi script ini — dipakai untuk cek update otomatis
+SCRIPT_VERSION="1.1"
+# File flag update (disimpan di /tmp, tidak ikut git)
+_UPDATE_FLAG="/tmp/.pushwily_update_$(echo "$PWD" | tr '/' '_').flag"
+
 # Branch yang disembunyikan dari menu (system / internal).
 # Pisahkan dengan spasi. Contoh: "replit-agent gh-pages backup"
 IGNORE_BRANCHES="replit-agent HEAD"
@@ -1297,6 +1302,21 @@ _sbar_sweep 89 99 0.025 "Verifikasi ..."
 # ── 100% : selesai ──
 startup_done
 
+# ── Cek update push.sh di background (tidak blokir) ──────────────────────
+rm -f "$_UPDATE_FLAG" 2>/dev/null
+_do_check_update() {
+  local _raw_url="https://raw.githubusercontent.com/${USER}/${REPO}/${DEFAULT_BRANCH}/push.sh"
+  local _remote_ver
+  _remote_ver=$(curl -sf --max-time 8 "$_raw_url" 2>/dev/null \
+    | grep -m1 "Versi  :" \
+    | sed "s/.*Versi  *: *//;s/ .*//" \
+    | tr -d '\r\n ')
+  if [ -n "$_remote_ver" ] && [ "$_remote_ver" != "$SCRIPT_VERSION" ]; then
+    printf '%s\n%s\n' "$_remote_ver" "$_raw_url" > "$_UPDATE_FLAG"
+  fi
+}
+_do_check_update &
+
 # ===== Auto-classify commit (Conventional Commits) =====
 classify_commit() {
   local files status_lines
@@ -1852,9 +1872,76 @@ banner() {
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
 }
 
+# ===== Update push.sh dari GitHub =====
+action_self_update() {
+  local _new_ver="$1" _raw_url="$2"
+  clear >/dev/tty 2>/dev/null || true
+  echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
+  echo -e "${C_BOLD}│   🔄  UPDATE PUSH SCRIPT         │${C_RESET}"
+  echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
+  echo ""
+  echo -e "  ${C_DIM}Versi sekarang :${C_RESET} ${C_YELLOW}${C_BOLD}${SCRIPT_VERSION}${C_RESET}"
+  echo -e "  ${C_DIM}Versi baru     :${C_RESET} ${C_GREEN}${C_BOLD}${_new_ver}${C_RESET}"
+  echo ""
+  echo -e "  ${C_DIM}File push.sh akan diganti dengan versi terbaru.${C_RESET}"
+  echo -e "  ${C_DIM}Backup otomatis disimpan ke ${C_RESET}${C_BOLD}push.sh.bak${C_RESET}"
+  echo ""
+  echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+  printf "  Lanjut update? ${C_BOLD}[y/N]${C_RESET} ▸ "
+  local _confirm
+  read -r _confirm </dev/tty
+  _confirm=$(echo "$_confirm" | tr '[:upper:]' '[:lower:]' | tr -d '\n\r ')
+  if [ "$_confirm" != "y" ]; then
+    echo -e "\n  ${C_DIM}Update dibatalkan.${C_RESET}"
+    sleep 1
+    return
+  fi
+  echo ""
+  mini_bar_start "Mengunduh push.sh versi ${_new_ver}" 0.05
+  local _tmp_dl
+  _tmp_dl=$(mktemp)
+  if curl -sf --max-time 20 "$_raw_url" -o "$_tmp_dl" 2>/dev/null; then
+    mini_bar_ok "Download selesai!"
+    cp push.sh push.sh.bak 2>/dev/null
+    mv "$_tmp_dl" push.sh
+    chmod +x push.sh
+    rm -f "$_UPDATE_FLAG" 2>/dev/null
+    echo ""
+    echo -e "  ${C_GREEN}✅  push.sh berhasil diupdate ke versi ${C_BOLD}${_new_ver}${C_RESET}"
+    echo -e "  ${C_DIM}   Backup tersimpan di ${C_BOLD}push.sh.bak${C_RESET}"
+    echo ""
+    echo -e "  ${C_YELLOW}🔄  Jalankan ulang script:  ${C_BOLD}bash push.sh${C_RESET}"
+    echo ""
+    printf "  ${C_DIM}Tekan Enter untuk keluar...${C_RESET}"
+    read -r </dev/tty
+    exit 0
+  else
+    rm -f "$_tmp_dl" 2>/dev/null
+    mini_bar_fail "Download gagal"
+    echo ""
+    echo -e "  ${C_RED}❌  Gagal mengunduh update. Coba lagi nanti.${C_RESET}"
+    sleep 2
+  fi
+}
+
 # ===== Menu utama =====
 show_main_menu() {
   banner
+
+  # ── Banner update (muncul kalau ada versi baru) ───────────────────────────
+  local _upd_ver="" _upd_url=""
+  if [ -f "$_UPDATE_FLAG" ]; then
+    _upd_ver=$(sed -n '1p' "$_UPDATE_FLAG")
+    _upd_url=$(sed -n '2p' "$_UPDATE_FLAG")
+  fi
+  if [ -n "$_upd_ver" ]; then
+    echo -e "  ${C_BOLD}${C_GREEN}╔══════════════════════════════════╗${C_RESET}"
+    echo -e "  ${C_BOLD}${C_GREEN}║  🆕  UPDATE TERSEDIA!  ▸ [u]     ║${C_RESET}"
+    printf  "  ${C_GREEN}║  Versi baru : %-20s║${C_RESET}\n" "${_upd_ver}"
+    echo -e "  ${C_BOLD}${C_GREEN}╚══════════════════════════════════╝${C_RESET}"
+    echo ""
+  fi
+
   # ── Grup: Branch 1–7 ─────────────────
   echo -e "  ${C_DIM}🌿 BRANCH${C_RESET}"
   echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
@@ -1878,6 +1965,10 @@ show_main_menu() {
   echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
   printf "  ${C_GREEN} p${C_RESET} › %-16s  ${C_MAGENTA} l${C_RESET} › %s\n" "Quick Push"     "Riwayat push"
   printf "  ${C_YELLOW} c${C_RESET} › %-16s\n"                                "Bersihkan history node_modules"
+  if [ -n "$_upd_ver" ]; then
+    printf "  ${C_GREEN} u${C_RESET} › ${C_BOLD}%-16s${C_RESET}  ${C_DIM}versi sekarang: %s → baru: %s${C_RESET}\n" \
+      "Update script" "$SCRIPT_VERSION" "$_upd_ver"
+  fi
   printf "  ${C_RED} 0${C_RESET} › %s\n"                                      "Keluar"
   echo -e "  ${C_DIM}──────────────────────────────────${C_RESET}"
   printf "  ${C_BOLD}▸ ${C_RESET}"
@@ -1904,6 +1995,7 @@ show_main_menu() {
     p|P) action_quick_push ;;
     l|L) action_view_push_log ;;
     c|C) action_cleanup_node_modules ;;
+    u|U) action_self_update "$_upd_ver" "$_upd_url" ;;
     0|q|Q|exit) goodbye_prompt ;;
     *)
       echo -e "${C_RED}✖ Pilihan tidak valid: '${pick}'${C_RESET}"
