@@ -3223,6 +3223,60 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         // Pending ada tapi bukan pilihan 1/2 — abaikan (biarkan lanjut ke switch)
                 }
 
+                // Handle cekauto interactive list toggle
+                if (m.isOwner && typeof m.text === 'string' && m.text.startsWith('__cauto__')) {
+                        const parts = m.text.split('__').filter(Boolean);
+                        if (parts.length === 3 && parts[0] === 'cauto') {
+                                const configKey = parts[1];
+                                const action = parts[2];
+                                if ((action === 'on' || action === 'off') && configKey) {
+                                        try {
+                                                const cfgToggle = loadConfig();
+                                                const currentVal = cfgToggle[configKey] || {};
+                                                cfgToggle[configKey] = { ...currentVal, enabled: action === 'on' };
+
+                                                if (configKey === 'autoCleaner') {
+                                                        saveConfig(cfgToggle);
+                                                        if (action === 'on') restartAutoCleaner();
+                                                        else stopAutoCleaner();
+                                                } else if (configKey === 'autoOnline') {
+                                                        saveConfig(cfgToggle);
+                                                        if (global.startAutoOnline) {
+                                                                global.startAutoOnline();
+                                                        } else if (action === 'off') {
+                                                                if (global.autoOnlineInterval) {
+                                                                        clearInterval(global.autoOnlineInterval);
+                                                                        global.autoOnlineInterval = null;
+                                                                }
+                                                                if (global.hisokaClient) global.hisokaClient.sendPresenceUpdate('unavailable');
+                                                        } else if (action === 'on' && global.hisokaClient) {
+                                                                global.hisokaClient.sendPresenceUpdate('available');
+                                                        }
+                                                } else {
+                                                        saveConfig(cfgToggle);
+                                                }
+
+                                                const namaMap = {
+                                                        antiCall: 'Anti Call', antiCallVideo: 'Anti Call Video',
+                                                        antiDelete: 'Anti Delete', antiTagSW: 'Anti Tag SW',
+                                                        autoCleaner: 'Auto Cleaner', autoOnline: 'Auto Online',
+                                                        autoReadStory: 'Auto Read Story', autoRecording: 'Auto Recording',
+                                                        autoSimi: 'Auto Simi', autoTyping: 'Auto Typing',
+                                                        reactApi: 'React API', sessionCleaner: 'Session Cleaner',
+                                                        telegram: 'Telegram Bridge', wilyAI: 'Wily AI',
+                                                };
+                                                const nama = namaMap[configKey] || configKey;
+                                                const icon = action === 'on' ? '✅' : '❌';
+                                                await tolak(hisoka, m, `${icon} *${nama}* berhasil ${action === 'on' ? 'diaktifkan' : 'dinonaktifkan'}.`);
+                                                await hisoka.sendMessage(m.from, { react: { text: icon, key: m.key } });
+                                        } catch (cautoErr) {
+                                                await tolak(hisoka, m, `❌ Gagal toggle fitur: ${cautoErr.message}`);
+                                        }
+                                        return;
+                                }
+                        }
+                }
+
                 switch (m.command) {
 
                         case 'hidetag':
@@ -9032,27 +9086,27 @@ if (isJadibot) text += jadibotNote;
                                 const cfgCekAuto = loadConfig();
 
                                 const FITUR_LIST = [
-                                        { key: 'antiCall',       nama: 'Anti Call',        cmd: '.anticall on/off',        type: 'global' },
-                                        { key: 'antiCallVideo',  nama: 'Anti Call Video',  cmd: '.anticallvid on/off',     type: 'global' },
-                                        { key: 'antiDelete',     nama: 'Anti Delete',      cmd: '.antidel on/off',         type: 'global' },
-                                        { key: 'antiTagSW',      nama: 'Anti Tag SW',      cmd: '.antitagsw on/off',       type: 'global' },
-                                        { key: 'autoCleaner',    nama: 'Auto Cleaner',     cmd: '.autocleaner on/off',     type: 'global' },
-                                        { key: 'autoOnline',     nama: 'Auto Online',      cmd: '.online on/off',          type: 'global' },
-                                        { key: 'autoReadStory',  nama: 'Auto Read Story',  cmd: '.readsw on/off',          type: 'global' },
-                                        { key: 'autoRecording',  nama: 'Auto Recording',   cmd: '.recording on/off',       type: 'global' },
-                                        { key: 'autoSimi',       nama: 'Auto Simi (AI)',   cmd: '.simi on/off',            type: 'global' },
-                                        { key: 'autoTyping',     nama: 'Auto Typing',      cmd: '.typing on/off',          type: 'global' },
-                                        { key: 'infowibu',       nama: 'Info Wibu',        cmd: '.infowibu on/off',        type: 'global' },
-                                        { key: 'memoryMonitor',  nama: 'Memory Monitor',   cmd: '.ram',                    type: 'global' },
-                                        { key: 'reactApi',       nama: 'React API',        cmd: '.setreactapi on/off',     type: 'global' },
-                                        { key: 'sessionCleaner', nama: 'Session Cleaner',  cmd: '.sessioncleaner on/off',  type: 'global' },
-                                        { key: 'telegram',       nama: 'Telegram Bridge',  cmd: '.telegram on/off',        type: 'global' },
-                                        { key: 'welcomeGoodbye', nama: 'Welcome/Goodbye',  cmd: '.welcome on/off',         type: 'global' },
-                                        { key: 'wilyAI',         nama: 'Wily AI',          cmd: '.wilyai on/off',          type: 'global' },
-                                        { key: 'alqanimenotif',  nama: 'Alqanime Notif',   cmd: '.alqanimenotif on/off',   type: 'group' },
-                                        { key: 'animasu',        nama: 'Animasu Notif',    cmd: '.animasu on/off',         type: 'group' },
-                                        { key: 'malnews',        nama: 'MAL News',         cmd: '.malnews on/off',         type: 'group' },
-                                        { key: 'tvonenews',      nama: 'TV One News',      cmd: '.tvone on/off',           type: 'group' },
+                                        { key: 'antiCall',       nama: 'Anti Call',        cmd: '.anticall on/off',        type: 'global', toggleKey: 'antiCall',       toggleable: true  },
+                                        { key: 'antiCallVideo',  nama: 'Anti Call Video',  cmd: '.anticallvid on/off',     type: 'global', toggleKey: 'antiCallVideo',  toggleable: true  },
+                                        { key: 'antiDelete',     nama: 'Anti Delete',      cmd: '.antidel on/off',         type: 'global', toggleKey: 'antiDelete',     toggleable: true  },
+                                        { key: 'antiTagSW',      nama: 'Anti Tag SW',      cmd: '.antitagsw on/off',       type: 'global', toggleKey: 'antiTagSW',      toggleable: true  },
+                                        { key: 'autoCleaner',    nama: 'Auto Cleaner',     cmd: '.autocleaner on/off',     type: 'global', toggleKey: 'autoCleaner',    toggleable: true  },
+                                        { key: 'autoOnline',     nama: 'Auto Online',      cmd: '.online on/off',          type: 'global', toggleKey: 'autoOnline',     toggleable: true  },
+                                        { key: 'autoReadStory',  nama: 'Auto Read Story',  cmd: '.readsw on/off',          type: 'global', toggleKey: 'autoReadStory',  toggleable: true  },
+                                        { key: 'autoRecording',  nama: 'Auto Recording',   cmd: '.recording on/off',       type: 'global', toggleKey: 'autoRecording',  toggleable: true  },
+                                        { key: 'autoSimi',       nama: 'Auto Simi (AI)',   cmd: '.simi on/off',            type: 'global', toggleKey: 'autoSimi',       toggleable: true  },
+                                        { key: 'autoTyping',     nama: 'Auto Typing',      cmd: '.typing on/off',          type: 'global', toggleKey: 'autoTyping',     toggleable: true  },
+                                        { key: 'infowibu',       nama: 'Info Wibu',        cmd: '.infowibu on/off',        type: 'group',  toggleable: false             },
+                                        { key: 'memoryMonitor',  nama: 'Memory Monitor',   cmd: '.ram',                    type: 'global', toggleable: false             },
+                                        { key: 'reactApi',       nama: 'React API',        cmd: '.setreactapi on/off',     type: 'global', toggleKey: 'reactApi',       toggleable: true  },
+                                        { key: 'sessionCleaner', nama: 'Session Cleaner',  cmd: '.sessioncleaner on/off',  type: 'global', toggleKey: 'sessionCleaner', toggleable: true  },
+                                        { key: 'telegram',       nama: 'Telegram Bridge',  cmd: '.telegram on/off',        type: 'global', toggleKey: 'telegram',       toggleable: true  },
+                                        { key: 'welcomeGoodbye', nama: 'Welcome/Goodbye',  cmd: '.welcome on/off',         type: 'global', toggleable: false             },
+                                        { key: 'wilyAI',         nama: 'Wily AI',          cmd: '.wilyai on/off',          type: 'global', toggleKey: 'wilyAI',         toggleable: true  },
+                                        { key: 'alqanimenotif',  nama: 'Alqanime Notif',   cmd: '.alqanimenotif on/off',   type: 'group',  toggleable: false             },
+                                        { key: 'animasu',        nama: 'Animasu Notif',    cmd: '.animasu on/off',         type: 'group',  toggleable: false             },
+                                        { key: 'malnews',        nama: 'MAL News',         cmd: '.malnews on/off',         type: 'group',  toggleable: false             },
+                                        { key: 'tvonenews',      nama: 'TV One News',      cmd: '.tvone on/off',           type: 'group',  toggleable: false             },
                                 ];
 
                                 const aktif   = [];
@@ -9100,6 +9154,66 @@ if (isJadibot) text += jadibotNote;
                                 txt += `📦 *Total* : ${FITUR_LIST.length} fitur terdaftar`;
 
                                 await tolak(hisoka, m, txt);
+
+                                const toggleableAktif   = aktif.filter(f => FITUR_LIST.find(x => x.nama === f.nama)?.toggleable);
+                                const toggleableNonaktif = nonaktif.filter(f => FITUR_LIST.find(x => x.nama === f.nama)?.toggleable);
+                                const namaToKey = {};
+                                for (const f of FITUR_LIST) { if (f.toggleable && f.toggleKey) namaToKey[f.nama] = f.toggleKey; }
+
+                                const cautoRows = [];
+                                if (toggleableAktif.length) {
+                                        cautoRows.push({
+                                                title: '🟢 AKTIF — Klik untuk matikan',
+                                                rows: toggleableAktif.map(f => ({
+                                                        header: f.nama,
+                                                        title: '🔴 Nonaktifkan',
+                                                        description: f.cmd,
+                                                        id: `__cauto__${namaToKey[f.nama]}__off`
+                                                }))
+                                        });
+                                }
+                                if (toggleableNonaktif.length) {
+                                        cautoRows.push({
+                                                title: '🔴 NONAKTIF — Klik untuk aktifkan',
+                                                rows: toggleableNonaktif.map(f => ({
+                                                        header: f.nama,
+                                                        title: '🟢 Aktifkan',
+                                                        description: f.cmd,
+                                                        id: `__cauto__${namaToKey[f.nama]}__on`
+                                                }))
+                                        });
+                                }
+
+                                if (cautoRows.length) {
+                                        const cautoListMsg = generateWAMessageFromContent(
+                                                m.from,
+                                                {
+                                                        viewOnceMessage: {
+                                                                message: {
+                                                                        messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                                        interactiveMessage: {
+                                                                                body: { text: '⚙️ *Toggle Fitur* — Pilih fitur untuk mengaktifkan / menonaktifkan:' },
+                                                                                nativeFlowMessage: {
+                                                                                        buttons: [
+                                                                                                {
+                                                                                                        name: 'single_select',
+                                                                                                        buttonParamsJson: JSON.stringify({
+                                                                                                                title: '⚙️ PILIH FITUR',
+                                                                                                                sections: cautoRows
+                                                                                                        })
+                                                                                                }
+                                                                                        ]
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
+                                                },
+                                                { quoted: m },
+                                                {}
+                                        );
+                                        await hisoka.relayMessage(cautoListMsg.key.remoteJid, cautoListMsg.message, { messageId: cautoListMsg.key.id });
+                                }
+
                                 logCommand(m, hisoka, 'cekauto');
                                 break;
                         }

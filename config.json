@@ -72,7 +72,7 @@
     "sourceUrl": "https://wa.me/6289688206739"
   },
   "wilyAI": {
-    "enabled": true,
+    "enabled": false,
     "autoReply": true,
     "privateReply": true,
     "scope": "all"
@@ -116,7 +116,7 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": false,
-        "diubahPada": 1778751221640
+        "diubahPada": 1779172927111
       }
     }
   },
@@ -140,7 +140,7 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": false,
-        "diubahPada": 1779097753781
+        "diubahPada": 1779172995456
       },
       "120363383540766761@g.us": {
         "enabled": false,
