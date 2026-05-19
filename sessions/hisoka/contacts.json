@@ -3690,7 +3690,8 @@
     "name": "Arga",
     "lid": "12442939724000@lid",
     "jid": "6285150762138@s.whatsapp.net",
-    "notify": "anti kompres"
+    "notify": "anti kompres",
+    "verifiedName": "anti kompres"
   },
   "62881038505755@s.whatsapp.net": {
     "isContact": true,
@@ -24755,7 +24756,8 @@
     "id": "6289627505993@s.whatsapp.net",
     "name": "√ Rendy",
     "lid": "194562018529473@lid",
-    "jid": "6289627505993@s.whatsapp.net"
+    "jid": "6289627505993@s.whatsapp.net",
+    "notify": "Fiveteen"
   },
   "6289527882009@s.whatsapp.net": {
     "isContact": true,
@@ -31863,5 +31865,15 @@
     "id": "193015830302824@lid",
     "lid": "193015830302824@lid",
     "imgUrl": "removed"
+  },
+  "166451675664550@lid": {
+    "id": "166451675664550@lid",
+    "lid": "166451675664550@lid",
+    "imgUrl": "removed"
+  },
+  "75724853612672@lid": {
+    "id": "75724853612672@lid",
+    "lid": "75724853612672@lid",
+    "imgUrl": "changed"
   }
 }
