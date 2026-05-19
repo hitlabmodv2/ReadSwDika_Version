@@ -21297,7 +21297,8 @@
     "id": "6288986037769@s.whatsapp.net",
     "name": "Lita 14",
     "lid": "247734116335860@lid",
-    "jid": "6288986037769@s.whatsapp.net"
+    "jid": "6288986037769@s.whatsapp.net",
+    "notify": "🤷🏻‍♀️"
   },
   "6282323528323@s.whatsapp.net": {
     "isContact": true,
@@ -31442,5 +31443,15 @@
     "lid": "162160936263906@lid",
     "notify": "F",
     "verifiedName": "F"
+  },
+  "247734116335860@lid": {
+    "id": "247734116335860@lid",
+    "lid": "247734116335860@lid",
+    "notify": "🤷🏻‍♀️"
+  },
+  "227341544464449@lid": {
+    "id": "227341544464449@lid",
+    "lid": "227341544464449@lid",
+    "imgUrl": "changed"
   }
 }

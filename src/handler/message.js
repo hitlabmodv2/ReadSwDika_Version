@@ -1370,6 +1370,26 @@ const CEKAUTO_GROUP_FITUR_LIST = [
         },
 ];
 
+function getFeatureTimestamp(featureKey, jid) {
+        const cfg = loadConfig();
+        if (['infowibu', 'animasu', 'alqanimenotif', 'tvonenews', 'malnews'].includes(featureKey)) {
+                return cfg[featureKey]?.groups?.[jid]?.diubahPada || null;
+        }
+        return null;
+}
+
+function formatRelativeTime(ts) {
+        if (!ts) return null;
+        const diff = Date.now() - ts;
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor(diff / 3600000);
+        const mins = Math.floor(diff / 60000);
+        if (days >= 1) return `${days} hari lalu`;
+        if (hours >= 1) return `${hours} jam lalu`;
+        if (mins >= 1) return `${mins} menit lalu`;
+        return 'baru saja';
+}
+
 function getActiveGroupsForFeature(featureKey) {
         const cfg = loadConfig();
         if (featureKey === 'welcome') {
@@ -1456,9 +1476,11 @@ async function sendCekautoGrupSelectMsg(hisoka, m, featureKey) {
                         const adminText = adminNames.length
                                 ? `Admin: ${adminNames.slice(0, 3).join(', ')}${adminNames.length > 3 ? ` +${adminNames.length - 3} lainnya` : ''}`
                                 : 'Tidak ada admin';
+                        const ts = getFeatureTimestamp(featureKey, jid);
+                        const tsText = ts ? ` • Aktif ${formatRelativeTime(ts)}` : '';
                         grupRows.push({
                                 header: `🏘️ ${meta.subject || jid}`,
-                                title: `👥 ${memberCount} member`,
+                                title: `👥 ${memberCount} member${tsText}`,
                                 description: adminText,
                                 id: `__cgrupoff__${featureKey}__${jid}`
                         });
@@ -3897,12 +3919,24 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 goodbye: 'Goodbye', antipornGrup: 'Anti Porn (Grup)',
                                                 antiTagSWGrup: 'Anti Tag SW (Grup)',
                                         };
+                                        const grupNamaList = [];
+                                        for (const gjid of sebelumnya) {
+                                                try {
+                                                        const meta = await hisoka.groupMetadata(gjid);
+                                                        grupNamaList.push(meta.subject || gjid);
+                                                } catch (_) {
+                                                        grupNamaList.push(gjid);
+                                                }
+                                        }
+                                        const grupLines = grupNamaList.map(n => `│  🔴 ${n}`).join('\n');
                                         await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
                                         await tolak(hisoka, m,
                                                 `╭══『 🔴 *OFF SEMUA GRUP* 』══╮\n` +
                                                 `│\n` +
                                                 `│ Fitur: *${namaMapAll[featureKey] || featureKey}*\n` +
-                                                `│ Dinonaktifkan di *${sebelumnya.length}* grup\n` +
+                                                `│ Dinonaktifkan di *${sebelumnya.length}* grup:\n` +
+                                                `│\n` +
+                                                grupLines + '\n' +
                                                 `│\n` +
                                                 `│ ✅ Semua grup berhasil di-off!\n` +
                                                 `│\n` +

@@ -99,15 +99,15 @@
     "enabled": false,
     "groups": {
       "120363419402989015@g.us": {
-        "welcome": true,
+        "welcome": false,
         "goodbye": false
       },
       "120363192554714254@g.us": {
-        "welcome": true,
+        "welcome": false,
         "goodbye": true
       },
       "120363383540766761@g.us": {
-        "welcome": true
+        "welcome": false
       }
     }
   },
