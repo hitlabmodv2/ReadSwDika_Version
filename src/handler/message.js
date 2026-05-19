@@ -1603,66 +1603,67 @@ async function sendCekautoGrupMsg(hisoka, m) {
         if (!m.isGroup) return m.reply('❌ Perintah ini hanya bisa digunakan di dalam grup!');
         const cfg = loadConfig();
         const jid = m.from;
-        const aktif = [];
-        const nonaktif = [];
 
-        for (const f of CEKAUTO_GROUP_FITUR_LIST) {
-                const isOn = f.checkFn(cfg, jid);
-                (isOn ? aktif : nonaktif).push(f);
-        }
-
-        aktif.sort((a, b) => a.nama.localeCompare(b.nama));
-        nonaktif.sort((a, b) => a.nama.localeCompare(b.nama));
-
-        let txt =
-                `╔══════════════════════════╗\n` +
-                `║  🏘️  *FITUR GRUP*  ║\n` +
-                `╚══════════════════════════╝\n\n`;
-        txt += `┌─────────────────────────────┐\n`;
-        txt += `│  ✅ *AKTIF*  ·  ${aktif.length} fitur aktif\n`;
-        txt += `└─────────────────────────────┘\n`;
         const getDesc = (f) => {
                 if (f.descFn) return f.descFn(cfg);
                 return f.desc || f.cmd;
         };
         const truncDesc = (str, max = 72) => str.length > max ? str.substring(0, max - 1) + '…' : str;
 
-        txt += aktif.length
-                ? aktif.map(f => `  🟢  *${f.nama}*`).join('\n') + '\n'
-                : `  _Tidak ada fitur yang aktif_\n`;
-        txt += `\n┌─────────────────────────────┐\n`;
-        txt += `│  ❌ *NONAKTIF*  ·  ${nonaktif.length} fitur mati\n`;
-        txt += `└─────────────────────────────┘\n`;
-        txt += nonaktif.length
-                ? nonaktif.map(f => `  🔴  *${f.nama}*`).join('\n') + '\n'
-                : `  _Semua fitur aktif_ ✨\n`;
-        txt += `\n╔══════════════════════════╗\n`;
-        txt += `║  📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar\n`;
-        txt += `╚══════════════════════════╝`;
+        const SECURITY_KEYS = ['antipornGrup', 'antiTagSWGrup', 'welcome', 'goodbye'];
+        const NOTIF_KEYS    = ['infowibu', 'animasu', 'alqanimenotif', 'tvonenews', 'malnews'];
 
-        const cgrupRows = [];
-        if (aktif.length) {
-                cgrupRows.push({
-                        title: '✅ FITUR AKTIF — Ketuk untuk nonaktifkan',
-                        rows: aktif.filter(f => f.toggleable).map(f => ({
-                                header: `🟢 ${f.nama}`,
-                                title: '❌ Nonaktifkan sekarang',
-                                description: truncDesc(getDesc(f)),
-                                id: `__cgrupsel__${f.key}`
-                        }))
-                });
-        }
-        if (nonaktif.length) {
-                cgrupRows.push({
-                        title: '❌ FITUR NONAKTIF — Ketuk untuk aktifkan',
-                        rows: nonaktif.filter(f => f.toggleable).map(f => ({
-                                header: `🔴 ${f.nama}`,
-                                title: '✅ Aktifkan sekarang',
-                                description: truncDesc(getDesc(f)),
-                                id: `__cgrup__${f.key}__on`
-                        }))
-                });
-        }
+        const secFitur  = CEKAUTO_GROUP_FITUR_LIST.filter(f => SECURITY_KEYS.includes(f.key));
+        const notifFitur = CEKAUTO_GROUP_FITUR_LIST.filter(f => NOTIF_KEYS.includes(f.key));
+
+        const makeRow = (f) => {
+                const isOn = f.checkFn(cfg, jid);
+                return {
+                        header: `${isOn ? '🟢' : '🔴'} ${f.nama}`,
+                        title: isOn ? '❌ Nonaktifkan' : '✅ Aktifkan',
+                        description: truncDesc(getDesc(f)),
+                        id: isOn ? `__cgrupsel__${f.key}` : `__cgrup__${f.key}__on`,
+                };
+        };
+
+        const totalAktif = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.checkFn(cfg, jid)).length;
+        const totalMati  = CEKAUTO_GROUP_FITUR_LIST.length - totalAktif;
+
+        const renderCategory = (list) =>
+                list.map(f => {
+                        const isOn = f.checkFn(cfg, jid);
+                        return `  ${isOn ? '🟢' : '🔴'}  *${f.nama}*`;
+                }).join('\n');
+
+        let txt =
+                `╔══════════════════════════════╗\n` +
+                `║   🏘️  *FITUR GRUP*  ║\n` +
+                `╚══════════════════════════════╝\n` +
+                `\n` +
+                `┌──────────────────────────────┐\n` +
+                `│  🛡️ *KEAMANAN & MEMBER*\n` +
+                `└──────────────────────────────┘\n` +
+                renderCategory(secFitur) + '\n' +
+                `\n` +
+                `┌──────────────────────────────┐\n` +
+                `│  📺 *NOTIFIKASI OTOMATIS*\n` +
+                `└──────────────────────────────┘\n` +
+                renderCategory(notifFitur) + '\n' +
+                `\n` +
+                `╔══════════════════════════════╗\n` +
+                `║  ✅ Aktif: ${String(totalAktif).padStart(2)}  ❌ Mati: ${String(totalMati).padStart(2)}  │ Total: ${CEKAUTO_GROUP_FITUR_LIST.length}\n` +
+                `╚══════════════════════════════╝`;
+
+        const cgrupRows = [
+                {
+                        title: '🛡️ KEAMANAN & MEMBER — Ketuk untuk toggle',
+                        rows: secFitur.filter(f => f.toggleable).map(makeRow),
+                },
+                {
+                        title: '📺 NOTIFIKASI OTOMATIS — Ketuk untuk toggle',
+                        rows: notifFitur.filter(f => f.toggleable).map(makeRow),
+                },
+        ].filter(s => s.rows.length > 0);
 
         let botPpMedia = {};
         try {
@@ -1778,6 +1779,36 @@ async function sendCekautoMsg(hisoka, m) {
                 cautoRows.push({
                         title: '❌ FITUR NONAKTIF — Ketuk untuk aktifkan',
                         rows: tNonaktif.map(f => ({ header: `🔴 ${f.nama}`, title: '✅ Aktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__on` }))
+                });
+        }
+
+        // Tambah section Fitur Grup di dropdown
+        if (m.isGroup) {
+                const cfgGrup = loadConfig();
+                const grupRows = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.toggleable).map(f => {
+                        const isOn = f.checkFn(cfgGrup, m.from);
+                        return {
+                                header: `${isOn ? '🟢' : '🔴'} ${f.nama}`,
+                                title: isOn ? '❌ Nonaktifkan' : '✅ Aktifkan',
+                                description: `Perintah: ${f.cmd}`,
+                                id: isOn ? `__cgrupsel__${f.key}` : `__cgrup__${f.key}__on`,
+                        };
+                });
+                if (grupRows.length) {
+                        cautoRows.push({
+                                title: '🏘️ FITUR GRUP — Toggle fitur untuk grup ini',
+                                rows: grupRows,
+                        });
+                }
+        } else {
+                cautoRows.push({
+                        title: '🏘️ FITUR GRUP',
+                        rows: [{
+                                header: '🏘️ Menu Fitur Grup',
+                                title: '→ Gunakan di dalam grup',
+                                description: 'Ketik .cekauto gc di dalam grup untuk toggle fitur grup',
+                                id: '__cekauto_gc__',
+                        }],
                 });
         }
 
@@ -4050,6 +4081,13 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         return;
                                 }
                         }
+                }
+
+                // Handle cekauto gc shortcut dari main menu
+                if (m.isOwner && typeof m.text === 'string' && m.text === '__cekauto_gc__') {
+                        if (!m.isGroup) return tolak(hisoka, m, '❌ Fitur ini hanya bisa digunakan di dalam grup!');
+                        try { await sendCekautoGrupMsg(hisoka, m); } catch (e) { await tolak(hisoka, m, `❌ ${e.message}`); }
+                        return;
                 }
 
                 // Handle add all grup — aktifkan fitur untuk SEMUA grup sekaligus
