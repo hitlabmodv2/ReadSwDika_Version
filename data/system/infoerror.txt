@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 19/05/2026, 10.13.14  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 19/05/2026, 13.34.04  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 6
-  Total Kejadian Error       : 36
+  Total Kejadian Error       : 39
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [6 jenis, 36 kejadian total]
+  DAFTAR ERROR LENGKAP  [6 jenis, 39 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -87,9 +87,9 @@ Require stack:
 │
 │  DETAIL
 │  Sumber      : MALNews
-│  Frekuensi   : 3x (duplikat digabung)
+│  Frekuensi   : 4x (duplikat digabung)
 │  Pertama     : 17/05/2026, 11.47.46
-│  Terakhir    : 17/05/2026, 11.57.46
+│  Terakhir    : 19/05/2026, 13.34.04
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [MALNews] Error scheduler: Cannot find module 'axios'
@@ -108,9 +108,9 @@ Require stack:
 │
 │  DETAIL
 │  Sumber      : TVOneNews
-│  Frekuensi   : 3x (duplikat digabung)
+│  Frekuensi   : 4x (duplikat digabung)
 │  Pertama     : 17/05/2026, 11.47.31
-│  Terakhir    : 17/05/2026, 11.57.31
+│  Terakhir    : 19/05/2026, 13.33.49
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [TVOneNews] Error scheduler: Cannot find module 'axios'
@@ -129,9 +129,9 @@ Require stack:
 │
 │  DETAIL
 │  Sumber      : AlqanimeNotif
-│  Frekuensi   : 15x (duplikat digabung)
+│  Frekuensi   : 16x (duplikat digabung)
 │  Pertama     : 17/05/2026, 11.46.31
-│  Terakhir    : 17/05/2026, 12.00.31
+│  Terakhir    : 19/05/2026, 13.33.49
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [AlqanimeNotif] Error scheduler: Cannot find module 'axios'
@@ -140,6 +140,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 6 jenis, 36 kejadian
-  Terakhir diperbarui: 19/05/2026, 10.13.14
+  End of Report  —  Total: 6 jenis, 39 kejadian
+  Terakhir diperbarui: 19/05/2026, 13.34.04
 ════════════════════════════════════════════════════════════════════════

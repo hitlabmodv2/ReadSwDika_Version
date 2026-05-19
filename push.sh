@@ -615,8 +615,10 @@ setup_token() {
 
     # ── Pilihan 0: keluar ────────────────────────────────────────────────────
     if [ "$_tok_type" = "0" ]; then
-      echo "" >&2
-      echo -e "  ${C_DIM}Keluar dari script.${C_RESET}" >&2
+      clear >/dev/tty 2>/dev/null || true
+      echo -e "\n  ${C_GREEN}👋  Keluar dari Push Script — sampai jumpa, Bang!${C_RESET}\n" >&2
+      sleep 0.4
+      echo "__EXIT__"
       exit 0
     fi
 
@@ -1149,6 +1151,7 @@ pick_repo() {
 }
 
 TOKEN=$(setup_token)
+[ "$TOKEN" = "__EXIT__" ] && exit 0
 
 # Validasi token ke GitHub secara real-time
 # Kalau invalid/expired → .token.secret dihapus oleh validate_token,
@@ -1164,6 +1167,7 @@ while true; do
   # validate_result=1 → token invalid, .token.secret sudah dihapus
   # Langsung panggil setup_token lagi — akan minta paste token baru
   TOKEN=$(setup_token)
+  [ "$TOKEN" = "__EXIT__" ] && exit 0
 done
 
 # Pilih repo tujuan push dari daftar GitHub (bisa Enter untuk skip)
@@ -6195,11 +6199,13 @@ check_token_realtime() {
   _delete_token_backup 2>/dev/null || true
 
   TOKEN=$(setup_token)
+  [ "$TOKEN" = "__EXIT__" ] && exit 0
   while true; do
     local _vr=0
     validate_token "$TOKEN" || _vr=$?
     [ "$_vr" -eq 0 ] || [ "$_vr" -eq 2 ] && break
     TOKEN=$(setup_token)
+    [ "$TOKEN" = "__EXIT__" ] && exit 0
   done
 
   REMOTE_URL="https://${USER}:${TOKEN}@github.com/${USER}/${REPO}.git"
@@ -6226,11 +6232,13 @@ relogin_if_needed() {
   _delete_token_backup 2>/dev/null || true
 
   TOKEN=$(setup_token)
+  [ "$TOKEN" = "__EXIT__" ] && exit 0
   while true; do
     local _vr=0
     validate_token "$TOKEN" || _vr=$?
     [ "$_vr" -eq 0 ] || [ "$_vr" -eq 2 ] && break
     TOKEN=$(setup_token)
+    [ "$TOKEN" = "__EXIT__" ] && exit 0
   done
 
   REMOTE_URL="https://${USER}:${TOKEN}@github.com/${USER}/${REPO}.git"
