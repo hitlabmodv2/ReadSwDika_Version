@@ -1,7 +1,7 @@
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
 
-✨ *6 Fitur Baru*
+✨ *7 Fitur Baru*
 🔧 *11 Bug Fix*
 🚀 *5 Improvement*
 
@@ -31,6 +31,11 @@ _📅 15 Mei 2026_
 
 > 🖼️ *Command .hd / .remini*
 > Perjelas foto blur — kini bisa dipakai user Jadibot
+
+> 📡 *Command .upswgc — Kini bisa dipakai user Jadibot*
+> Upload status/story ke semua grup langsung dari jadibot
+> Support kirim gambar, video, audio, atau teks biasa
+> Muncul di menu jadibot seksi STATUS & STORY
 
 > 🤖 *AI Format WA*
 > Respons Gemini otomatis diformat pakai simbol WA
