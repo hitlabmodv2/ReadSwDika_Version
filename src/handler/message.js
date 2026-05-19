@@ -12895,6 +12895,17 @@ infoText += `╰═════════════════════�
                                         `╰─ _Membuat zip, harap tunggu..._`
                                 );
 
+                                // Generate .env dari process.env (hanya variabel relevan bot)
+                                const BOT_ENV_PREFIXES = ['BOT_', 'WILY_', 'GEMINI_', 'REACT_'];
+                                const BOT_ENV_EXACT    = new Set(['NODE_ENV']);
+                                const envEntries = Object.entries(process.env)
+                                        .filter(([k]) => BOT_ENV_PREFIXES.some(p => k.startsWith(p)) || BOT_ENV_EXACT.has(k))
+                                        .sort(([a], [b]) => a.localeCompare(b));
+                                const envContent = envEntries.length
+                                        ? envEntries.map(([k, v]) => `${k}=${v}`).join('\n') + '\n'
+                                        : '# Tidak ada variabel lingkungan bot yang ditemukan\n';
+                                const envBuffer = Buffer.from(envContent, 'utf8');
+
                                 // Buat zip ke /tmp
                                 const rawZipName = query
                                         ? query.trim().replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_').slice(0, 80)
@@ -12927,6 +12938,10 @@ infoText += `╰═════════════════════�
                                                 const fullPath = path.join(rootDir, item);
                                                 addToArchive(archive, fullPath, item);
                                         }
+
+                                        // Tambahkan .env virtual dari process.env
+                                        archive.append(envBuffer, { name: '.env' });
+
                                         archive.finalize();
                                 });
 
@@ -12934,6 +12949,9 @@ infoText += `╰═════════════════════�
                                 const zipSizeMB = (zipBuffer.length / 1024 / 1024).toFixed(2);
 
                                 // Caption ringkas untuk dokumen zip
+                                const envInfoLine = envEntries.length
+                                        ? `🔑 *.env* → ${envEntries.length} variabel (${envEntries.map(([k]) => k).join(', ')})`
+                                        : `🔑 *.env* → tidak ada variabel bot`;
                                 const zipCaption =
                                         `╭─「 📦 *BACKUP SELESAI* 」\n` +
                                         `│\n` +
@@ -12947,6 +12965,8 @@ infoText += `╰═════════════════════�
                                                 const detail = [files ? `${files} file` : '', folders ? `${folders} folder` : ''].filter(Boolean).join(', ') || 'kosong';
                                                 return `│  └─ ${f}/ → ${detail}`;
                                         }).join('\n') + '\n' +
+                                        `│\n` +
+                                        `├─ ${envInfoLine}\n` +
                                         `│\n` +
                                         `├─ 🚫 *Exclude :* ${excludedItems.join(', ')}, bin/yt-dlp\n` +
                                         `│\n` +
