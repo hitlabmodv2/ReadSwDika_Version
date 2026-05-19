@@ -1976,12 +1976,72 @@ action_self_update() {
     return
   fi
   echo ""
-  mini_bar_start "Mengunduh push.sh versi ${_new_ver}" 0.05
-  local _tmp_dl
-  _tmp_dl=$(mktemp)
+  local _tmp_dl; _tmp_dl=$(mktemp)
   local _upd_ts; _upd_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
-  if curl -sf --max-time 20 "$_raw_url" -o "$_tmp_dl" 2>/dev/null; then
-    mini_bar_ok "Download selesai!"
+  # ── Live download: progress bar + speed + bytes real-time ─────────────────
+  # Estimasi ukuran push.sh (~306KB — update otomatis dari Content-Length jika ada)
+  local _est_bytes=306407
+  # Jalankan curl di background
+  curl -sf --max-time 30 "$_raw_url" -o "$_tmp_dl" 2>/dev/null &
+  local _curl_pid=$!
+  local _bw_dl=22 _p_dl=0 _prev_bytes=0 _speed_str="-- B/s"
+  local _spin_dl=(◐ ◓ ◑ ◒) _sdi=0
+  # Print 2 baris area untuk bar + speed
+  printf "\n" >/dev/tty 2>/dev/null
+  while kill -0 "$_curl_pid" 2>/dev/null; do
+    # Baca ukuran file saat ini
+    local _cur_bytes=0
+    _cur_bytes=$(wc -c < "$_tmp_dl" 2>/dev/null | tr -d ' ') || _cur_bytes=0
+    # Hitung speed (bytes per 0.15s → per detik)
+    local _delta=$(( _cur_bytes - _prev_bytes ))
+    local _bps=$(( _delta * 1000 / 150 ))
+    if   [ "$_bps" -ge 1048576 ]; then _speed_str="$(( _bps / 1048576 )) MB/s"
+    elif [ "$_bps" -ge 1024 ];    then _speed_str="$(( _bps / 1024 )) KB/s"
+    elif [ "$_bps" -gt 0 ];       then _speed_str="${_bps} B/s"
+    else _speed_str="-- B/s"; fi
+    _prev_bytes=$_cur_bytes
+    # Format bytes downloaded
+    local _dl_str=""
+    if   [ "$_cur_bytes" -ge 1048576 ]; then _dl_str="$(( _cur_bytes / 1048576 )).$(( (_cur_bytes % 1048576) / 104858 )) MB"
+    elif [ "$_cur_bytes" -ge 1024 ];    then _dl_str="$(( _cur_bytes / 1024 )) KB"
+    else _dl_str="${_cur_bytes} B"; fi
+    # Hitung persen (cap 92% selama masih download)
+    local _pct_dl=$(( _cur_bytes * 100 / _est_bytes ))
+    [ "$_pct_dl" -gt 92 ] && _pct_dl=92
+    [ "$_pct_dl" -gt "$_p_dl" ] && _p_dl=$_pct_dl
+    local _f_dl=$(( _p_dl * _bw_dl / 100 ))
+    local _bf_dl="" _be_dl="" _jd=0
+    while [ $_jd -lt $_f_dl  ]; do _bf_dl="${_bf_dl}█"; _jd=$(( _jd+1 )); done
+    while [ $_jd -lt $_bw_dl ]; do _be_dl="${_be_dl}░"; _jd=$(( _jd+1 )); done
+    local _sp_dl="${_spin_dl[$(( _sdi % 4 ))]}"
+    _sdi=$(( _sdi + 1 ))
+    # Update 2 baris in-place
+    printf "\033[2A\r\033[K  [\033[36m%s\033[0m\033[2m%s\033[0m] \033[1;36m%3d%%\033[0m  \033[2mMengunduh push.sh\033[0m\n\033[K  \033[36m%s\033[0m \033[1;33m%-10s\033[0m  \033[2m%s downloaded\033[0m\n" \
+      "$_bf_dl" "$_be_dl" "$_p_dl" "$_sp_dl" "$_speed_str" "$_dl_str" >/dev/tty 2>/dev/null
+    sleep 0.15
+  done
+  wait "$_curl_pid"
+  local _curl_exit=$?
+  # Bar 100% atau error — bersihkan baris ke-2
+  local _full_dl="" _jf=0
+  while [ $_jf -lt $_bw_dl ]; do _full_dl="${_full_dl}█"; _jf=$(( _jf+1 )); done
+  local _final_bytes=0
+  _final_bytes=$(wc -c < "$_tmp_dl" 2>/dev/null | tr -d ' ') || _final_bytes=0
+  local _final_str=""
+  if   [ "$_final_bytes" -ge 1048576 ]; then _final_str="$(( _final_bytes / 1048576 )).$(( (_final_bytes % 1048576) / 104858 )) MB"
+  elif [ "$_final_bytes" -ge 1024 ];    then _final_str="$(( _final_bytes / 1024 )) KB"
+  else _final_str="${_final_bytes} B"; fi
+  if [ "$_curl_exit" = "0" ] && [ "$_final_bytes" -gt 1000 ]; then
+    printf "\033[2A\r\033[K  [\033[32m%s\033[0m] \033[1;32m100%%\033[0m  \033[32m✅ Download selesai (%s)\033[0m\n\033[K\n" \
+      "$_full_dl" "$_final_str" >/dev/tty 2>/dev/null
+  else
+    local _hf_dl="" _jh=0
+    while [ $_jh -lt $_bw_dl ]; do _hf_dl="${_hf_dl}▒"; _jh=$(( _jh+1 )); done
+    printf "\033[2A\r\033[K  [\033[31m%s\033[0m] \033[1;31m ERR\033[0m  \033[31m❌ Download gagal\033[0m\n\033[K\n" \
+      "$_hf_dl" >/dev/tty 2>/dev/null
+    _curl_exit=1
+  fi
+  if [ "$_curl_exit" = "0" ]; then
     cp push.sh push.sh.bak 2>/dev/null
     mv "$_tmp_dl" push.sh
     chmod +x push.sh
@@ -2008,7 +2068,6 @@ action_self_update() {
     exit 0
   else
     rm -f "$_tmp_dl" 2>/dev/null
-    mini_bar_fail "Download gagal"
     echo ""
     echo -e "  ${C_RED}❌  Gagal mengunduh update. Coba lagi nanti.${C_RESET}"
     # ── Notif Telegram: update gagal ─────────────────────────────────────
