@@ -571,7 +571,21 @@ setup_token() {
     else
       echo -e "  ${C_YELLOW}⚠️  Token tidak valid / placeholder.${C_RESET}" >&2
     fi
+
+    # ── Status node_modules ──────────────────────────────────────────────────
+    local _nm_missing=0
+    if [ ! -d node_modules ] || [ ! -f node_modules/.package-lock.json ] && [ ! -f package-lock.json ] || [ ! -d node_modules/.bin ]; then
+      if [ ! -d node_modules ] || [ ! -d node_modules/.bin ]; then
+        _nm_missing=1
+      fi
+    fi
+    if [ "$_nm_missing" = "1" ]; then
+      echo -e "  ${C_RED}📦  node_modules belum ada / belum di-install.${C_RESET}" >&2
+    else
+      echo -e "  ${C_GREEN}📦  node_modules${C_RESET}${C_DIM} — sudah terinstall ✓${C_RESET}" >&2
+    fi
     echo "" >&2
+
     echo -e "  ${C_BOLD}Pilih opsi:${C_RESET}" >&2
     echo "" >&2
     echo -e "  ${C_CYAN}[1]${C_RESET} ${C_BOLD}Classic Token${C_RESET}         ${C_DIM}— belum punya, buat baru  (ghp_...)${C_RESET}" >&2
@@ -581,13 +595,19 @@ setup_token() {
     if [ -f .token.secret ]; then
       echo -e "  ${C_RED}[4]${C_RESET} ${C_BOLD}Hapus token tersimpan${C_RESET} ${C_DIM}— reset .token.secret${C_RESET}" >&2
     fi
+    # Opsi 5: install node_modules (selalu tampil)
+    if [ "$_nm_missing" = "1" ]; then
+      echo -e "  ${C_MAGENTA}[5]${C_RESET} ${C_BOLD}Install node_modules${C_RESET}  ${C_DIM}— jalankan npm install sekarang${C_RESET}  ${C_RED}⚠ belum ada${C_RESET}" >&2
+    else
+      echo -e "  ${C_MAGENTA}[5]${C_RESET} ${C_BOLD}Install node_modules${C_RESET}  ${C_DIM}— jalankan npm install ulang${C_RESET}" >&2
+    fi
     echo -e "  ${C_DIM}[0]${C_RESET} ${C_DIM}Keluar${C_RESET}" >&2
     echo "" >&2
     echo -e "${C_DIM}  ─────────────────────────────────────────────────${C_RESET}" >&2
     if [ -f .token.secret ]; then
-      printf "  ${C_BOLD}Pilih [0/1/2/3/4] ▸ ${C_RESET}" >&2
+      printf "  ${C_BOLD}Pilih [0/1/2/3/4/5] ▸ ${C_RESET}" >&2
     else
-      printf "  ${C_BOLD}Pilih [0/1/2/3] ▸ ${C_RESET}" >&2
+      printf "  ${C_BOLD}Pilih [0/1/2/3/5] ▸ ${C_RESET}" >&2
     fi
     local _tok_type=""
     read -r _tok_type </dev/tty
@@ -598,6 +618,39 @@ setup_token() {
       echo "" >&2
       echo -e "  ${C_DIM}Keluar dari script.${C_RESET}" >&2
       exit 0
+    fi
+
+    # ── Pilihan 5: install node_modules ─────────────────────────────────────
+    if [ "$_tok_type" = "5" ]; then
+      clear >/dev/tty 2>/dev/null || true
+      echo -e "${C_BOLD}╔══════════════════════════════════════════════════╗${C_RESET}" >&2
+      echo -e "${C_BOLD}║        📦  INSTALL NODE_MODULES — BANG WILY      ║${C_RESET}" >&2
+      echo -e "${C_BOLD}╚══════════════════════════════════════════════════╝${C_RESET}" >&2
+      echo "" >&2
+      echo -e "  ${C_DIM}Menjalankan npm install — harap tunggu...${C_RESET}" >&2
+      echo "" >&2
+      # Progress bar animasi selama npm install
+      mini_bar_start "npm install" 0.06
+      local _nm_log _nm_exit
+      _nm_log=$(npm install 2>&1)
+      _nm_exit=$?
+      if [ "$_nm_exit" = "0" ]; then
+        mini_bar_ok "node_modules berhasil diinstall!"
+        echo "" >&2
+        echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}" >&2
+      else
+        mini_bar_fail "npm install gagal"
+        echo "" >&2
+        echo -e "  ${C_RED}❌  Error:${C_RESET}" >&2
+        echo "$_nm_log" | tail -10 | while IFS= read -r _line; do
+          echo -e "      ${C_DIM}$_line${C_RESET}" >&2
+        done
+      fi
+      echo "" >&2
+      printf "  ${C_DIM}Tekan Enter untuk kembali ke menu...${C_RESET}" >&2
+      read -r </dev/tty
+      tok=""
+      continue
     fi
 
     # ── Pilihan 4: hapus token tersimpan ────────────────────────────────────
