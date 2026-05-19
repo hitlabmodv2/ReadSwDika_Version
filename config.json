@@ -51,7 +51,7 @@
     "whitelist": []
   },
   "antiTagSW": {
-    "enabled": true,
+    "enabled": false,
     "maxWarnings": 10
   },
   "autoCleaner": {

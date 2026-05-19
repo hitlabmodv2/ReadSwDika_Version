@@ -20788,7 +20788,9 @@
     "id": "6285711200877@s.whatsapp.net",
     "name": "Naizo 👍",
     "lid": "168736715731040@lid",
-    "jid": "6285711200877@s.whatsapp.net"
+    "jid": "6285711200877@s.whatsapp.net",
+    "notify": "Albiverstappen",
+    "verifiedName": "Albiverstappen"
   },
   "6285314753030@s.whatsapp.net": {
     "isContact": true,
@@ -22594,7 +22596,9 @@
     "id": "6289688206739@s.whatsapp.net",
     "name": "Agan Rizkia",
     "lid": "81582920577063@lid",
-    "jid": "6289688206739@s.whatsapp.net"
+    "jid": "6289688206739@s.whatsapp.net",
+    "notify": "Wily",
+    "verifiedName": "Wily"
   },
   "628889079192@s.whatsapp.net": {
     "isContact": true,
@@ -31340,5 +31344,21 @@
     "id": "97968623505429@lid",
     "lid": "97968623505429@lid",
     "notify": "Hen V2"
+  },
+  "168736715731040@lid": {
+    "id": "168736715731040@lid",
+    "lid": "168736715731040@lid",
+    "notify": "Albiverstappen",
+    "verifiedName": "Albiverstappen"
+  },
+  "58459219341360@lid": {
+    "id": "58459219341360@lid",
+    "lid": "58459219341360@lid",
+    "imgUrl": "removed"
+  },
+  "153855023161567@lid": {
+    "id": "153855023161567@lid",
+    "lid": "153855023161567@lid",
+    "imgUrl": "changed"
   }
 }
