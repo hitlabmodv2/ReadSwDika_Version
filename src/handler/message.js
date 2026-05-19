@@ -1616,10 +1616,10 @@ async function sendCekautoGrupMsg(hisoka, m) {
         const secFitur  = CEKAUTO_GROUP_FITUR_LIST.filter(f => SECURITY_KEYS.includes(f.key));
         const notifFitur = CEKAUTO_GROUP_FITUR_LIST.filter(f => NOTIF_KEYS.includes(f.key));
 
-        const makeRow = (f) => {
+        const makeRow = (f, catEmoji = '') => {
                 const isOn = f.checkFn(cfg, jid);
                 return {
-                        header: `${isOn ? '🟢' : '🔴'} ${f.nama}`,
+                        header: `${catEmoji ? catEmoji + ' ' : ''}${isOn ? '🟢' : '🔴'} ${f.nama}`,
                         title: isOn ? '❌ Nonaktifkan' : '✅ Aktifkan',
                         description: truncDesc(getDesc(f)),
                         id: isOn ? `__cgrupsel__${f.key}` : `__cgrup__${f.key}__on`,
@@ -1654,14 +1654,21 @@ async function sendCekautoGrupMsg(hisoka, m) {
                 `║  ✅ Aktif: ${String(totalAktif).padStart(2)}  ❌ Mati: ${String(totalMati).padStart(2)}  │ Total: ${CEKAUTO_GROUP_FITUR_LIST.length}\n` +
                 `╚══════════════════════════════╝`;
 
+        const sortToggle = (list, emoji) => {
+                const toggleable = list.filter(f => f.toggleable);
+                const onList  = toggleable.filter(f =>  f.checkFn(cfg, jid)).map(f => makeRow(f, emoji));
+                const offList = toggleable.filter(f => !f.checkFn(cfg, jid)).map(f => makeRow(f, emoji));
+                return [...onList, ...offList];
+        };
+
         const cgrupRows = [
                 {
                         title: '🛡️ KEAMANAN & MEMBER — Ketuk untuk toggle',
-                        rows: secFitur.filter(f => f.toggleable).map(makeRow),
+                        rows: sortToggle(secFitur, '🛡️'),
                 },
                 {
                         title: '📺 NOTIFIKASI OTOMATIS — Ketuk untuk toggle',
-                        rows: notifFitur.filter(f => f.toggleable).map(makeRow),
+                        rows: sortToggle(notifFitur, '📺'),
                 },
         ].filter(s => s.rows.length > 0);
 
@@ -1742,7 +1749,7 @@ async function sendCekautoMsg(hisoka, m) {
                         const groups = val?.groups || {};
                         isOn = Object.values(groups).some(g => g?.enabled === true);
                 }
-                (isOn ? aktif : nonaktif).push({ nama: f.nama, cmd: f.cmd });
+                (isOn ? aktif : nonaktif).push({ nama: f.nama, cmd: f.cmd, key: f.key });
         }
 
         aktif.sort((a, b) => a.nama.localeCompare(b.nama));
@@ -1771,6 +1778,16 @@ async function sendCekautoMsg(hisoka, m) {
         const namaToKey = {};
         for (const f of CEKAUTO_FITUR_LIST) { if (f.toggleable && f.toggleKey) namaToKey[f.nama] = f.toggleKey; }
 
+        const catEmojiMap = {
+                antiCall: '🛡️', antiCallVideo: '🛡️', antiDelete: '🛡️', antiTagSW: '🛡️', antiPorn: '🛡️',
+                autoOnline: '🌐', autoReadStory: '📖', autoTyping: '💬', autoRecording: '🎙️',
+                autoCleaner: '🧹', sessionCleaner: '🧹',
+                autoSimi: '🤖', wilyAI: '🤖',
+                reactApi: '⚡', telegram: '📲',
+                infowibu: '📺', alqanimenotif: '📺', animasu: '📺', malnews: '📺', tvonenews: '📺',
+                welcomeGoodbye: '👋', cekswTracking: '📊', memoryMonitor: '📊',
+        };
+
         const tAktif   = aktif.filter(f => CEKAUTO_FITUR_LIST.find(x => x.nama === f.nama)?.toggleable);
         const tNonaktif = nonaktif.filter(f => CEKAUTO_FITUR_LIST.find(x => x.nama === f.nama)?.toggleable);
 
@@ -1778,23 +1795,28 @@ async function sendCekautoMsg(hisoka, m) {
         if (tAktif.length) {
                 cautoRows.push({
                         title: '✅ FITUR AKTIF — Ketuk untuk nonaktifkan',
-                        rows: tAktif.map(f => ({ header: `🟢 ${f.nama}`, title: '❌ Nonaktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__off` }))
+                        rows: tAktif.map(f => ({ header: `${catEmojiMap[f.key] || '⚙️'} 🟢 ${f.nama}`, title: '❌ Nonaktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__off` }))
                 });
         }
         if (tNonaktif.length) {
                 cautoRows.push({
                         title: '❌ FITUR NONAKTIF — Ketuk untuk aktifkan',
-                        rows: tNonaktif.map(f => ({ header: `🔴 ${f.nama}`, title: '✅ Aktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__on` }))
+                        rows: tNonaktif.map(f => ({ header: `${catEmojiMap[f.key] || '⚙️'} 🔴 ${f.nama}`, title: '✅ Aktifkan sekarang', description: `Perintah: ${f.cmd}`, id: `__cauto__${namaToKey[f.nama]}__on` }))
                 });
         }
 
         // Tambah section Fitur Grup di dropdown
         if (m.isGroup) {
                 const cfgGrup = loadConfig();
-                const grupRows = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.toggleable).map(f => {
+                const GC_SEC_KEYS = ['antipornGrup', 'antiTagSWGrup', 'welcome', 'goodbye'];
+                const gcToggleable = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.toggleable);
+                const gcActive   = gcToggleable.filter(f =>  f.checkFn(cfgGrup, m.from));
+                const gcInactive = gcToggleable.filter(f => !f.checkFn(cfgGrup, m.from));
+                const grupRows = [...gcActive, ...gcInactive].map(f => {
                         const isOn = f.checkFn(cfgGrup, m.from);
+                        const catE = GC_SEC_KEYS.includes(f.key) ? '🛡️' : '📺';
                         return {
-                                header: `${isOn ? '🟢' : '🔴'} ${f.nama}`,
+                                header: `${catE} ${isOn ? '🟢' : '🔴'} ${f.nama}`,
                                 title: isOn ? '❌ Nonaktifkan' : '✅ Aktifkan',
                                 description: `Perintah: ${f.cmd}`,
                                 id: isOn ? `__cgrupsel__${f.key}` : `__cgrup__${f.key}__on`,
