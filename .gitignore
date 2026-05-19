@@ -23,9 +23,6 @@ zipFile.zip
 *.zip
 *.pdf
 
-# node_modules — JANGAN upload, install via npm install
-node_modules/
-node_modules/**
 
 # Sessions — upload SEMUA isi hisoka
 sessions/**
