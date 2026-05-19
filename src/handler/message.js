@@ -1317,15 +1317,57 @@ const CEKAUTO_FITUR_LIST = [
 ];
 
 const CEKAUTO_GROUP_FITUR_LIST = [
-        { key: 'infowibu',     nama: 'Info Wibu',        cmd: '.infowibu on/off',      toggleable: true,  checkFn: (cfg, jid) => cfg.infowibu?.groups?.[jid]?.enabled === true },
-        { key: 'animasu',      nama: 'Animasu Notif',    cmd: '.animasu on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.animasu?.groups?.[jid]?.enabled === true },
-        { key: 'alqanimenotif',nama: 'Alqanime Notif',   cmd: '.alqanimenotif on/off', toggleable: true,  checkFn: (cfg, jid) => cfg.alqanimenotif?.groups?.[jid]?.enabled === true },
-        { key: 'tvonenews',    nama: 'TV One News',      cmd: '.tvone on/off',         toggleable: true,  checkFn: (cfg, jid) => cfg.tvonenews?.groups?.[jid]?.enabled === true },
-        { key: 'malnews',      nama: 'MAL News',         cmd: '.malnews on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.malnews?.groups?.[jid]?.enabled === true },
-        { key: 'welcome',      nama: 'Welcome',          cmd: '.welcome on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.welcome === true },
-        { key: 'goodbye',      nama: 'Goodbye',          cmd: '.goodbye on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.goodbye === true },
-        { key: 'antipornGrup', nama: 'Anti Porn (Grup)', cmd: '.antiporn on/off',      toggleable: true,  checkFn: (cfg, jid) => Array.isArray(cfg.antiPorn?.groups) && cfg.antiPorn.groups.includes(jid) },
-        { key: 'antiTagSWGrup',nama: 'Anti Tag SW (Grup)',cmd: '.antitagsw on/off',   toggleable: true,  checkFn: (_cfg, jid) => isAntiTagSWEnabled(jid) },
+        {
+                key: 'infowibu', nama: 'Info Wibu', cmd: '.infowibu on/off', toggleable: true,
+                desc: 'Kirim info & jadwal anime/wibu terbaru ke grup ini secara otomatis.',
+                checkFn: (cfg, jid) => cfg.infowibu?.groups?.[jid]?.enabled === true
+        },
+        {
+                key: 'animasu', nama: 'Animasu Notif', cmd: '.animasu on/off', toggleable: true,
+                desc: 'Notifikasi update episode anime terbaru dari Animasu ke grup.',
+                checkFn: (cfg, jid) => cfg.animasu?.groups?.[jid]?.enabled === true
+        },
+        {
+                key: 'alqanimenotif', nama: 'Alqanime Notif', cmd: '.alqanimenotif on/off', toggleable: true,
+                desc: 'Notifikasi rilis anime terbaru dari Alqanime ke grup ini.',
+                checkFn: (cfg, jid) => cfg.alqanimenotif?.groups?.[jid]?.enabled === true
+        },
+        {
+                key: 'tvonenews', nama: 'TV One News', cmd: '.tvone on/off', toggleable: true,
+                desc: 'Kirim berita terkini dari TV One ke grup ini secara otomatis.',
+                checkFn: (cfg, jid) => cfg.tvonenews?.groups?.[jid]?.enabled === true
+        },
+        {
+                key: 'malnews', nama: 'MAL News', cmd: '.malnews on/off', toggleable: true,
+                desc: 'Kirim berita & update anime/manga dari MyAnimeList ke grup.',
+                checkFn: (cfg, jid) => cfg.malnews?.groups?.[jid]?.enabled === true
+        },
+        {
+                key: 'welcome', nama: 'Welcome', cmd: '.welcome on/off', toggleable: true,
+                desc: 'Kirim pesan sambutan otomatis saat member baru bergabung ke grup.',
+                checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.welcome === true
+        },
+        {
+                key: 'goodbye', nama: 'Goodbye', cmd: '.goodbye on/off', toggleable: true,
+                desc: 'Kirim pesan perpisahan otomatis saat member keluar atau dikick.',
+                checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.goodbye === true
+        },
+        {
+                key: 'antipornGrup', nama: 'Anti Porn (Grup)', cmd: '.antiporn on/off', toggleable: true,
+                descFn: (cfg) => {
+                        const globalOn = cfg.antiPorn?.enabled === true;
+                        return `Hapus konten +18 di grup. Global: ${globalOn ? '🟢 Aktif' : '🔴 Nonaktif → ketik .antiporn global on'}`;
+                },
+                checkFn: (cfg, jid) => Array.isArray(cfg.antiPorn?.groups) && cfg.antiPorn.groups.includes(jid)
+        },
+        {
+                key: 'antiTagSWGrup', nama: 'Anti Tag SW (Grup)', cmd: '.antitagsw on/off', toggleable: true,
+                descFn: (cfg) => {
+                        const globalOn = cfg.antiTagSW?.enabled === true;
+                        return `Cegah member mentag grup via SW. Global: ${globalOn ? '🟢 Aktif' : '🔴 Nonaktif → ketik .antitagsw global on'}`;
+                },
+                checkFn: (_cfg, jid) => isAntiTagSWEnabled(jid)
+        },
 ];
 
 async function sendCekautoGrupMsg(hisoka, m) {
@@ -1350,14 +1392,20 @@ async function sendCekautoGrupMsg(hisoka, m) {
         txt += `┌─────────────────────────────┐\n`;
         txt += `│  ✅ *AKTIF*  ·  ${aktif.length} fitur aktif\n`;
         txt += `└─────────────────────────────┘\n`;
+        const getDesc = (f) => {
+                if (f.descFn) return f.descFn(cfg);
+                return f.desc || f.cmd;
+        };
+        const truncDesc = (str, max = 72) => str.length > max ? str.substring(0, max - 1) + '…' : str;
+
         txt += aktif.length
-                ? aktif.map(f => `  🟢  *${f.nama}*`).join('\n') + '\n'
+                ? aktif.map(f => `  🟢  *${f.nama}*\n     _↳ ${getDesc(f)}_`).join('\n') + '\n'
                 : `  _Tidak ada fitur yang aktif_\n`;
         txt += `\n┌─────────────────────────────┐\n`;
         txt += `│  ❌ *NONAKTIF*  ·  ${nonaktif.length} fitur mati\n`;
         txt += `└─────────────────────────────┘\n`;
         txt += nonaktif.length
-                ? nonaktif.map(f => `  🔴  *${f.nama}*`).join('\n') + '\n'
+                ? nonaktif.map(f => `  🔴  *${f.nama}*\n     _↳ ${getDesc(f)}_`).join('\n') + '\n'
                 : `  _Semua fitur aktif_ ✨\n`;
         txt += `\n╔══════════════════════════╗\n`;
         txt += `║  📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar\n`;
@@ -1368,7 +1416,9 @@ async function sendCekautoGrupMsg(hisoka, m) {
                 cgrupRows.push({
                         title: '✅ FITUR AKTIF — Ketuk untuk nonaktifkan',
                         rows: aktif.filter(f => f.toggleable).map(f => ({
-                                header: `🟢 ${f.nama}`, title: '❌ Nonaktifkan sekarang', description: `Perintah: ${f.cmd}`,
+                                header: `🟢 ${f.nama}`,
+                                title: '❌ Nonaktifkan sekarang',
+                                description: truncDesc(getDesc(f)),
                                 id: `__cgrup__${f.key}__off`
                         }))
                 });
@@ -1377,7 +1427,9 @@ async function sendCekautoGrupMsg(hisoka, m) {
                 cgrupRows.push({
                         title: '❌ FITUR NONAKTIF — Ketuk untuk aktifkan',
                         rows: nonaktif.filter(f => f.toggleable).map(f => ({
-                                header: `🔴 ${f.nama}`, title: '✅ Aktifkan sekarang', description: `Perintah: ${f.cmd}`,
+                                header: `🔴 ${f.nama}`,
+                                title: '✅ Aktifkan sekarang',
+                                description: truncDesc(getDesc(f)),
                                 id: `__cgrup__${f.key}__on`
                         }))
                 });
