@@ -14357,7 +14357,8 @@
     "name": "Hamdan",
     "lid": "239328697536578@lid",
     "jid": "6283134844523@s.whatsapp.net",
-    "notify": "Anda Siapa?"
+    "notify": "Anda Siapa?",
+    "verifiedName": "Anda Siapa?"
   },
   "6281289973507@s.whatsapp.net": {
     "isContact": true,
@@ -20908,7 +20909,8 @@
     "id": "6283182665936@s.whatsapp.net",
     "name": "ルトピ",
     "lid": "165536713416760@lid",
-    "jid": "6283182665936@s.whatsapp.net"
+    "jid": "6283182665936@s.whatsapp.net",
+    "notify": "Luthfi (Lui)"
   },
   "601140548413@s.whatsapp.net": {
     "isContact": true,
@@ -25062,7 +25064,8 @@
     "name": "√ Miku",
     "lid": "38642156306452@lid",
     "jid": "6282268990535@s.whatsapp.net",
-    "notify": "Otaku Hakase"
+    "notify": "Otaku Hakase",
+    "verifiedName": "Otaku Hakase"
   },
   "6285789578973@s.whatsapp.net": {
     "isContact": true,
@@ -31792,5 +31795,46 @@
     "id": "82828679200798@lid",
     "lid": "82828679200798@lid",
     "notify": "𝙢𝙖𝙪𝙡𝙖𝙣𝙖 𝙣𝙜𝙚𝙣"
+  },
+  "38642156306452@lid": {
+    "id": "38642156306452@lid",
+    "lid": "38642156306452@lid",
+    "notify": "Otaku Hakase",
+    "verifiedName": "Otaku Hakase"
+  },
+  "69849254518919@lid": {
+    "id": "69849254518919@lid",
+    "lid": "69849254518919@lid",
+    "notify": "𝘼𝙛𝙖𝙨𝙨"
+  },
+  "90916371062907@lid": {
+    "id": "90916371062907@lid",
+    "lid": "90916371062907@lid",
+    "notify": "Nursaori_saossoryy"
+  },
+  "165536713416760@lid": {
+    "id": "165536713416760@lid",
+    "lid": "165536713416760@lid",
+    "notify": "Luthfi (Lui)"
+  },
+  "125173013422190@lid": {
+    "id": "125173013422190@lid",
+    "lid": "125173013422190@lid",
+    "imgUrl": "removed"
+  },
+  "196920190492874@lid": {
+    "id": "196920190492874@lid",
+    "lid": "196920190492874@lid",
+    "imgUrl": "changed"
+  },
+  "254627354280042@lid": {
+    "id": "254627354280042@lid",
+    "lid": "254627354280042@lid",
+    "imgUrl": "removed"
+  },
+  "58390382440544@lid": {
+    "id": "58390382440544@lid",
+    "lid": "58390382440544@lid",
+    "imgUrl": "changed"
   }
 }

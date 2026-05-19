@@ -1663,14 +1663,16 @@ prepare_stage() {
     esac
   done
 
-  # Auto-untrack node_modules dari git index (file di disk tetap aman).
-  local nm_tracked
-  nm_tracked=$(git ls-files node_modules 2>/dev/null | wc -l | tr -d ' ')
-  if [ "$nm_tracked" -gt 0 ]; then
-    echo -e "  ${C_YELLOW}🧹 Untrack node_modules dari git (${nm_tracked} file)...${C_RESET}"
-    git rm -r --cached -q node_modules 2>>"$err_log" || true
-    echo -e "  ${C_DIM}   (file di disk tetap ada, cuma dilepas dari tracking git)${C_RESET}"
-  fi
+  # node_modules: hapus folder BERAT dari tracking, sisanya biarkan ter-upload.
+  for heavy in node_modules/@tensorflow \
+               node_modules/@ffmpeg-installer \
+               node_modules/nsfwjs \
+               node_modules/@img \
+               node_modules/typescript; do
+    if git ls-files --error-unmatch "$heavy" >/dev/null 2>&1; then
+      git rm -r --cached -q "$heavy" 2>>"$err_log" || true
+    fi
+  done
 
   # ⚠️  KEAMANAN: Auto-untrack .token.secret agar token asli tidak pernah ke-commit.
   if git ls-files --error-unmatch .token.secret >/dev/null 2>&1; then
@@ -1693,7 +1695,7 @@ prepare_stage() {
   _skip_large_staged_files
 
   # Force-add file penting yang biasanya di-ignore.
-  # CATATAN: node_modules & .token.secret SENGAJA TIDAK di-force-add.
+  # CATATAN: .token.secret SENGAJA TIDAK di-force-add (keamanan token).
   for forced in package-lock.json .env \
                 sessions/hisoka/creds.json \
                 sessions/hisoka/contacts.json \
@@ -1705,6 +1707,19 @@ prepare_stage() {
     [ -e "$forced" ] || continue
     git add -f "$forced" 2>>"$err_log" || true
   done
+
+  # Force-add node_modules (kecuali folder berat) — bypass global gitignore.
+  if [ -d "node_modules" ]; then
+    git add -f node_modules/ 2>>"$err_log" || true
+    # Hapus kembali folder berat dari staging area
+    for heavy in node_modules/@tensorflow \
+                 node_modules/@ffmpeg-installer \
+                 node_modules/nsfwjs \
+                 node_modules/@img \
+                 node_modules/typescript; do
+      git rm -r --cached -q "$heavy" 2>/dev/null || true
+    done
+  fi
 
   # Kalau ada error non-fatal, tampilkan singkat (tapi jangan stop).
   if [ -s "$err_log" ]; then
