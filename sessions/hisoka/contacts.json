@@ -30652,7 +30652,8 @@
     "id": "6285954745105@s.whatsapp.net",
     "name": "√Airlangga Satria.P TITL-1",
     "lid": "145436467830940@lid",
-    "jid": "6285954745105@s.whatsapp.net"
+    "jid": "6285954745105@s.whatsapp.net",
+    "notify": "Knight"
   },
   "6283875812593@s.whatsapp.net": {
     "isContact": true,
@@ -31847,5 +31848,20 @@
     "id": "95434911531184@lid",
     "lid": "95434911531184@lid",
     "imgUrl": "changed"
+  },
+  "34522997501977@lid": {
+    "id": "34522997501977@lid",
+    "lid": "34522997501977@lid",
+    "imgUrl": "changed"
+  },
+  "193020829909081@lid": {
+    "id": "193020829909081@lid",
+    "lid": "193020829909081@lid",
+    "notify": "Zacky Ariansyah"
+  },
+  "193015830302824@lid": {
+    "id": "193015830302824@lid",
+    "lid": "193015830302824@lid",
+    "imgUrl": "removed"
   }
 }

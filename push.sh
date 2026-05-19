@@ -5615,6 +5615,39 @@ push_head_to_branch() {
       echo -e "  ${C_GREEN}✅ Sudah up-to-date${C_RESET} → ${C_BLUE}https://github.com/${USER}/${REPO}/tree/${branch}${C_RESET}"
       return 0
     fi
+
+    # ── Deteksi konflik sebelum push ──────────────────────────────────────────
+    # Hitung berapa commit remote yang tidak ada di lokal (behind),
+    # dan berapa commit lokal yang belum di-push (ahead).
+    local _behind_count _ahead_count
+    _behind_count=$(git rev-list --count "HEAD..refs/remotes/origin/${branch}" 2>/dev/null || echo "0")
+    _ahead_count=$(git rev-list --count  "refs/remotes/origin/${branch}..HEAD"  2>/dev/null || echo "0")
+    # Bersihkan jadi angka murni, hindari error aritmatik
+    _behind_count=$(printf '%s' "$_behind_count" | tr -cd '0-9'); _behind_count="${_behind_count:-0}"
+    _ahead_count=$(printf '%s'  "$_ahead_count"  | tr -cd '0-9'); _ahead_count="${_ahead_count:-0}"
+
+    if [ "$_behind_count" -gt 0 ] 2>/dev/null; then
+      echo ""
+      echo -e "  ${C_YELLOW}⚠️  Remote ${C_BOLD}${branch}${C_RESET}${C_YELLOW} punya ${C_BOLD}${_behind_count}${C_RESET}${C_YELLOW} commit yang tidak ada di lokal${C_RESET}"
+      echo -e "  ${C_DIM}   Lokal : ↑${_ahead_count} commit belum di-push${C_RESET}"
+      echo -e "  ${C_DIM}   Remote: ↑${_behind_count} commit belum di-pull${C_RESET}"
+      echo ""
+      echo -e "  ${C_GREEN}f${C_RESET} › Force push — file lokal menang ${C_DIM}(histori remote ditimpa)${C_RESET}"
+      echo -e "  ${C_CYAN}s${C_RESET} › Skip branch ini"
+      echo -e "  ${C_DIM}────────────────────────────────${C_RESET}"
+      printf "  ${C_BOLD}▸ ${C_RESET}"
+      local _conf_ans
+      read -r _conf_ans </dev/tty
+      echo ""
+      _conf_ans=$(printf '%s' "$_conf_ans" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+      if [ "$_conf_ans" != "f" ]; then
+        echo -e "  ${C_CYAN}↩ Branch ${C_BOLD}${branch}${C_RESET}${C_CYAN} di-skip${C_RESET}"
+        return 0
+      fi
+      echo -e "  ${C_YELLOW}⚡ Force push dipilih — lanjut...${C_RESET}"
+      echo ""
+    fi
+    # ─────────────────────────────────────────────────────────────────────────
   fi
 
   local push_log
