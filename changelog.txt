@@ -1,6 +1,6 @@
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
-📦 19 Update | 🔧 10 Bug Fix | ✨ 4 Fitur Baru | 🚀 7 Improvement
+📦 22 Update | 🔧 11 Bug Fix | ✨ 6 Fitur Baru | 🚀 7 Improvement
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
@@ -13,6 +13,15 @@ _📅 15 Mei 2026_
 > 🌐 *Speedtest* — Test kecepatan internet bot realtime
 > Ukur Download, Upload, Ping, Jitter + info ISP & IP
 > Alias: `.speedtest` `.speed` `.cekspeed` `.testnet`
+>
+> 📰 *MAL News* — Notifikasi berita anime dari MyAnimeList ke grup WA
+> Ambil via RSS feed myanimelist.net, judul & ringkasan auto-translate ke Indonesia
+> Aktifkan per grup lewat command `.malnews`
+>
+> 📺 *TVOne News* — Notifikasi berita terkini dari tvonenews.com ke grup WA
+> Scraping otomatis setiap 5 menit, kirim ke grup saat ada berita baru
+> Lengkap dengan gambar, kategori, dan link artikel
+> Aktifkan per grup lewat command `.tvone`
 >
 > 🖼️ *Command .hd / .remini* — Kini bisa dipakai user Jadibot
 >
@@ -30,6 +39,9 @@ _📅 15 Mei 2026_
 > 🔁 *Animasu* — `simulasi()` crash saat slug 404 → pakai fallback URL
 > 📊 *Animasu* — `getAiringStatus()` silent drop season lanjutan → diperbaiki
 > 📨 *Animasu* — Notifikasi episode sama muncul 2x → dedup by slug + epNum
+>
+> 🎌 *Alqanime Notif* — Post gagal-fetch tidak dicoba ulang → retry TTL 30 menit
+> Post yang terbit tepat di batas window sering terlewat → buffer waktu +3 menit
 >
 > ⚡ *Speedtest* — `require is not defined` di ES module → ganti ke `_require()`
 >
