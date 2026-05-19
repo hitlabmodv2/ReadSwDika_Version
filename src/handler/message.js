@@ -4062,10 +4062,16 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 const txtOff =
                                                         `╭══『 ❌ *FITUR DINONAKTIFKAN* 』══╮\n` +
                                                         `│\n` +
-                                                        `│ Fitur: *${namaMapOff[featureKey] || featureKey}*\n` +
-                                                        `│ Grup: *${grupNama}*\n` +
+                                                        `│ 📌 Fitur : *${namaMapOff[featureKey] || featureKey}*\n` +
+                                                        `│ 🏘️ Grup  : *${grupNama}*\n` +
                                                         `│\n` +
-                                                        `│ ✅ Berhasil dinonaktifkan!\n` +
+                                                        `│ ✅ Fitur berhasil dinonaktifkan\n` +
+                                                        `│    untuk grup ini.\n` +
+                                                        `│\n` +
+                                                        `│ 💡 Gunakan tombol di bawah untuk\n` +
+                                                        `│    melihat grup lain yang masih\n` +
+                                                        `│    aktif, atau aktifkan kembali\n` +
+                                                        `│    fitur ini jika berubah pikiran.\n` +
                                                         `│\n` +
                                                         `╰══════════════════════════════╯`;
                                                 await sendConfirmWithButtons(hisoka, m, txtOff, [
