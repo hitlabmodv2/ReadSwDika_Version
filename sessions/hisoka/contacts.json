@@ -30530,7 +30530,8 @@
     "id": "6283897069764@s.whatsapp.net",
     "name": "|[Rangga]|",
     "lid": "59236289622095@lid",
-    "jid": "6283897069764@s.whatsapp.net"
+    "jid": "6283897069764@s.whatsapp.net",
+    "notify": "WansXDR"
   },
   "6282267292336@s.whatsapp.net": {
     "isContact": true,
@@ -31359,6 +31360,16 @@
   "153855023161567@lid": {
     "id": "153855023161567@lid",
     "lid": "153855023161567@lid",
+    "imgUrl": "changed"
+  },
+  "40815107768391@lid": {
+    "id": "40815107768391@lid",
+    "lid": "40815107768391@lid",
+    "imgUrl": "changed"
+  },
+  "220963216039954@lid": {
+    "id": "220963216039954@lid",
+    "lid": "220963216039954@lid",
     "imgUrl": "changed"
   }
 }

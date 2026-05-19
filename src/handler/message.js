@@ -1339,9 +1339,9 @@ async function sendCekautoMsg(hisoka, m) {
                 `✦ ⚙️ *STATUS AUTO FITUR* ✦\n` +
                 `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n\n`;
         txt += `◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ✅ *AKTIF* (${aktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
-        txt += aktif.length ? aktif.map(f => `🟢 *${f.nama}*\n  > _${f.cmd}_`).join('\n') + '\n' : `_Tidak ada fitur yang aktif_\n`;
+        txt += aktif.length ? aktif.map(f => `🟢 *${f.nama}*`).join('\n') + '\n' : `_Tidak ada fitur yang aktif_\n`;
         txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n  ❌ *NONAKTIF* (${nonaktif.length} fitur)\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n`;
-        txt += nonaktif.length ? nonaktif.map(f => `🔴 *${f.nama}*\n  > _${f.cmd}_`).join('\n') + '\n' : `_Semua fitur aktif_\n`;
+        txt += nonaktif.length ? nonaktif.map(f => `🔴 *${f.nama}*`).join('\n') + '\n' : `_Semua fitur aktif_\n`;
         txt += `\n◈━━━━━━━━━━━━━━━━━━━━━━━◈\n📦 *Total* : ${CEKAUTO_FITUR_LIST.length} fitur terdaftar`;
 
         const namaToKey = {};
@@ -1364,6 +1364,30 @@ async function sendCekautoMsg(hisoka, m) {
                 });
         }
 
+        // Fetch bot profile picture for header
+        let botPpMedia = {};
+        try {
+                const botJid = hisoka.user?.id;
+                if (botJid) {
+                        const ppUrl = await hisoka.profilePictureUrl(botJid, 'image');
+                        if (ppUrl) {
+                                botPpMedia = await prepareWAMessageMedia(
+                                        { image: { url: ppUrl } },
+                                        { upload: hisoka.waUploadToServer }
+                                );
+                        }
+                }
+        } catch (_) {}
+
+        const hasPp = Object.keys(botPpMedia).length > 0;
+
+        // Build contextInfo so message appears as a reply to the original command
+        const replyCtx = m.key?.id ? {
+                stanzaId: m.key.id,
+                participant: m.sender || m.key?.participant || '',
+                quotedMessage: m.message || {},
+        } : {};
+
         if (cautoRows.length) {
                 const cautoMsg = generateWAMessageFromContent(
                         m.from,
@@ -1372,6 +1396,13 @@ async function sendCekautoMsg(hisoka, m) {
                                         message: {
                                                 messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
                                                 interactiveMessage: {
+                                                        contextInfo: replyCtx,
+                                                        ...(hasPp ? {
+                                                                header: {
+                                                                        hasMediaAttachment: true,
+                                                                        ...botPpMedia,
+                                                                }
+                                                        } : {}),
                                                         body: { text: txt },
                                                         nativeFlowMessage: {
                                                                 buttons: [{
@@ -1383,7 +1414,7 @@ async function sendCekautoMsg(hisoka, m) {
                                         }
                                 }
                         },
-                        { quoted: m },
+                        {},
                         {}
                 );
                 await hisoka.relayMessage(cautoMsg.key.remoteJid, cautoMsg.message, { messageId: cautoMsg.key.id });
