@@ -1944,6 +1944,20 @@ action_install_node_modules() {
   fi
   printf "\r  ${C_GREEN}✅  Koneksi internet OK${C_RESET}              \n"
   echo ""
+  # ── Konfirmasi sebelum install ────────────────────────────────────────
+  echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+  printf "  ${C_GREEN}y${C_RESET} ${C_BOLD}›${C_RESET} Lanjut install      ${C_RED}n${C_RESET} ${C_BOLD}›${C_RESET} Batal\n"
+  echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
+  printf "  ${C_BOLD}▸ ${C_RESET}"
+  local _confirm_nm
+  read -r _confirm_nm </dev/tty
+  _confirm_nm=$(printf '%s' "$_confirm_nm" | tr '[:upper:]' '[:lower:]' | tr -d ' \r\n')
+  if [ "$_confirm_nm" != "y" ]; then
+    echo -e "\n  ${C_DIM}Install dibatalkan.${C_RESET}"
+    sleep 1
+    return
+  fi
+  echo ""
   echo -e "  ${C_DIM}Menjalankan npm install — harap tunggu...${C_RESET}"
   echo ""
   # ── Live display: progress bar + nama paket real-time ─────────────────
@@ -2027,6 +2041,7 @@ action_install_node_modules() {
   local _nm_duration=$(( _nm_end_ts - _nm_start_ts ))
   local _nm_ts; _nm_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
   local _nm_pkg_count="0"
+  local _nm_size="?"
   if [ -d node_modules ]; then
     local _tm _sd _sp
     _tm=$(ls -1d node_modules/*/ 2>/dev/null | wc -l | tr -d ' ')
@@ -2034,6 +2049,7 @@ action_install_node_modules() {
     _sp=$(ls -1d node_modules/@*/*/ 2>/dev/null | wc -l | tr -d ' ')
     _nm_pkg_count=$(( _tm - _sd + _sp ))
     [ "$_nm_pkg_count" -lt 0 ] && _nm_pkg_count=0
+    _nm_size=$(du -sh node_modules 2>/dev/null | awk '{print $1}' || echo "?")
   fi
   # ── Verifikasi: cek semua deps dari package.json ada di node_modules ──
   local _ver_missing="" _ver_total=0 _ver_ok=0 _ver_missing_count=0
@@ -2059,10 +2075,10 @@ console.log(Object.keys(pj.dependencies||{}).length);}catch(e){console.log(0);}
     echo ""
     if [ "$_ver_missing_count" = "0" ]; then
       echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}"
-      echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages total  •  ✔ ${_ver_total}/${_ver_total} deps OK  •  ⏱ ${_nm_duration}s${C_RESET}"
+      echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages  •  ✔ ${_ver_total}/${_ver_total} deps OK  •  ⏱ ${_nm_duration}s  •  💾 ${_nm_size}${C_RESET}"
     else
       echo -e "  ${C_YELLOW}⚠️  npm install selesai tapi ada package missing!${C_RESET}"
-      echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages total  •  ✔ ${_ver_ok}/${_ver_total} deps OK  •  ⏱ ${_nm_duration}s${C_RESET}"
+      echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages  •  ✔ ${_ver_ok}/${_ver_total} deps OK  •  ⏱ ${_nm_duration}s  •  💾 ${_nm_size}${C_RESET}"
       echo ""
       echo -e "  ${C_RED}   Package masih missing (${_ver_missing_count}):${C_RESET}"
       echo "$_ver_missing" | while IFS= read -r _mp; do
@@ -2079,6 +2095,7 @@ console.log(Object.keys(pj.dependencies||{}).length);}catch(e){console.log(0);}
 📁 <code>${USER}/${REPO}</code>
 📦 Total packages : <b>${_nm_pkg_count}</b>
 ✔ Deps terpasang  : <b>${_ver_ok}/${_ver_total}</b>
+💾 Ukuran         : <b>${_nm_size}</b>
 ⏱ Durasi          : <b>${_nm_duration} detik</b>
 ${_tg_status}
 ━━━━━━━━━━━━━━━━━━━━
