@@ -2854,7 +2854,8 @@ action_rename_repo() {
   fi
 
   echo ""
-  mini_bar_start "Rename repo di GitHub ..." 0.05
+  local old_repo="$REPO"
+  mini_bar2_start "Rename repo di GitHub ..." "Kirim PATCH ke GitHub API..." 0.05
 
   local api_http
   api_http=$(curl -s -o /tmp/_gh_rename.json -w "%{http_code}" \
@@ -2867,8 +2868,7 @@ action_rename_repo() {
 
   relogin_if_needed "$api_http" "rename repo" || return
   if [ "$api_http" = "200" ]; then
-    mini_bar_ok "Rename berhasil"
-    local old_repo="$REPO"
+    mini_bar2_ok "Rename berhasil" "${old_repo} → ${new_name} ✓"
     REPO="$new_name"
 
     # Update REPO di push.sh secara permanen
@@ -2895,7 +2895,7 @@ action_rename_repo() {
   else
     local api_msg
     api_msg=$(grep -o '"message":"[^"]*"' /tmp/_gh_rename.json 2>/dev/null | head -1 | sed 's/"message":"//;s/"//')
-    mini_bar_fail "Gagal HTTP ${api_http}"
+    mini_bar2_fail "Gagal HTTP ${api_http}" "${api_msg:-error dari GitHub API}"
     echo ""
     echo -e "  ${C_RED}❌ Gagal rename repository (HTTP ${api_http})${C_RESET}"
     [ -n "$api_msg" ] && echo -e "  ${C_DIM}   GitHub: ${api_msg}${C_RESET}"
@@ -3688,7 +3688,7 @@ action_create_repo() {
 
   # ── Kirim ke GitHub API ─────────────────────────────────────────────────
   echo ""
-  mini_bar_start "Membuat repository di GitHub ..." 0.05
+  mini_bar2_start "Membuat repository di GitHub ..." "Kirim POST ke GitHub API..." 0.05
 
   local resp http_code
   resp=$(curl -s -w "\n%{http_code}" \
@@ -3702,7 +3702,13 @@ action_create_repo() {
 
   http_code=$(printf '%s' "$resp" | tail -1)
   relogin_if_needed "$http_code" "buat repo" || return
-  if [ "$http_code" = "201" ]; then mini_bar_ok "Repository dibuat"; else mini_bar_fail "HTTP ${http_code}"; fi
+  if [ "$http_code" = "201" ]; then
+    mini_bar2_ok "Repository dibuat" "${USER}/${new_repo_name} berhasil dibuat ✓"
+  else
+    local _cr_err
+    _cr_err=$(printf '%s' "$resp" | sed '$d' | grep -oE '"message"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"message"[[:space:]]*:[[:space:]]*"//;s/".*//')
+    mini_bar2_fail "Gagal HTTP ${http_code}" "${_cr_err:-error dari GitHub API}"
+  fi
   local body
   body=$(printf '%s' "$resp" | sed '$d')
 
@@ -3908,7 +3914,7 @@ action_import_repo() {
 
   # ── Langkah 1: Buat repo kosong dulu ────────────────────────────────────
   echo ""
-  mini_bar_start "[1/2] Membuat repo kosong di GitHub ..." 0.05
+  mini_bar2_start "[1/2] Membuat repo kosong ..." "Kirim POST ke GitHub API..." 0.05
   local create_resp create_code
   local name_esc
   name_esc=$(printf '%s' "$imp_repo_name" | sed 's/\\/\\\\/g;s/"/\\"/g')
@@ -3927,7 +3933,13 @@ action_import_repo() {
   create_body=$(printf '%s' "$create_resp" | sed '$d')
 
   relogin_if_needed "$create_code" "buat repo import" || return
-  if [ "$create_code" = "201" ]; then mini_bar_ok "Repo kosong dibuat"; else mini_bar_fail "HTTP ${create_code}"; fi
+  if [ "$create_code" = "201" ]; then
+    mini_bar2_ok "Repo kosong dibuat" "${USER}/${imp_repo_name} siap untuk import ✓"
+  else
+    local _ic_err
+    _ic_err=$(printf '%s' "$create_body" | grep -oE '"message"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"message"[[:space:]]*:[[:space:]]*"//;s/".*//')
+    mini_bar2_fail "Gagal buat repo HTTP ${create_code}" "${_ic_err:-error dari GitHub API}"
+  fi
   if [ "$create_code" != "201" ]; then
     local cerr
     cerr=$(printf '%s' "$create_body" \
@@ -3946,7 +3958,7 @@ action_import_repo() {
   fi
 
   # ── Langkah 2: Mulai import ──────────────────────────────────────────────
-  mini_bar_start "[2/2] Memulai import dari sumber ..." 0.05
+  mini_bar2_start "[2/2] Memulai import dari sumber ..." "Kirim PUT ke GitHub Importer API..." 0.05
 
   # Bangun payload import
   local src_url_esc
@@ -3974,7 +3986,13 @@ action_import_repo() {
   imp_body=$(printf '%s' "$imp_resp" | sed '$d')
 
   relogin_if_needed "$imp_code" "mulai import" || return
-  if [ "$imp_code" = "201" ]; then mini_bar_ok "Import dimulai"; else mini_bar_fail "HTTP ${imp_code}"; fi
+  if [ "$imp_code" = "201" ]; then
+    mini_bar2_ok "Import dimulai" "Proses berjalan di background GitHub ✓"
+  else
+    local _ii_err
+    _ii_err=$(printf '%s' "$imp_body" | grep -oE '"message"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"message"[[:space:]]*:[[:space:]]*"//;s/".*//')
+    mini_bar2_fail "Gagal mulai import HTTP ${imp_code}" "${_ii_err:-error dari GitHub API}"
+  fi
 
   # ── Tampilkan status awal + polling ─────────────────────────────────────
   clear >/dev/tty 2>/dev/null || true
