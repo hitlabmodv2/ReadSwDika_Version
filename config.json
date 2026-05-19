@@ -103,7 +103,7 @@
         "goodbye": false
       },
       "120363192554714254@g.us": {
-        "welcome": true,
+        "welcome": false,
         "goodbye": true
       },
       "120363383540766761@g.us": {
@@ -123,8 +123,8 @@
   "animasu": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": true,
-        "diubahPada": 1779184250373
+        "enabled": false,
+        "diubahPada": 1779185690582
       }
     }
   },
@@ -155,8 +155,8 @@
   "malnews": {
     "groups": {
       "120363192554714254@g.us": {
-        "enabled": true,
-        "diubahPada": 1779184250377
+        "enabled": false,
+        "diubahPada": 1779185907505
       }
     }
   },

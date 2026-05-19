@@ -1475,7 +1475,10 @@ async function sendCekautoGrupSelectMsg(hisoka, m, featureKey) {
         const activeJids = getActiveGroupsForFeature(featureKey);
 
         if (activeJids.length === 0) {
-                return m.reply(`ℹ️ Tidak ada grup yang aktif untuk fitur *${namFitur}*.`);
+                return sendConfirmWithButtons(hisoka, m,
+                        `ℹ️ Tidak ada grup yang aktif untuk fitur *${namFitur}*.`,
+                        [{ text: '🏘️ Lihat Fitur GC', id: '__cekauto_gc__' }]
+                );
         }
 
         const resolveAdminName = (p) => {
@@ -1584,10 +1587,16 @@ async function sendCekautoGrupSelectMsg(hisoka, m, featureKey) {
                                                 ...(hasPp ? { header: { hasMediaAttachment: true, ...botPpMedia } } : {}),
                                                 body: { text: txt },
                                                 nativeFlowMessage: {
-                                                        buttons: [{
-                                                                name: 'single_select',
-                                                                buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih Grup', sections })
-                                                        }]
+                                                        buttons: [
+                                                                {
+                                                                        name: 'single_select',
+                                                                        buttonParamsJson: JSON.stringify({ title: '🏘️ Pilih Grup', sections })
+                                                                },
+                                                                {
+                                                                        name: 'quick_reply',
+                                                                        buttonParamsJson: JSON.stringify({ display_text: '🏘️ Lihat Fitur GC', id: '__cekauto_gc__' })
+                                                                }
+                                                        ]
                                                 }
                                         }
                                 }
@@ -4073,6 +4082,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `╰══════════════════════════════╯`;
                                         await sendConfirmWithButtons(hisoka, m, txtAll, [
                                                 { text: '🏘️ Cek Status Fitur', id: `__cgrupsel__${featureKey}` },
+                                                { text: '🏘️ Lihat Fitur GC', id: '__cekauto_gc__' },
                                         ]);
                                 } catch (e) {
                                         await tolak(hisoka, m, `❌ Gagal off semua grup: ${e.message}`);
@@ -4216,7 +4226,10 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `│ ✅ Semua grup sudah aktif secara realtime!\n` +
                                                 `│\n` +
                                                 `╰══════════════════════════════╯`,
-                                                [{ text: '🏘️ Lihat Status Grup', id: `__cgrupsel__${featureKey}` }]
+                                                [
+                                                        { text: '🏘️ Lihat Status Grup', id: `__cgrupsel__${featureKey}` },
+                                                        { text: '🏘️ Lihat Fitur GC', id: '__cekauto_gc__' },
+                                                ]
                                         );
                                 } catch (e) {
                                         await tolak(hisoka, m, `❌ Gagal add all grup: ${e.message}`);
