@@ -1,11 +1,27 @@
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
-📦 18 Update | 🔧 10 Bug Fix | ✨ 3 Fitur Baru | 🚀 7 Improvement
+📦 19 Update | 🔧 10 Bug Fix | ✨ 4 Fitur Baru | 🚀 7 Improvement
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
 ✨ *FITUR BARU*
 
+> 🔞 *Anti-Porn — Deteksi & Hapus Konten 18+ Otomatis*
+> Deteksi konten 18+ (gambar, stiker, video) di grup secara otomatis
+> Menggunakan nsfwjs + TensorFlow.js — deteksi lokal, tanpa API key
+> Model MobileNetV2 — loaded sekali, reuse untuk semua pesan berikutnya
+> Mendeteksi 3 kategori: *Porn*, *Hentai*, *Sexy* dengan skor per kategori
+> Video: pakai thumbnail bawaan WA, bukan download video penuh (hemat bandwidth)
+> Sistem peringatan bertahap dengan batas warning yang bisa dikonfigurasi (default: 10x)
+> ├ Jika bot *admin grup*: pesan langsung *dihapus otomatis* + notifikasi skor
+> ├ Jika bot *bukan admin*: notifikasi saja, tidak bisa hapus/kick
+> ├ Jika sudah mencapai batas warning: member di-*kick* otomatis (jika bot admin)
+> └ Jika pengirim adalah *Owner Bot*: tidak dihapus, hanya notif skor (bypass)
+> Terintegrasi dengan Anti-Delete — pesan yang dihapus antiporn tidak notif antidel
+> Threshold & max warning bisa diatur di `config.json` → `antiPorn`
+> Data warning tersimpan per grup per member di KV store
+> File: `src/handler/antiporn.js`
+>
 > 🌐 *Internet Speed Test — Command .speedtest*
 > Test kecepatan internet bot secara realtime
 > Menggunakan Cloudflare Speed Server (speed.cloudflare.com)
