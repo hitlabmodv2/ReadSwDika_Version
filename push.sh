@@ -637,14 +637,35 @@ setup_token() {
       echo -e "  ${C_DIM}Menjalankan npm install — harap tunggu...${C_RESET}" >&2
       echo "" >&2
       # Progress bar animasi selama npm install
+      local _nm_start_ts; _nm_start_ts=$(date '+%s')
       mini_bar_start "npm install" 0.06
       local _nm_log _nm_exit
       _nm_log=$(npm install 2>&1)
       _nm_exit=$?
+      local _nm_end_ts; _nm_end_ts=$(date '+%s')
+      local _nm_duration=$(( _nm_end_ts - _nm_start_ts ))
+      local _nm_ts; _nm_ts=$(TZ=Asia/Jakarta date '+%d %b %Y • %H:%M WIB' 2>/dev/null || date '+%d %b %Y • %H:%M')
+      # Hitung jumlah packages terinstall
+      local _nm_pkg_count="?"
+      if [ -d node_modules ]; then
+        _nm_pkg_count=$(ls -1 node_modules | grep -v '^\.' | wc -l | tr -d ' ')
+      fi
       if [ "$_nm_exit" = "0" ]; then
         mini_bar_ok "node_modules berhasil diinstall!"
         echo "" >&2
         echo -e "  ${C_GREEN}✅  node_modules siap digunakan.${C_RESET}" >&2
+        echo -e "  ${C_DIM}   📦 ${_nm_pkg_count} packages  •  ⏱ ${_nm_duration}s${C_RESET}" >&2
+        # ── Notif Telegram: sukses ──────────────────────────────────────────
+        local _btn_nm_ok='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Packages","url":"https://www.npmjs.com/"}],[{"text":"🟢 GitHub Actions","url":"https://github.com/'"${USER}"'/'"${REPO}"'/actions"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
+        send_telegram_photo "https://cdn.myanimelist.net/images/anime/1517/100633.jpg" "📦 <b>NODE_MODULES BERHASIL DIINSTALL</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${REPO}</code>
+📦 Packages terinstall : <b>${_nm_pkg_count}</b>
+⏱ Durasi               : <b>${_nm_duration} detik</b>
+✅ Status               : <b>Sukses</b>
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_nm_ts}" "$_btn_nm_ok" 2>/dev/null &
       else
         mini_bar_fail "npm install gagal"
         echo "" >&2
@@ -652,6 +673,19 @@ setup_token() {
         echo "$_nm_log" | tail -10 | while IFS= read -r _line; do
           echo -e "      ${C_DIM}$_line${C_RESET}" >&2
         done
+        # ── Notif Telegram: gagal ───────────────────────────────────────────
+        local _nm_err_short; _nm_err_short=$(echo "$_nm_log" | tail -3 | tr '\n' ' ' | cut -c1-120)
+        local _btn_nm_fail='{"inline_keyboard":[[{"text":"📁 Buka Repo","url":"https://github.com/'"${USER}"'/'"${REPO}"'"},{"text":"📦 npm Docs","url":"https://docs.npmjs.com/"}],[{"text":"🔍 Troubleshoot","url":"https://docs.npmjs.com/common-errors"},{"text":"📜 package.json","url":"https://github.com/'"${USER}"'/'"${REPO}"'/blob/'"${DEFAULT_BRANCH}"'/package.json"}]]}'
+        send_telegram_photo "https://cdn.myanimelist.net/images/anime/1286/99889.jpg" "📦 <b>NPM INSTALL GAGAL</b>
+━━━━━━━━━━━━━━━━━━━━
+👤 <code>${USER}</code>
+📁 <code>${USER}/${REPO}</code>
+⏱ Durasi : <b>${_nm_duration} detik</b>
+❌ Status : <b>Gagal</b>
+━━━━━━━━━━━━━━━━━━━━
+⚠️ <code>${_nm_err_short}</code>
+━━━━━━━━━━━━━━━━━━━━
+🕐 ${_nm_ts}" "$_btn_nm_fail" 2>/dev/null &
       fi
       echo "" >&2
       printf "  ${C_DIM}Tekan Enter untuk kembali ke menu...${C_RESET}" >&2
