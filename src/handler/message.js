@@ -1373,9 +1373,41 @@ const CEKAUTO_GROUP_FITUR_LIST = [
 function getFeatureTimestamp(featureKey, jid) {
         const cfg = loadConfig();
         if (['infowibu', 'animasu', 'alqanimenotif', 'tvonenews', 'malnews'].includes(featureKey)) {
-                return cfg[featureKey]?.groups?.[jid]?.diubahPada || null;
+                return cfg[featureKey]?.groups?.[jid]?.diubahPada || cfg.cekautoTimestamps?.[featureKey]?.[jid] || null;
         }
-        return null;
+        return cfg.cekautoTimestamps?.[featureKey]?.[jid] || null;
+}
+
+function saveCekautoTimestamp(featureKey, jid) {
+        const cfg = loadConfig();
+        if (!cfg.cekautoTimestamps) cfg.cekautoTimestamps = {};
+        if (!cfg.cekautoTimestamps[featureKey]) cfg.cekautoTimestamps[featureKey] = {};
+        cfg.cekautoTimestamps[featureKey][jid] = Date.now();
+        saveConfig(cfg);
+}
+
+async function sendConfirmWithButtons(hisoka, m, txt, buttons) {
+        let sent = false;
+        try {
+                await m.reply({
+                        interactiveMessage: {
+                                contextInfo: {
+                                        stanzaId: m.key?.id,
+                                        participant: m.sender || m.key?.participant || '',
+                                        quotedMessage: m.message || {},
+                                },
+                                body: { text: txt },
+                                nativeFlowMessage: {
+                                        buttons: buttons.map(b => ({
+                                                name: 'quick_reply',
+                                                buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
+                                        }))
+                                }
+                        }
+                });
+                sent = true;
+        } catch (_) {}
+        if (!sent) await tolak(hisoka, m, txt);
 }
 
 function formatRelativeTime(ts) {
@@ -3821,10 +3853,13 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         if (!cfgGrup.welcomeGoodbye.groups[jidGrup]) cfgGrup.welcomeGoodbye.groups[jidGrup] = {};
                                                         cfgGrup.welcomeGoodbye.groups[jidGrup][featureKey] = enable;
                                                         saveConfig(cfgGrup);
+                                                        if (enable) saveCekautoTimestamp(featureKey, jidGrup);
                                                 } else if (featureKey === 'antipornGrup') {
                                                         toggleAntiPorn(jidGrup, enable);
+                                                        if (enable) saveCekautoTimestamp('antipornGrup', jidGrup);
                                                 } else if (featureKey === 'antiTagSWGrup') {
                                                         toggleAntiTagSW(jidGrup, enable);
+                                                        if (enable) saveCekautoTimestamp('antiTagSWGrup', jidGrup);
                                                 } else {
                                                         if (!cfgGrup[featureKey]) cfgGrup[featureKey] = {};
                                                         if (!cfgGrup[featureKey].groups) cfgGrup[featureKey].groups = {};
@@ -3887,7 +3922,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         grupNama = meta.subject || targetJid;
                                                 } catch (_) {}
                                                 await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
-                                                await tolak(hisoka, m,
+                                                const txtOff =
                                                         `╭══『 ❌ *FITUR DINONAKTIFKAN* 』══╮\n` +
                                                         `│\n` +
                                                         `│ Fitur: *${namaMapOff[featureKey] || featureKey}*\n` +
@@ -3895,8 +3930,11 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         `│\n` +
                                                         `│ ✅ Berhasil dinonaktifkan!\n` +
                                                         `│\n` +
-                                                        `╰══════════════════════════════╯`
-                                                );
+                                                        `╰══════════════════════════════╯`;
+                                                await sendConfirmWithButtons(hisoka, m, txtOff, [
+                                                        { text: '🏘️ Lihat Sisa Grup Aktif', id: `__cgrupsel__${featureKey}` },
+                                                        { text: '↩️ Aktifkan Kembali', id: `__cgrupre__${featureKey}__${targetJid}` },
+                                                ]);
                                         } catch (e) {
                                                 await tolak(hisoka, m, `❌ Gagal nonaktifkan fitur: ${e.message}`);
                                         }
@@ -3930,7 +3968,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         }
                                         const grupLines = grupNamaList.map(n => `│  🔴 ${n}`).join('\n');
                                         await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
-                                        await tolak(hisoka, m,
+                                        const txtAll =
                                                 `╭══『 🔴 *OFF SEMUA GRUP* 』══╮\n` +
                                                 `│\n` +
                                                 `│ Fitur: *${namaMapAll[featureKey] || featureKey}*\n` +
@@ -3940,12 +3978,77 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `│\n` +
                                                 `│ ✅ Semua grup berhasil di-off!\n` +
                                                 `│\n` +
-                                                `╰══════════════════════════════╯`
-                                        );
+                                                `╰══════════════════════════════╯`;
+                                        await sendConfirmWithButtons(hisoka, m, txtAll, [
+                                                { text: '🏘️ Cek Status Fitur', id: `__cgrupsel__${featureKey}` },
+                                        ]);
                                 } catch (e) {
                                         await tolak(hisoka, m, `❌ Gagal off semua grup: ${e.message}`);
                                 }
                                 return;
+                        }
+                }
+
+                // Handle cekauto grup — aktifkan kembali fitur untuk grup tertentu
+                if (m.isOwner && typeof m.text === 'string' && m.text.startsWith('__cgrupre__')) {
+                        const raw = m.text.slice('__cgrupre__'.length);
+                        const sepIdx = raw.indexOf('__');
+                        if (sepIdx !== -1) {
+                                const featureKey = raw.slice(0, sepIdx);
+                                const targetJid = raw.slice(sepIdx + 2);
+                                if (featureKey && targetJid) {
+                                        try {
+                                                const cfgRe = loadConfig();
+                                                if (featureKey === 'welcome' || featureKey === 'goodbye') {
+                                                        if (!cfgRe.welcomeGoodbye) cfgRe.welcomeGoodbye = { enabled: true, groups: {} };
+                                                        if (!cfgRe.welcomeGoodbye.groups) cfgRe.welcomeGoodbye.groups = {};
+                                                        if (!cfgRe.welcomeGoodbye.groups[targetJid]) cfgRe.welcomeGoodbye.groups[targetJid] = {};
+                                                        cfgRe.welcomeGoodbye.groups[targetJid][featureKey] = true;
+                                                        saveConfig(cfgRe);
+                                                        saveCekautoTimestamp(featureKey, targetJid);
+                                                } else if (featureKey === 'antipornGrup') {
+                                                        toggleAntiPorn(targetJid, true);
+                                                        saveCekautoTimestamp('antipornGrup', targetJid);
+                                                } else if (featureKey === 'antiTagSWGrup') {
+                                                        toggleAntiTagSW(targetJid, true);
+                                                        saveCekautoTimestamp('antiTagSWGrup', targetJid);
+                                                } else {
+                                                        if (!cfgRe[featureKey]) cfgRe[featureKey] = { groups: {} };
+                                                        if (!cfgRe[featureKey].groups) cfgRe[featureKey].groups = {};
+                                                        cfgRe[featureKey].groups[targetJid] = { enabled: true, diubahPada: Date.now() };
+                                                        saveConfig(cfgRe);
+                                                }
+                                                const namaMapRe = {
+                                                        infowibu: 'Info Wibu', animasu: 'Animasu Notif',
+                                                        alqanimenotif: 'Alqanime Notif', tvonenews: 'TV One News',
+                                                        malnews: 'MAL News', welcome: 'Welcome',
+                                                        goodbye: 'Goodbye', antipornGrup: 'Anti Porn (Grup)',
+                                                        antiTagSWGrup: 'Anti Tag SW (Grup)',
+                                                };
+                                                let grupNamaRe = targetJid;
+                                                try {
+                                                        const meta = await hisoka.groupMetadata(targetJid);
+                                                        grupNamaRe = meta.subject || targetJid;
+                                                } catch (_) {}
+                                                await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                                const txtRe =
+                                                        `╭══『 ✅ *FITUR DIAKTIFKAN* 』══╮\n` +
+                                                        `│\n` +
+                                                        `│ Fitur: *${namaMapRe[featureKey] || featureKey}*\n` +
+                                                        `│ Grup: *${grupNamaRe}*\n` +
+                                                        `│\n` +
+                                                        `│ ✅ Berhasil diaktifkan kembali!\n` +
+                                                        `│\n` +
+                                                        `╰══════════════════════════════╯`;
+                                                await sendConfirmWithButtons(hisoka, m, txtRe, [
+                                                        { text: '🏘️ Lihat Status Grup', id: `__cgrupsel__${featureKey}` },
+                                                        { text: '❌ Nonaktifkan Lagi', id: `__cgrupoff__${featureKey}__${targetJid}` },
+                                                ]);
+                                        } catch (e) {
+                                                await tolak(hisoka, m, `❌ Gagal aktifkan fitur: ${e.message}`);
+                                        }
+                                        return;
+                                }
                         }
                 }
 

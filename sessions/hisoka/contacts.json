@@ -7034,7 +7034,8 @@
     "id": "6285845490588@s.whatsapp.net",
     "name": "Ngetesssss",
     "lid": "226396467122238@lid",
-    "jid": "6285845490588@s.whatsapp.net"
+    "jid": "6285845490588@s.whatsapp.net",
+    "notify": "ᵛᵒⁿ•𝗘𝗜𝗡𝗭𝗕𝗘𝗥𝗡"
   },
   "201224535483@s.whatsapp.net": {
     "isContact": true,
@@ -31452,6 +31453,11 @@
   "227341544464449@lid": {
     "id": "227341544464449@lid",
     "lid": "227341544464449@lid",
+    "imgUrl": "changed"
+  },
+  "226396467122238@lid": {
+    "id": "226396467122238@lid",
+    "lid": "226396467122238@lid",
     "imgUrl": "changed"
   }
 }
