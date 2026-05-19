@@ -8,22 +8,58 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 17/05/2026, 12.00.31  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 19/05/2026, 08.01.46  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
-  Total Jenis Error (unik)  : 3
-  Total Kejadian Error       : 21
+  Total Jenis Error (unik)  : 5
+  Total Kejadian Error       : 29
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [3 jenis, 21 kejadian total]
+  DAFTAR ERROR LENGKAP  [5 jenis, 29 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #001  —  MALNews
+│  #001  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[HotReload] ✗ Gagal reload 'src/handler/message.js', pakai versi lama.[39m
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 4x (duplikat digabung)
+│  Pertama     : 19/05/2026, 08.00.17
+│  Terakhir    : 19/05/2026, 08.01.46
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[HotReload] ✗ Gagal reload 'src/handler/message.js', pakai versi lama.[39m
+│     at console.error (file:///home/runner/workspace/index.js:350:27)
+│     at Timeout._onTimeout (file:///home/runner/workspace/src/helper/hotReload.js:103:29)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #002  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[HotReload] Gagal load 'src/handler/message.js':[39m The requested module './antiporn.js' does not provide an export named 'getAllAntiPornGroups'
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 4x (duplikat digabung)
+│  Pertama     : 19/05/2026, 08.00.17
+│  Terakhir    : 19/05/2026, 08.01.46
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[HotReload] Gagal load 'src/handler/message.js':[39m The requested module './antiporn.js' does not provide an export named 'getAllAntiPornGroups'
+│     at console.error (file:///home/runner/workspace/index.js:350:27)
+│     at loadModule (file:///home/runner/workspace/src/helper/hotReload.js:74:17)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #003  —  MALNews
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [MALNews] Error scheduler: Cannot find module 'axios'
@@ -44,7 +80,7 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #002  —  TVOneNews
+│  #004  —  TVOneNews
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [TVOneNews] Error scheduler: Cannot find module 'axios'
@@ -65,7 +101,7 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #003  —  AlqanimeNotif
+│  #005  —  AlqanimeNotif
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [AlqanimeNotif] Error scheduler: Cannot find module 'axios'
@@ -86,6 +122,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 3 jenis, 21 kejadian
-  Terakhir diperbarui: 17/05/2026, 12.00.31
+  End of Report  —  Total: 5 jenis, 29 kejadian
+  Terakhir diperbarui: 19/05/2026, 08.01.46
 ════════════════════════════════════════════════════════════════════════

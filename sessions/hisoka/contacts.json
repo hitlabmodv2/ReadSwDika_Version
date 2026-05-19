@@ -10548,7 +10548,8 @@
     "id": "6282228431883@s.whatsapp.net",
     "name": "• Ikyy No Cure",
     "lid": "124507108991054@lid",
-    "jid": "6282228431883@s.whatsapp.net"
+    "jid": "6282228431883@s.whatsapp.net",
+    "notify": "Ikyysigmax"
   },
   "6281382475115@s.whatsapp.net": {
     "isContact": true,
@@ -19409,7 +19410,9 @@
     "id": "6285799241374@s.whatsapp.net",
     "name": "▫️Fadli",
     "lid": "162160936263906@lid",
-    "jid": "6285799241374@s.whatsapp.net"
+    "jid": "6285799241374@s.whatsapp.net",
+    "notify": "F",
+    "verifiedName": "F"
   },
   "6285609278485@s.whatsapp.net": {
     "isContact": true,
@@ -31433,5 +31436,11 @@
     "id": "41304851529772@lid",
     "lid": "41304851529772@lid",
     "imgUrl": "changed"
+  },
+  "162160936263906@lid": {
+    "id": "162160936263906@lid",
+    "lid": "162160936263906@lid",
+    "notify": "F",
+    "verifiedName": "F"
   }
 }
