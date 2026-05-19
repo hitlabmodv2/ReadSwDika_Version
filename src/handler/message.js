@@ -1399,13 +1399,13 @@ async function sendCekautoGrupMsg(hisoka, m) {
         const truncDesc = (str, max = 72) => str.length > max ? str.substring(0, max - 1) + '…' : str;
 
         txt += aktif.length
-                ? aktif.map(f => `  🟢  *${f.nama}*\n     _↳ ${getDesc(f)}_`).join('\n') + '\n'
+                ? aktif.map(f => `  🟢  *${f.nama}*`).join('\n') + '\n'
                 : `  _Tidak ada fitur yang aktif_\n`;
         txt += `\n┌─────────────────────────────┐\n`;
         txt += `│  ❌ *NONAKTIF*  ·  ${nonaktif.length} fitur mati\n`;
         txt += `└─────────────────────────────┘\n`;
         txt += nonaktif.length
-                ? nonaktif.map(f => `  🔴  *${f.nama}*\n     _↳ ${getDesc(f)}_`).join('\n') + '\n'
+                ? nonaktif.map(f => `  🔴  *${f.nama}*`).join('\n') + '\n'
                 : `  _Semua fitur aktif_ ✨\n`;
         txt += `\n╔══════════════════════════╗\n`;
         txt += `║  📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar\n`;
