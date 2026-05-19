@@ -1325,6 +1325,7 @@ const CEKAUTO_GROUP_FITUR_LIST = [
         { key: 'welcome',      nama: 'Welcome',          cmd: '.welcome on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.welcome === true },
         { key: 'goodbye',      nama: 'Goodbye',          cmd: '.goodbye on/off',       toggleable: true,  checkFn: (cfg, jid) => cfg.welcomeGoodbye?.groups?.[jid]?.goodbye === true },
         { key: 'antipornGrup', nama: 'Anti Porn (Grup)', cmd: '.antiporn on/off',      toggleable: true,  checkFn: (cfg, jid) => Array.isArray(cfg.antiPorn?.groups) && cfg.antiPorn.groups.includes(jid) },
+        { key: 'antiTagSWGrup',nama: 'Anti Tag SW (Grup)',cmd: '.antitagsw on/off',   toggleable: true,  checkFn: (_cfg, jid) => isAntiTagSWEnabled(jid) },
 ];
 
 async function sendCekautoGrupMsg(hisoka, m) {
@@ -3553,6 +3554,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         saveConfig(cfgGrup);
                                                 } else if (featureKey === 'antipornGrup') {
                                                         toggleAntiPorn(jidGrup, enable);
+                                                } else if (featureKey === 'antiTagSWGrup') {
+                                                        toggleAntiTagSW(jidGrup, enable);
                                                 } else {
                                                         if (!cfgGrup[featureKey]) cfgGrup[featureKey] = {};
                                                         if (!cfgGrup[featureKey].groups) cfgGrup[featureKey].groups = {};
@@ -3565,6 +3568,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         alqanimenotif: 'Alqanime Notif', tvonenews: 'TV One News',
                                                         malnews: 'MAL News', welcome: 'Welcome',
                                                         goodbye: 'Goodbye', antipornGrup: 'Anti Porn (Grup)',
+                                                        antiTagSWGrup: 'Anti Tag SW (Grup)',
                                                 };
                                                 const icon = enable ? '✅' : '❌';
                                                 await hisoka.sendMessage(m.from, { react: { text: icon, key: m.key } });
