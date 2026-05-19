@@ -26,7 +26,7 @@ import os from 'os';
 import { PassThrough } from 'stream';
 import { createRequire } from 'module';
 const _require = createRequire(import.meta.url);
-const { isJidGroup, downloadMediaMessage, getContentType, generateWAMessageFromContent, generateWAMessageContent, prepareWAMessageMedia, proto } = _require('socketon');
+const { isJidGroup, downloadMediaMessage, getContentType, generateWAMessageFromContent, generateWAMessageContent, prepareWAMessageMedia, proto, jidDecode, jidNormalizedUser } = _require('socketon');
 import crypto from 'crypto';
 import { exec } from 'child_process';
 import util from 'util';
@@ -1426,16 +1426,35 @@ async function sendCekautoGrupSelectMsg(hisoka, m, featureKey) {
                 return m.reply(`ℹ️ Tidak ada grup yang aktif untuk fitur *${namFitur}*.`);
         }
 
+        const resolveAdminName = (p) => {
+                let realJid = p.id || '';
+                if (realJid.endsWith('@lid')) {
+                        const pn = p.phoneNumber || p.jid || '';
+                        if (pn && !pn.endsWith('@lid')) realJid = jidNormalizedUser(pn);
+                } else if (realJid) {
+                        realJid = jidNormalizedUser(realJid);
+                }
+                const numOnly = jidDecode(realJid)?.user || realJid.split('@')[0];
+                let name = hisoka.getName
+                        ? (hisoka.getName(realJid, true) || hisoka.getName(realJid) || null)
+                        : null;
+                if (!name || name === numOnly) {
+                        const contact = hisoka.contacts?.read ? hisoka.contacts.read(realJid) : null;
+                        name = contact?.name || contact?.notify || contact?.verifiedName || null;
+                }
+                return name || `+${numOnly}`;
+        };
+
         const grupRows = [];
         for (const jid of activeJids) {
                 try {
                         const meta = await hisoka.groupMetadata(jid);
                         const memberCount = meta.participants?.length || 0;
-                        const admins = (meta.participants || [])
+                        const adminNames = (meta.participants || [])
                                 .filter(p => p.admin)
-                                .map(p => `+${p.id.split('@')[0]}`);
-                        const adminText = admins.length
-                                ? `Admin: ${admins.slice(0, 3).join(', ')}${admins.length > 3 ? ` +${admins.length - 3} lainnya` : ''}`
+                                .map(p => resolveAdminName(p));
+                        const adminText = adminNames.length
+                                ? `Admin: ${adminNames.slice(0, 3).join(', ')}${adminNames.length > 3 ? ` +${adminNames.length - 3} lainnya` : ''}`
                                 : 'Tidak ada admin';
                         grupRows.push({
                                 header: `🏘️ ${meta.subject || jid}`,

@@ -100,7 +100,7 @@
     "groups": {
       "120363419402989015@g.us": {
         "welcome": true,
-        "goodbye": true
+        "goodbye": false
       },
       "120363192554714254@g.us": {
         "welcome": true,
