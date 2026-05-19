@@ -4243,7 +4243,7 @@ action_delete_repo() {
   echo ""
 
   # ── Ambil info repo dulu dari API ───────────────────────────────────────
-  mini_bar_start "Mengambil info repository ..." 0.05
+  mini_bar2_start "Mengambil info repository ..." "Fetch dari GitHub API..." 0.05
   local info_raw info_code
   info_raw=$(curl -s -w "\n%{http_code}" \
     -H "Authorization: token ${TOKEN}" \
@@ -4255,7 +4255,11 @@ action_delete_repo() {
   info_body=$(printf '%s' "$info_raw" | sed '$d')
 
   relogin_if_needed "$info_code" "ambil info repo" || return
-  if [ "$info_code" = "200" ]; then mini_bar_ok "Info repo didapat"; else mini_bar_fail "HTTP ${info_code}"; fi
+  if [ "$info_code" = "200" ]; then
+    mini_bar2_ok "Info repo didapat" "${del_owner}/${del_repo} ditemukan ✓"
+  else
+    mini_bar2_fail "Gagal HTTP ${info_code}" "Tidak bisa ambil info dari GitHub API"
+  fi
   if [ "$info_code" = "404" ]; then
     echo -e "  ${C_RED}❌ Repository '${del_owner}/${del_repo}' tidak ditemukan.${C_RESET}"
     echo ""
@@ -4393,7 +4397,7 @@ action_delete_repo() {
 
   # ── Eksekusi hapus via API ───────────────────────────────────────────────
   echo ""
-  echo -e "  ${C_DIM}▸ Menghapus ${del_owner}/${del_repo}...${C_RESET}"
+  mini_bar2_start "Menghapus ${del_owner}/${del_repo} ..." "Kirim DELETE ke GitHub API..." 0.05
   local del_resp del_code
   del_resp=$(curl -s -w "\n%{http_code}" \
     -X DELETE \
@@ -4402,6 +4406,11 @@ action_delete_repo() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/${del_owner}/${del_repo}" 2>/dev/null)
   del_code=$(printf '%s' "$del_resp" | tail -1)
+  if [ "$del_code" = "204" ]; then
+    mini_bar2_ok "Repository dihapus" "${del_owner}/${del_repo} sudah dihapus permanen"
+  else
+    mini_bar2_fail "Gagal hapus HTTP ${del_code}" "Cek token scope: delete_repo"
+  fi
 
   clear >/dev/tty 2>/dev/null || true
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
@@ -5056,12 +5065,15 @@ action_delete_branch() {
   echo -e "${C_BOLD}╭──────────────────────────────────╮${C_RESET}"
   echo -e "${C_BOLD}│   🗑️   HAPUS BRANCH              │${C_RESET}"
   echo -e "${C_BOLD}╰──────────────────────────────────╯${C_RESET}"
-  mini_bar_start "Memuat daftar branch ..." 0.06
+  _MB_SUB_FILE=$(mktemp)
+  printf "Menghubungi GitHub API..." > "$_MB_SUB_FILE"
+  mini_bar2_start "Memuat daftar branch ..." "Menghubungi GitHub API..." 0.06
   local branches=()
   while IFS= read -r b; do
     [ -n "$b" ] && [ "$b" != "$DEFAULT_BRANCH" ] && branches+=("$b")
   done < <(fetch_branches_recent)
-  mini_bar_ok "Daftar branch siap"
+  rm -f "$_MB_SUB_FILE" 2>/dev/null; _MB_SUB_FILE=""
+  mini_bar2_ok "Daftar branch siap" "${#branches[@]} branch tersedia ✓"
 
   local total=${#branches[@]}
 
@@ -5194,14 +5206,14 @@ action_delete_branch() {
   done
   echo ""
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
-  echo -e "  ${C_GREEN}1${C_RESET} ${C_BOLD}›${C_RESET} Lanjut hapus"
-  echo -e "  ${C_RED}0${C_RESET} ${C_BOLD}›${C_RESET} Batal"
+  echo -e "  ${C_GREEN}y${C_RESET} ${C_BOLD}›${C_RESET} Lanjut hapus      ${C_RED}n${C_RESET} ${C_BOLD}›${C_RESET} Batal"
   echo -e "${C_DIM}  ──────────────────────────────────${C_RESET}"
   printf "  ${C_BOLD}▸ ${C_RESET}"
   local confirm
-  read -r confirm
+  read -r confirm </dev/tty
+  confirm=$(printf '%s' "$confirm" | tr '[:upper:]' '[:lower:]' | tr -d ' \r\n')
 
-  if [ "$confirm" != "1" ]; then
+  if [ "$confirm" != "y" ]; then
     echo -e "${C_YELLOW}↩ Dibatalkan, kembali ke menu.${C_RESET}"
     sleep 1
     return
