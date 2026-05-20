@@ -1390,22 +1390,25 @@ async function sendConfirmWithButtons(hisoka, m, txt, buttons, opts = {}) {
         const quoteTarget = (opts.quoteBot && m.quoted) ? m.quoted : m;
         let sent = false;
         try {
-                await m.reply({
-                        interactiveMessage: {
-                                contextInfo: {
-                                        stanzaId: quoteTarget.key?.id,
-                                        participant: quoteTarget.sender || quoteTarget.key?.participant || quoteTarget.key?.remoteJid || '',
-                                        quotedMessage: quoteTarget.message || {},
-                                },
-                                body: { text: txt },
-                                nativeFlowMessage: {
-                                        buttons: buttons.map(b => ({
-                                                name: 'quick_reply',
-                                                buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
-                                        }))
+                const ephemeral = await hisoka.getEphemeral(m.from).catch(() => ({}));
+                await hisoka.sendMessage(
+                        m.from,
+                        {
+                                interactiveMessage: {
+                                        body: { text: txt },
+                                        nativeFlowMessage: {
+                                                buttons: buttons.map(b => ({
+                                                        name: 'quick_reply',
+                                                        buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
+                                                }))
+                                        }
                                 }
+                        },
+                        {
+                                quoted: quoteTarget,
+                                ephemeralExpiration: m.content?.contextInfo?.expiration || ephemeral.expiration,
                         }
-                });
+                );
                 sent = true;
         } catch (_) {}
         if (!sent) await tolak(hisoka, m, txt);
