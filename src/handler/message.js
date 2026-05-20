@@ -1434,12 +1434,22 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, rows, opts = {
         const listTitle = opts.listTitle || '🎵 Pilih Aksi';
         const sectionTitle = opts.sectionTitle || 'Opsi';
         const sections = [{ title: sectionTitle, rows }];
+        const coverBuf = opts.coverBuf || null;
+
+        // Kirim audio dulu sebagai file terpisah (bisa diputar)
+        await hisoka.sendMessage(m.from, {
+                audio: audioBuf,
+                mimetype: 'audio/mpeg',
+                ptt: false,
+                fileName,
+        }, { quoted: m }).catch(() => {});
+
+        // Lalu kirim cover + info + button dalam SATU pesan interaktif
         let sent = false;
         try {
-                const audioMedia = await prepareWAMessageMedia(
-                        { document: audioBuf, mimetype: 'audio/mpeg', fileName },
-                        { upload: hisoka.waUploadToServer }
-                );
+                const headerMedia = coverBuf
+                        ? await prepareWAMessageMedia({ image: coverBuf }, { upload: hisoka.waUploadToServer })
+                        : null;
                 const msg = generateWAMessageFromContent(
                         m.from,
                         {
@@ -1448,7 +1458,7 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, rows, opts = {
                                                 messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
                                                 interactiveMessage: {
                                                         contextInfo,
-                                                        header: { hasMediaAttachment: true, ...audioMedia },
+                                                        ...(headerMedia ? { header: { hasMediaAttachment: true, ...headerMedia } } : {}),
                                                         body: { text: bodyTxt },
                                                         nativeFlowMessage: {
                                                                 buttons: [
@@ -1468,14 +1478,7 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, rows, opts = {
                 await hisoka.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
                 sent = true;
         } catch (_) {}
-        if (!sent) {
-                await hisoka.sendMessage(m.from, {
-                        audio: audioBuf,
-                        mimetype: 'audio/mpeg',
-                        ptt: false,
-                        fileName,
-                }, { quoted: m }).catch(() => {});
-        }
+        if (!sent) await tolak(hisoka, m, bodyTxt);
 }
 
 function formatRelativeTime(ts) {
@@ -4420,24 +4423,9 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         try { await hisoka.sendMessage(m.from, { delete: loadingMsg.key }); } catch (_) {}
                                 }
 
-                                // Album cover
-                                const coverItems = results
-                                        .filter(r => r.coverBuf)
-                                        .map(r => ({ image: r.coverBuf, caption: buildCaption(r.track, r.index, results.length, params) }));
-
-                                if (coverItems.length > 0) {
-                                        try {
-                                                await hisoka.sendMessage(m.from, { albumMessage: coverItems }, { quoted: m });
-                                        } catch (_) {
-                                                for (const item of coverItems) {
-                                                        await hisoka.sendMessage(m.from, { image: item.image, caption: item.caption }, { quoted: m }).catch(() => {});
-                                                }
-                                        }
-                                }
-
                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
 
-                                // Tiap audio dikirim sebagai 1 pesan: audio + info + tombol
+                                // Tiap track: audio (terpisah) + cover+info+button (satu pesan)
                                 const { formatDuration: fmtDur } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                 const modeLabel = params.isInstrumental ? '🎹 Instrumental' : '🎤 Dengan Vokal';
                                 for (const r of results) {
@@ -4452,7 +4440,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `│ 🎸 *Genre*  : ${trackStyle}\n` +
                                                 `│ ${modeLabel}${durLine}\n` +
                                                 `│\n` +
-                                                `│ ▶️ Tekan file di atas untuk memutar\n` +
+                                                `│ ▶️ Audio dikirim di atas ↑\n` +
                                                 `╰──────────────────────────────`;
                                         await sendAudioWithButtons(hisoka, m, r.audioBuf, bodyTxt,
                                                 [
@@ -4463,6 +4451,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                         fileName: `${trackTitle} (v${r.index}).mp3`,
                                                         listTitle: '🎵 Pilih Aksi',
                                                         sectionTitle: 'Aksi Lanjutan',
+                                                        coverBuf: r.coverBuf || null,
                                                 }
                                         );
                                 }
