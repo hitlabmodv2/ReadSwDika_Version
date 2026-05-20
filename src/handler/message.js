@@ -4456,20 +4456,33 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         `│ Pilih variasi untuk mendengarkan ↓\n` +
                                         `╰──────────────────────────────`;
 
-                                // Buat rows untuk single_select
+                                // Buat rows untuk single_select — tampilan rapi & lengkap
+                                const genreLabel = params.musicStyle || 'pop';
                                 const playRows = results.map(r => {
                                         const t = r.track?.title || params.title || 'musik';
-                                        const dur = r.track?.duration ? ` (${fmtDur(r.track.duration)})` : '';
+                                        const dur = r.track?.duration ? fmtDur(r.track.duration) : null;
+                                        const modeBadge = params.isInstrumental ? 'Instrumental' : 'Vokal';
+                                        const descParts = [genreLabel, modeBadge, dur].filter(Boolean);
                                         return {
-                                                header: `▶️`,
-                                                title: `Variasi ${r.index}${dur}`,
-                                                description: t,
+                                                header: `▶️  Variasi ${r.index}${dur ? '  •  ' + dur : ''}`,
+                                                title: t,
+                                                description: descParts.join('  •  '),
                                                 id: `__musikai_play__${cacheKey}__${r.index}`,
                                         };
                                 });
                                 const actionRows = [
-                                        { header: '🎲', title: 'Random Lagi', description: 'Generate musik baru secara random', id: '__musikai_random__' },
-                                        { header: '🎵', title: 'Menu Musik AI', description: 'Lihat menu lengkap', id: '__musikai_menu__' },
+                                        {
+                                                header: '🎲  Generate Lagi',
+                                                title: 'Random Genre Baru',
+                                                description: 'Pilih genre & buat lagu baru secara random',
+                                                id: '__musikai_random__',
+                                        },
+                                        {
+                                                header: '🎵  Menu Utama',
+                                                title: 'Menu Musik AI',
+                                                description: 'Lihat semua opsi & cara pakai',
+                                                id: '__musikai_menu__',
+                                        },
                                 ];
 
                                 // Kirim SATU pesan: cover + info + button pilih variasi
@@ -4477,8 +4490,8 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 await sendAudioWithButtons(hisoka, m, null, bodyTxt,
                                         [...playRows, ...actionRows],
                                         {
-                                                listTitle: '🎧 Pilih Variasi',
-                                                sectionTitle: 'Pilih untuk Diputar',
+                                                listTitle: '🎧 Dengarkan Sekarang',
+                                                sectionTitle: `🎼 ${params.title || 'Hasil Musik'} — Pilih Variasi`,
                                                 coverBuf: firstCover,
                                                 noAudio: true,
                                         }
