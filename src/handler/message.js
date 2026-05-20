@@ -4438,17 +4438,19 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
 
                                 // Tiap audio dikirim sebagai 1 pesan: audio + info + tombol
+                                const { formatDuration: fmtDur } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                 const modeLabel = params.isInstrumental ? '🎹 Instrumental' : '🎤 Dengan Vokal';
                                 for (const r of results) {
                                         const trackTitle = r.track?.title || params.title || 'musik';
-                                        const trackStyle = r.track?.style || params.musicStyle || params.prompt || 'pop';
-                                        const trackTags = r.track?.tags ? `\n│ 🏷️ *Tags*   : ${r.track.tags}` : '';
+                                        const trackStyle = params.musicStyle || 'pop';
+                                        const durStr = r.track?.duration ? fmtDur(r.track.duration) : null;
+                                        const durLine = durStr ? `\n│ ⏱️ *Durasi* : ${durStr}` : '';
                                         const bodyTxt =
                                                 `╭──『 🎵 *MUSIK AI — Variasi ${r.index}* 』\n` +
                                                 `│\n` +
                                                 `│ 🎼 *Judul*  : ${trackTitle}\n` +
                                                 `│ 🎸 *Genre*  : ${trackStyle}\n` +
-                                                `│ ${modeLabel}${trackTags}\n` +
+                                                `│ ${modeLabel}${durLine}\n` +
                                                 `│\n` +
                                                 `│ ▶️ Tekan file di atas untuk memutar\n` +
                                                 `╰──────────────────────────────`;

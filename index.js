@@ -1742,14 +1742,14 @@ setTimeout(() => {
                         const msgId = message.key.id;
                         const handlerPromise = getHandler('message')({ ...messagesUpsert, message }, hisoka);
                         const timeoutPromise = new Promise((_, reject) =>
-                                setTimeout(() => reject(new Error(`Handler timeout for msg ${msgId}`)), 120000)
+                                setTimeout(() => reject(new Error(`Handler timeout for msg ${msgId}`)), 220000)
                         );
 
                         Promise.race([handlerPromise, timeoutPromise])
                                 .catch(err => {
                                         const msg = err?.message || String(err);
                                         if (msg.includes('timeout')) {
-                                                console.error(`\x1b[31m[CrashGuard] Message handler timed out (120s), skipping.\x1b[39m`);
+                                                console.error(`\x1b[31m[CrashGuard] Message handler timed out (220s), skipping.\x1b[39m`);
                                         } else {
                                                 console.error('\x1b[31m[Handler Error]\x1b[39m', msg);
                                         }
