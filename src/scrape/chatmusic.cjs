@@ -2,15 +2,46 @@
 
 const axios = require('axios');
 
-const RANDOM_PRESETS = [
-        { title: 'Kenangan Indah', prompt: 'nostalgic pop indonesia, warm, sunset vibes', musicStyle: 'pop', lyrics: '', isInstrumental: 1 },
-        { title: 'Malam Sunyi', prompt: 'sad ballad indonesia, melancholy, midnight, piano', musicStyle: 'ballad', lyrics: '', isInstrumental: 1 },
-        { title: 'Semangat Pagi', prompt: 'upbeat pop indonesia, energetic, morning vibes, cheerful', musicStyle: 'pop', lyrics: '', isInstrumental: 1 },
-        { title: 'Hujan Rindu', prompt: 'romantic pop indonesia, rain, longing, soft guitar', musicStyle: 'pop', lyrics: '', isInstrumental: 1 },
-        { title: 'Jiwa Muda', prompt: 'indie pop indonesia, youthful, adventurous, electric guitar', musicStyle: 'indie', lyrics: '', isInstrumental: 1 },
-        { title: 'Dansa Malam', prompt: 'dance pop indonesia, night club, electronic, upbeat', musicStyle: 'dance', lyrics: '', isInstrumental: 1 },
-        { title: 'Langit Senja', prompt: 'acoustic folk indonesia, peaceful, sunset, fingerstyle guitar', musicStyle: 'acoustic', lyrics: '', isInstrumental: 1 },
-        { title: 'Mimpi Indah', prompt: 'lofi hiphop, chill, dreamy, soft beats', musicStyle: 'lofi', lyrics: '', isInstrumental: 1 },
+// ─── Pool untuk auto-generate random preset ───────────────────────────────
+
+const _GENRES = [
+        'pop', 'ballad', 'indie pop', 'rnb', 'jazz', 'acoustic', 'folk',
+        'lofi hiphop', 'electronic', 'dance pop', 'rock', 'soul', 'funk',
+        'reggae', 'bossa nova', 'ambient', 'hip hop', 'country', 'blues',
+];
+
+const _MOODS = [
+        'melancholy', 'nostalgic', 'romantic', 'upbeat', 'energetic', 'chill',
+        'dreamy', 'peaceful', 'sad', 'happy', 'mysterious', 'epic',
+        'emotional', 'dark', 'hopeful', 'longing', 'joyful', 'tense',
+];
+
+const _VIBES = [
+        'midnight vibes', 'sunset vibes', 'morning vibes', 'rainy day',
+        'night club', 'coffee shop', 'beach sunset', 'city lights',
+        'starry night', 'golden hour', 'cozy room', 'empty streets',
+        'summer breeze', 'winter cold', 'forest walk', 'rooftop',
+];
+
+const _INSTRUMENTS = [
+        'piano', 'soft guitar', 'electric guitar', 'violin', 'cello',
+        'fingerstyle guitar', 'synthesizer', 'saxophone', 'trumpet',
+        'acoustic guitar', 'drum machine', 'bass guitar', 'flute',
+        'soft beats', 'orchestral strings', 'ukulele',
+];
+
+const _TITLE_ADJ = [
+        'Indah', 'Sunyi', 'Malam', 'Pagi', 'Senja', 'Abadi', 'Gelap',
+        'Terang', 'Jauh', 'Dekat', 'Hilang', 'Pulang', 'Pergi', 'Rindu',
+        'Sepi', 'Bahagia', 'Biru', 'Merah', 'Emas', 'Perak', 'Lembut',
+        'Keras', 'Sungguh', 'Nyata', 'Palsu', 'Hangat', 'Dingin', 'Teduh',
+];
+
+const _TITLE_NOUN = [
+        'Kenangan', 'Mimpi', 'Jiwa', 'Langit', 'Bintang', 'Lautan', 'Angin',
+        'Hujan', 'Cahaya', 'Bayangan', 'Hati', 'Cinta', 'Duka', 'Tawa',
+        'Suara', 'Dansa', 'Nada', 'Irama', 'Melodi', 'Lagu', 'Cerita',
+        'Hari', 'Waktu', 'Ruang', 'Jalan', 'Pintu', 'Jendela', 'Sayap',
 ];
 
 const MODELS = [
@@ -125,8 +156,34 @@ class ChatMusicAPI {
                 return Buffer.from(res.data);
         }
 
+        _pick(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        _pickN(arr, n) {
+                const shuffled = [...arr].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, n);
+        }
+
         getRandomPreset() {
-                return RANDOM_PRESETS[Math.floor(Math.random() * RANDOM_PRESETS.length)];
+                const genre    = this._pick(_GENRES);
+                const mood     = this._pick(_MOODS);
+                const vibe     = this._pick(_VIBES);
+                const instr    = this._pick(_INSTRUMENTS);
+                const noun     = this._pick(_TITLE_NOUN);
+                const adj      = this._pick(_TITLE_ADJ);
+
+                const title      = `${noun} ${adj}`;
+                const prompt     = `${genre} indonesia, ${mood}, ${vibe}, ${instr}`;
+                const musicStyle = genre;
+
+                return {
+                        title,
+                        prompt,
+                        musicStyle,
+                        lyrics: '',
+                        isInstrumental: 1,
+                };
         }
 }
 
@@ -155,4 +212,4 @@ function buildCaption(track, index, total, params) {
         return lines.join('\n');
 }
 
-module.exports = { ChatMusicAPI, RANDOM_PRESETS, MODELS, formatDuration, buildCaption };
+module.exports = { ChatMusicAPI, MODELS, formatDuration, buildCaption };
