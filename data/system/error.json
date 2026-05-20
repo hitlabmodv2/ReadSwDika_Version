@@ -1,6 +1,24 @@
 {
   "errors": [
     {
+      "fingerprint": "command:musikai::Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.",
+      "source": "command:musikai",
+      "message": "Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.",
+      "stack": "Error: Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.\n    at ChatMusicAPI.generate (/home/runner/workspace/src/scrape/chatmusic.cjs:214:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async _generateMusik (file:///home/runner/workspace/src/handler/message.js?t=1779276261711:4404:49)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779276261711:7668:41)",
+      "count": 2,
+      "firstSeen": "2026-05-20T11:29:32.796Z",
+      "lastSeen": "2026-05-20T11:31:08.502Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[MusicAI] Error:\u001b[Nm Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.",
+      "source": "console.error",
+      "message": "\u001b[31m[MusicAI] Error:\u001b[39m Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.",
+      "stack": "Error: \u001b[31m[MusicAI] Error:\u001b[39m Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779276261711:7670:49)",
+      "count": 2,
+      "firstSeen": "2026-05-20T11:29:32.793Z",
+      "lastSeen": "2026-05-20T11:31:08.499Z"
+    },
+    {
       "fingerprint": "command:musikai::Timeout: musik tidak selesai dalam N.N menit",
       "source": "command:musikai",
       "message": "Timeout: musik tidak selesai dalam 2.5 menit",

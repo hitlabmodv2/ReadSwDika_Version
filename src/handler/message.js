@@ -7670,9 +7670,28 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         console.error('\x1b[31m[MusicAI] Error:\x1b[39m', error.message);
                                         logError(error, 'command:musikai');
                                         await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
-                                        await sendConfirmWithButtons(hisoka, m,
-                                                `❌ *Gagal generate musik AI*\n\n_${error.message}_`,
-                                                [{ text: '🔁 Coba Random Lagi', id: '__musikai_random__' }]
+                                        const isSensitive = /sensitive words|prohibited/i.test(error.message);
+                                        const errMsg = isSensitive
+                                                ? `╭──『 ⚠️ *LIRIK DIBLOKIR* 』\n` +
+                                                  `│\n` +
+                                                  `│ API mendeteksi *kata sensitif* dalam lirik.\n` +
+                                                  `│\n` +
+                                                  `│ 💡 *Solusi:*\n` +
+                                                  `│ Hindari kata-kata terkait narkoba,\n` +
+                                                  `│ SARA, kekerasan, atau konten dewasa.\n` +
+                                                  `│\n` +
+                                                  `│ Coba ganti lirikmu & kirim ulang ↓\n` +
+                                                  `╰──────────────────────────────`
+                                                : `╭──『 ❌ *GAGAL GENERATE* 』\n` +
+                                                  `│\n` +
+                                                  `│ ${error.message}\n` +
+                                                  `│\n` +
+                                                  `│ Coba lagi atau pilih genre random ↓\n` +
+                                                  `╰──────────────────────────────`;
+                                        await sendConfirmWithButtons(hisoka, m, errMsg,
+                                                isSensitive
+                                                        ? [{ text: '📖 Lihat Contoh Format', id: '__musikai_help__' }]
+                                                        : [{ text: '🔁 Coba Random Lagi', id: '__musikai_random__' }]
                                         );
                                 }
                                 break;

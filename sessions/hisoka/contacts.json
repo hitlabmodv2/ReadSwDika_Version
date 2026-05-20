@@ -31527,7 +31527,8 @@
   "226396467122238@lid": {
     "id": "226396467122238@lid",
     "lid": "226396467122238@lid",
-    "imgUrl": "changed"
+    "imgUrl": "changed",
+    "notify": "ᵛᵒⁿ•𝗘𝗜𝗡𝗭𝗕𝗘𝗥𝗡"
   },
   "6283878562983@s.whatsapp.net": {
     "id": "6283878562983@s.whatsapp.net",
@@ -32209,5 +32210,20 @@
     "id": "25869007466634@lid",
     "lid": "25869007466634@lid",
     "notify": "anu"
+  },
+  "62895404977820@s.whatsapp.net": {
+    "id": "62895404977820@s.whatsapp.net",
+    "notify": "lamasia",
+    "verifiedName": "lamasia"
+  },
+  "38350400540702@lid": {
+    "id": "38350400540702@lid",
+    "lid": "38350400540702@lid",
+    "notify": "lamasia"
+  },
+  "165717085294691@lid": {
+    "id": "165717085294691@lid",
+    "lid": "165717085294691@lid",
+    "imgUrl": "removed"
   }
 }
