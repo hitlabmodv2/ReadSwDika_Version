@@ -7167,6 +7167,163 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 break;
                         }
 
+                        case 'musikai':
+                        case 'aimusik': {
+                                try {
+                                        const pfx = m.prefix || '.';
+                                        const input = (query || '').trim();
+
+                                        if (!input) {
+                                                await tolak(hisoka, m,
+                                                        `╭──『 🎵 *MUSIK AI* 』\n` +
+                                                        `│\n` +
+                                                        `│ Generate lagu original pakai AI.\n` +
+                                                        `│ Hasilnya *2 variasi audio VN* + cover.\n` +
+                                                        `│\n` +
+                                                        `│ *Format:*\n` +
+                                                        `│ ${pfx}musikai [judul] | [lirik]\n` +
+                                                        `│ ${pfx}musikai [judul] | [lirik] | [genre]\n` +
+                                                        `│ ${pfx}musikai random\n` +
+                                                        `│\n` +
+                                                        `│ *Contoh:*\n` +
+                                                        `│ ${pfx}musikai Hujan Malam | Hujan turun deras\n` +
+                                                        `│   malam ini, kenangan kita pergi | sad pop\n` +
+                                                        `│ ${pfx}musikai random\n` +
+                                                        `│\n` +
+                                                        `│ *Genre contoh:* pop, rock, jazz, rnb,\n` +
+                                                        `│ lofi, acoustic, ballad, indie, dance\n` +
+                                                        `╰──────────────────────────────`
+                                                );
+                                                break;
+                                        }
+
+                                        const { ChatMusicAPI, buildCaption } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+
+                                        let params = {};
+                                        if (input.toLowerCase() === 'random') {
+                                                const api0 = new ChatMusicAPI();
+                                                params = api0.getRandomPreset();
+                                        } else {
+                                                const parts = input.split('|').map(s => s.trim());
+                                                params.title      = parts[0] || 'My Song';
+                                                params.lyrics     = parts[1] || '';
+                                                params.musicStyle = parts[2] || 'pop';
+                                                params.isInstrumental = !parts[1] ? 1 : 0;
+                                                params.prompt     = `${params.musicStyle} indonesia`;
+                                        }
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } }).catch(() => {});
+                                        const loadingMsg = await tolak(hisoka, m,
+                                                `🎵 *Memulai generate musik AI...*\n` +
+                                                `│ Judul : *${params.title}*\n` +
+                                                `│ Genre : *${params.musicStyle || 'pop'}*\n` +
+                                                `│ Mode  : *${params.isInstrumental ? 'Instrumental' : 'Dengan Vokal'}*\n` +
+                                                `│\n` +
+                                                `│ ⏳ Proses ~20-40 detik...`
+                                        );
+
+                                        const api = new ChatMusicAPI();
+                                        await api.login();
+
+                                        if (loadingMsg?.key) {
+                                                try { await m.reply({ edit: loadingMsg.key, text: `🎵 Login OK. Mengirim request ke AI...\n│ Judul : *${params.title}*\n│ ⏳ Tunggu sebentar...` }); } catch (_) {}
+                                        }
+
+                                        const taskIds = await api.generate(params);
+
+                                        if (loadingMsg?.key) {
+                                                try { await m.reply({ edit: loadingMsg.key, text: `🎵 AI sedang menciptakan musik...\n│ Task  : ${taskIds.length} variasi\n│ ⏳ Polling progress...` }); } catch (_) {}
+                                        }
+
+                                        let completedCount = 0;
+                                        const tracks = await api.waitAll(taskIds, (done, total) => {
+                                                completedCount = done;
+                                                if (loadingMsg?.key) {
+                                                        m.reply({ edit: loadingMsg.key, text: `🎵 Progress: *${done}/${total}* variasi selesai...\n│ ⏳ Menunggu sisanya...` }).catch(() => {});
+                                                }
+                                        });
+
+                                        if (loadingMsg?.key) {
+                                                try { await m.reply({ edit: loadingMsg.key, text: `✅ *Musik selesai!* Mengunduh cover & audio...` }); } catch (_) {}
+                                        }
+
+                                        // Download semua cover dan audio paralel
+                                        const downloads = await Promise.allSettled(
+                                                tracks.map(async (track, i) => {
+                                                        const [coverBuf, audioBuf] = await Promise.all([
+                                                                track.cover_image
+                                                                        ? api.downloadBuffer(track.cover_image).catch(() => null)
+                                                                        : null,
+                                                                api.downloadBuffer(track.music_file),
+                                                        ]);
+                                                        return { track, index: i + 1, coverBuf, audioBuf };
+                                                })
+                                        );
+
+                                        const results = downloads
+                                                .filter(r => r.status === 'fulfilled')
+                                                .map(r => r.value);
+
+                                        if (!results.length) throw new Error('Semua download gagal');
+
+                                        // Hapus loading message
+                                        if (loadingMsg?.key) {
+                                                try { await hisoka.sendMessage(m.from, { delete: loadingMsg.key }); } catch (_) {}
+                                        }
+
+                                        // Kirim album cover dulu (kalau ada cover)
+                                        const coverItems = results
+                                                .filter(r => r.coverBuf)
+                                                .map(r => ({
+                                                        image: r.coverBuf,
+                                                        caption: buildCaption(r.track, r.index, results.length, params),
+                                                }));
+
+                                        if (coverItems.length > 0) {
+                                                try {
+                                                        await hisoka.sendMessage(m.from, { albumMessage: coverItems }, { quoted: m });
+                                                } catch (_) {
+                                                        // fallback satu per satu
+                                                        for (const item of coverItems) {
+                                                                await hisoka.sendMessage(m.from, { image: item.image, caption: item.caption }, { quoted: m }).catch(() => {});
+                                                        }
+                                                }
+                                        }
+
+                                        // Kirim audio VN satu per satu
+                                        for (const r of results) {
+                                                try {
+                                                        await hisoka.sendMessage(m.from, {
+                                                                audio: r.audioBuf,
+                                                                mimetype: 'audio/ogg; codecs=opus',
+                                                                ptt: true,
+                                                                fileName: `${params.title || 'musik'}_v${r.index}.ogg`,
+                                                        }, { quoted: m });
+                                                } catch (audioErr) {
+                                                        // fallback: kirim sebagai file audio biasa
+                                                        await hisoka.sendMessage(m.from, {
+                                                                audio: r.audioBuf,
+                                                                mimetype: 'audio/mpeg',
+                                                                fileName: `${params.title || 'musik'}_v${r.index}.mp3`,
+                                                        }, { quoted: m }).catch(() => {});
+                                                }
+                                        }
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
+                                        logCommand(m, hisoka, 'musikai');
+                                } catch (error) {
+                                        console.error('\x1b[31m[MusicAI] Error:\x1b[39m', error.message);
+                                        logError(error, 'command:musikai');
+                                        await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
+                                        await tolak(hisoka, m,
+                                                `❌ *Gagal generate musik AI*\n\n` +
+                                                `_${error.message}_\n\n` +
+                                                `Coba lagi dengan: *.musikai random*`
+                                        );
+                                }
+                                break;
+                        }
+
                         case 'geniusdetail':
                         case 'gdetail':
                         case 'detailgenius': {
@@ -7694,6 +7851,7 @@ cekhp/spechp/infohp | bandingkan
 cuaca | ba/bluearchive
 genius/carilagu | geniusdetail
 whatsmusik/wmusik
+musikai/aimusik
 pixiv | pixivr18
 
 「 🤖 *AI CHAT* 」

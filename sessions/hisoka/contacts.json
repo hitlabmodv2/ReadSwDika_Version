@@ -1788,7 +1788,8 @@
     "id": "6288247569901@s.whatsapp.net",
     "name": "🗿 Fariq",
     "lid": "4213446820079@lid",
-    "jid": "6288247569901@s.whatsapp.net"
+    "jid": "6288247569901@s.whatsapp.net",
+    "notify": "Aii_Gntng😎"
   },
   "628127548027@s.whatsapp.net": {
     "isContact": true,
@@ -32076,6 +32077,16 @@
   "250680480645258@lid": {
     "id": "250680480645258@lid",
     "lid": "250680480645258@lid",
+    "imgUrl": "removed"
+  },
+  "204569896337492@lid": {
+    "id": "204569896337492@lid",
+    "lid": "204569896337492@lid",
+    "imgUrl": "changed"
+  },
+  "208916084441117@lid": {
+    "id": "208916084441117@lid",
+    "lid": "208916084441117@lid",
     "imgUrl": "changed"
   }
 }
