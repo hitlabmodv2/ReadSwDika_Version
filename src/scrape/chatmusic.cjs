@@ -151,6 +151,47 @@ const MODELS = [
         { id: 1, version: 'v3.5' },
 ];
 
+// ─── Sanitizer lirik: ganti kata sensitif sebelum dikirim ke API ──────────
+const _SENSITIVE_MAP = [
+        // narkoba
+        [/\bsabu\b/gi,       'rindu'],
+        [/\bshabu\b/gi,      'rindu'],
+        [/\bnarkoba\b/gi,    'cinta'],
+        [/\bganja\b/gi,      'cahaya'],
+        [/\bheroin\b/gi,     'mimpi'],
+        [/\bkokain\b/gi,     'harapan'],
+        [/\bmorfin\b/gi,     'perasaan'],
+        [/\bekstasi\b/gi,    'bahagia'],
+        [/\bputaw\b/gi,      'embun'],
+        [/\btramadol\b/gi,   'waktu'],
+        [/\bmetamfetamin\b/gi,'semangat'],
+        [/\bnarkotika\b/gi,  'kenangan'],
+        [/\bopium\b/gi,      'angan'],
+        // nama politik / SARA (variasi umum)
+        [/\bmulyono\b/gi,    'seseorang'],
+        [/\bjokowi\b/gi,     'pemimpin'],
+        [/\bprabowo\b/gi,    'pahlawan'],
+        [/\banies\b/gi,      'penggagas'],
+        // kekerasan eksplisit
+        [/\bbunuh\b/gi,      'pergi'],
+        [/\bmembunuh\b/gi,   'meninggalkan'],
+        [/\bpembunuhan\b/gi, 'kepergian'],
+        [/\bmembantai\b/gi,  'melepaskan'],
+        [/\bperkosa\b/gi,    'memaksa rasa'],
+        // kata kasar keras
+        [/\bkontol\b/gi,     'kamu'],
+        [/\bbajingan\b/gi,   'orang'],
+        [/\bbangsat\b/gi,    'kawan'],
+        [/\blasingkan\b/gi,  'jauhkan'],
+];
+
+function sanitizeLyrics(text) {
+        if (!text) return text;
+        let out = text;
+        for (const [re, rep] of _SENSITIVE_MAP) out = out.replace(re, rep);
+        return out;
+}
+
 class ChatMusicAPI {
         constructor() {
                 this.baseUrl = 'https://api.chatmusicpro.com';
@@ -200,17 +241,40 @@ class ChatMusicAPI {
         }
 
         async generate(params) {
-                const r = await this._req('/music/create-music', {
+                // Pass 1: sanitize lirik & title sebelum dikirim
+                const cleanTitle  = sanitizeLyrics(params.title  || 'My Song');
+                const cleanLyrics = sanitizeLyrics(params.lyrics || '');
+                const cleanPrompt = sanitizeLyrics(params.prompt || '');
+
+                const body = {
                         music_model_id: params.modelId || 6,
-                        title: (params.title || 'My Song').slice(0, 80),
-                        prompt: (params.prompt || '').slice(0, 200),
-                        lyrics: (params.lyrics || '').slice(0, 1000),
+                        title: cleanTitle.slice(0, 80),
+                        prompt: cleanPrompt.slice(0, 200),
+                        lyrics: cleanLyrics.slice(0, 1000),
                         is_instrumental: params.isInstrumental ? 1 : 0,
                         music_style: params.musicStyle || 'pop',
                         music_style_code: '',
                         gender_type: params.genderType ?? 0,
-                });
+                };
+
+                const r = await this._req('/music/create-music', body);
                 if (r.code === 200) return r.data.create_id;
+
+                // Pass 2: masih sensitive → strip semua non-alfanumerik dari lirik lalu retry
+                if (/sensitive words|prohibited/i.test(r.message || '')) {
+                        const stripped = cleanLyrics
+                                .replace(/[^\w\s,.\-!?]/gi, ' ')
+                                .replace(/\s{2,}/g, ' ')
+                                .trim();
+                        const r2 = await this._req('/music/create-music', {
+                                ...body,
+                                lyrics: stripped.slice(0, 1000),
+                                title:  cleanTitle.replace(/[^\w\s]/gi, ' ').trim().slice(0, 80),
+                        });
+                        if (r2.code === 200) return r2.data.create_id;
+                        throw new Error('Generate gagal: ' + r2.message);
+                }
+
                 throw new Error('Generate gagal: ' + r.message);
         }
 
