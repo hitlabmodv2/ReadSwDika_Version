@@ -144,7 +144,11 @@ function parseDetail(md) {
         const raw = synM[1].trim();
         // Potong di baris yang ada icon notice (✴, !, gambar)
         const cutIdx = raw.search(/\n\s*(?:✴|!|#+\s)/);
-        sinopsis = (cutIdx > 0 ? raw.slice(0, cutIdx) : raw).replace(/\n/g, ' ').trim();
+        sinopsis = (cutIdx > 0 ? raw.slice(0, cutIdx) : raw)
+            .replace(/\r\n/g, '\n')           // normalkan CRLF
+            .replace(/\n{3,}/g, '\n\n')        // 3+ newline → 2 (satu baris kosong)
+            .replace(/([^\n])\n([^\n])/g, '$1 $2') // newline tunggal dalam paragraf → spasi
+            .trim();
     }
 
     // Ambil genre hanya dari konten post, sebelum sidebar genre list

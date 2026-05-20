@@ -1,6 +1,90 @@
 {
   "terkirim": [
     {
+      "id": "replica-datte-koi-wo-suru::7",
+      "judul": "Replica datte, Koi wo Suru.",
+      "epNum": 7,
+      "waktuKirim": "2026-05-20T05:51:43.531Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1148/155671l.jpg",
+      "url": "https://alqanime.net/replica-datte-koi-wo-suru/"
+    },
+    {
+      "id": "hidarikiki-no-eren::7",
+      "judul": "Hidarikiki no Eren",
+      "epNum": 7,
+      "waktuKirim": "2026-05-20T05:51:40.415Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1015/156388l.jpg",
+      "url": "https://alqanime.net/hidarikiki-no-eren/"
+    },
+    {
+      "id": "megami-isekai-tensei-nani-ni-naritai-desu-ka-ore-yuusha-no-rokkotsu-de::7",
+      "judul": "Megami \"Isekai Tensei Nani ni Naritai desu ka\" Ore \"Yuusha no Rokkotsu de\"",
+      "epNum": 7,
+      "waktuKirim": "2026-05-20T05:51:37.300Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1228/156696l.jpg",
+      "url": "https://alqanime.net/megami-isekai-tensei-nani-ni-naritai-desu-ka-ore-yuusha-no-rokkotsu-de/"
+    },
+    {
+      "id": "tadaima-ojamasaremasu::7",
+      "judul": "Tadaima, Ojamasaremasu!",
+      "epNum": 7,
+      "waktuKirim": "2026-05-20T05:51:34.103Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1199/156106l.jpg",
+      "url": "https://alqanime.net/tadaima-ojamasaremasu/"
+    },
+    {
+      "id": "marriagetoxin::7",
+      "judul": "Marriagetoxin",
+      "epNum": 7,
+      "waktuKirim": "2026-05-20T05:51:31.026Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1927/154309l.jpg",
+      "url": "https://alqanime.net/marriagetoxin/"
+    },
+    {
+      "id": "aishiteru-game-wo-owarasetai::6",
+      "judul": "Aishiteru Game wo Owarasetai",
+      "epNum": 6,
+      "waktuKirim": "2026-05-20T05:51:27.916Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1879/155958l.jpg",
+      "url": "https://alqanime.net/aishiteru-game-wo-owarasetai/"
+    },
+    {
+      "id": "class-de-2-banme-ni-kawaii-onnanoko-to-tomodachi-ni-natta::7",
+      "judul": "Class de 2-banme ni Kawaii Onnanoko to Tomodachi ni Natta",
+      "epNum": 7,
+      "waktuKirim": "2026-05-20T05:51:24.955Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1423/155713l.jpg",
+      "url": "https://alqanime.net/class-de-2-banme-ni-kawaii-onnanoko-to-tomodachi-ni-natta/"
+    },
+    {
       "id": "higeki-no-genkyou-to-naru-saikyou-gedou-last-boss-joou-wa-tami-no-tame-ni-tsukushimasu-season-2::7",
       "judul": "Higeki no Genkyou to Naru Saikyou Gedou Last Boss Joou wa Tami no Tame ni Tsukushimasu. Season 2",
       "epNum": 7,

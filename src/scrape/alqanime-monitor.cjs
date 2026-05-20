@@ -570,9 +570,9 @@ function buatCaptionGabung(data) {
     // Judul alt — plain text (bukan italic), langsung di bawah judul utama
     const judulAlt  = info.judulAlt ? `${info.judulAlt}\n` : '';
 
-    // Sinopsis — PENUH, tidak dipotong
+    // Sinopsis — PENUH, tidak dipotong. Baris kosong antar paragraf tidak diberi prefix >.
     const sinopsisText = (sinopsis || '-').trim();
-    const sinopsisBlok = sinopsisText.split('\n').map(b => `> ${b}`).join('\n');
+    const sinopsisBlok = sinopsisText.split('\n').map(b => b.trim() ? `> ${b}` : '').join('\n');
 
     // ── Info Grup 1: metadata utama ──
     const seksi1 = buatBarisInfo([
