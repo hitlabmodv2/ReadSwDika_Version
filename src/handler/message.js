@@ -1651,13 +1651,22 @@ async function sendCekautoGrupMsg(hisoka, m) {
         const totalAktif = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.checkFn(cfg, jid)).length;
         const totalMati  = CEKAUTO_GROUP_FITUR_LIST.length - totalAktif;
 
-        const renderCategory = (list) =>
-                [...list]
-                        .sort((a, b) => (b.checkFn(cfg, jid) ? 1 : 0) - (a.checkFn(cfg, jid) ? 1 : 0))
-                        .map(f => {
-                                const isOn = f.checkFn(cfg, jid);
-                                return `  ${isOn ? '🟢' : '🔴'}  *${f.nama}*`;
-                        }).join('\n');
+        const renderCategory = (list) => {
+                const sorted = [...list].sort((a, b) => (b.checkFn(cfg, jid) ? 1 : 0) - (a.checkFn(cfg, jid) ? 1 : 0));
+                const hasAktif = sorted.some(f => f.checkFn(cfg, jid));
+                const hasMati  = sorted.some(f => !f.checkFn(cfg, jid));
+                const lines = [];
+                let separatorAdded = false;
+                for (const f of sorted) {
+                        const isOn = f.checkFn(cfg, jid);
+                        if (!isOn && hasAktif && hasMati && !separatorAdded) {
+                                lines.push(`  ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄`);
+                                separatorAdded = true;
+                        }
+                        lines.push(`  ${isOn ? '🟢' : '🔴'}  *${f.nama}*`);
+                }
+                return lines.join('\n');
+        };
 
         let txt =
                 `╔══════════════════════════════╗\n` +
