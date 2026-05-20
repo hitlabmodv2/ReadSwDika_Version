@@ -16794,8 +16794,7 @@
     "name": "Remi_ikan 111",
     "lid": "26547712958494@lid",
     "jid": "6281295543915@s.whatsapp.net",
-    "notify": "Arthur.remi_kan",
-    "verifiedName": "Arthur.remi_kan"
+    "notify": "Arthur.remi_kan"
   },
   "6285855071706@s.whatsapp.net": {
     "isContact": true,
@@ -32169,5 +32168,20 @@
     "id": "194232061063346@lid",
     "lid": "194232061063346@lid",
     "imgUrl": "removed"
+  },
+  "16136410255494@lid": {
+    "id": "16136410255494@lid",
+    "lid": "16136410255494@lid",
+    "imgUrl": "changed"
+  },
+  "263144542830660@lid": {
+    "id": "263144542830660@lid",
+    "lid": "263144542830660@lid",
+    "imgUrl": "removed"
+  },
+  "206918907871331@lid": {
+    "id": "206918907871331@lid",
+    "lid": "206918907871331@lid",
+    "notify": "HERU KURNIAWAN"
   }
 }

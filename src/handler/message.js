@@ -4477,14 +4477,106 @@ export default async function ({ message, type: messagesType }, hisoka) {
                 };
 
                 // ─── Button callbacks: MusicAI ─────────────────────────────────────────
+
+                // Helper: tampilkan pilihan genre dulu (single_select), belum generate
+                const _showGenreSelect = async () => {
+                        const genreSections = [
+                                {
+                                        title: '🎵 Pop & Ballad',
+                                        rows: [
+                                                { header: '🎵', title: 'Pop', description: 'Musik pop Indonesia ringan & catchy', id: '__musikai_genre__pop' },
+                                                { header: '🎶', title: 'Indie Pop', description: 'Vibes indie yang dreamy & mellow', id: '__musikai_genre__indie pop' },
+                                                { header: '🎼', title: 'Ballad', description: 'Slow ballad penuh perasaan', id: '__musikai_genre__ballad' },
+                                                { header: '🎹', title: 'Piano Ballad', description: 'Ballad dengan dominan piano', id: '__musikai_genre__piano ballad' },
+                                        ],
+                                },
+                                {
+                                        title: '🎸 Rock & Acoustic',
+                                        rows: [
+                                                { header: '🎸', title: 'Acoustic', description: 'Gitar akustik hangat & intim', id: '__musikai_genre__acoustic' },
+                                                { header: '🪕', title: 'Folk', description: 'Folk Indonesia yang earthy', id: '__musikai_genre__folk' },
+                                                { header: '🎸', title: 'Indie Rock', description: 'Rock alternatif indie vibes', id: '__musikai_genre__indie rock' },
+                                                { header: '🤘', title: 'Rock', description: 'Rock energik dengan gitar listrik', id: '__musikai_genre__rock' },
+                                        ],
+                                },
+                                {
+                                        title: '🌊 Chill & Lo-Fi',
+                                        rows: [
+                                                { header: '☁️', title: 'Lo-Fi Hip Hop', description: 'Beats lofi santai buat fokus', id: '__musikai_genre__lofi hiphop' },
+                                                { header: '🌙', title: 'Chillwave', description: 'Electronic chill dengan nuansa retro', id: '__musikai_genre__chillwave' },
+                                                { header: '🎷', title: 'Jazz', description: 'Jazz smooth yang elegan', id: '__musikai_genre__smooth jazz' },
+                                                { header: '🛋️', title: 'Bedroom Pop', description: 'Vibes kamar malam yang cozy', id: '__musikai_genre__bedroom pop' },
+                                        ],
+                                },
+                                {
+                                        title: '💃 R&B & Soul',
+                                        rows: [
+                                                { header: '✨', title: 'R&B', description: 'R&B modern Indonesia', id: '__musikai_genre__rnb' },
+                                                { header: '🕊️', title: 'Neo Soul', description: 'Soul kontemporer yang smooth', id: '__musikai_genre__neo soul' },
+                                                { header: '🌙', title: 'City Pop', description: 'City pop 80s yang nostalgic', id: '__musikai_genre__city pop' },
+                                                { header: '🎻', title: 'Cinematic', description: 'Orkestral sinematik yang dramatis', id: '__musikai_genre__cinematic' },
+                                        ],
+                                },
+                        ];
+                        const msg = generateWAMessageFromContent(
+                                m.from,
+                                {
+                                        viewOnceMessage: {
+                                                message: {
+                                                        messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                        interactiveMessage: {
+                                                                contextInfo: m.key?.id ? {
+                                                                        stanzaId: m.key.id,
+                                                                        participant: m.sender || m.key?.participant || m.key?.remoteJid || '',
+                                                                        quotedMessage: m.raw || m.message || {},
+                                                                } : {},
+                                                                body: {
+                                                                        text:
+                                                                                `╭──『 🎲 *MUSIK AI — PILIH GENRE* 』\n` +
+                                                                                `│\n` +
+                                                                                `│ Pilih genre musik yang kamu mau.\n` +
+                                                                                `│ Judul & lirik akan di-random otomatis.\n` +
+                                                                                `│\n` +
+                                                                                `│ ✨ Tekan tombol di bawah untuk memilih!\n` +
+                                                                                `╰──────────────────────────────`,
+                                                                },
+                                                                nativeFlowMessage: {
+                                                                        buttons: [
+                                                                                {
+                                                                                        name: 'single_select',
+                                                                                        buttonParamsJson: JSON.stringify({
+                                                                                                title: '🎵 Pilih Genre',
+                                                                                                sections: genreSections,
+                                                                                        }),
+                                                                                },
+                                                                        ],
+                                                                },
+                                                        },
+                                                },
+                                        },
+                                },
+                                {}, {}
+                        );
+                        await hisoka.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
+                };
+
                 if (typeof m.text === 'string' && m.text === '__musikai_random__') {
+                        await _showGenreSelect();
+                        return;
+                }
+
+                // Callback setelah user pilih genre dari single_select
+                if (typeof m.text === 'string' && m.text.startsWith('__musikai_genre__')) {
+                        const selectedGenre = m.text.replace('__musikai_genre__', '').trim();
                         try {
                                 const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                 const preset = new ChatMusicAPI().getRandomPreset();
+                                preset.musicStyle = selectedGenre;
+                                preset.prompt = `${selectedGenre} indonesia, ${preset.prompt?.split(',').slice(1).join(',') || ''}`.trim();
                                 await _generateMusik(hisoka, m, preset);
                         } catch (err) {
                                 console.error('\x1b[31m[MusicAI] Error:\x1b[39m', err.message);
-                                logError(err, 'callback:musikai_random');
+                                logError(err, 'callback:musikai_genre');
                                 await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
                                 await sendConfirmWithButtons(hisoka, m,
                                         `❌ *Gagal generate musik*\n\n_${err.message}_`,
@@ -7430,18 +7522,19 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 }
 
                                 try {
-                                        const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
-                                        let params = {};
                                         if (input.toLowerCase() === 'random') {
-                                                params = new ChatMusicAPI().getRandomPreset();
-                                        } else {
-                                                const parts = input.split('|').map(s => s.trim());
-                                                params.title          = parts[0] || 'My Song';
-                                                params.lyrics         = parts[1] || '';
-                                                params.musicStyle     = parts[2] || 'pop';
-                                                params.isInstrumental = !parts[1] ? 1 : 0;
-                                                params.prompt         = `${params.musicStyle} indonesia`;
+                                                await _showGenreSelect();
+                                                break;
                                         }
+                                        const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                        const parts = input.split('|').map(s => s.trim());
+                                        const params = {
+                                                title:          parts[0] || 'My Song',
+                                                lyrics:         parts[1] || '',
+                                                musicStyle:     parts[2] || 'pop',
+                                                isInstrumental: !parts[1] ? 1 : 0,
+                                                prompt:         `${parts[2] || 'pop'} indonesia`,
+                                        };
                                         await _generateMusik(hisoka, m, params);
                                 } catch (error) {
                                         console.error('\x1b[31m[MusicAI] Error:\x1b[39m', error.message);
