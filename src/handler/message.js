@@ -1386,15 +1386,16 @@ function saveCekautoTimestamp(featureKey, jid) {
         saveConfig(cfg);
 }
 
-async function sendConfirmWithButtons(hisoka, m, txt, buttons) {
+async function sendConfirmWithButtons(hisoka, m, txt, buttons, opts = {}) {
+        const quoteTarget = (opts.quoteBot && m.quoted) ? m.quoted : m;
         let sent = false;
         try {
                 await m.reply({
                         interactiveMessage: {
                                 contextInfo: {
-                                        stanzaId: m.key?.id,
-                                        participant: m.sender || m.key?.participant || '',
-                                        quotedMessage: m.message || {},
+                                        stanzaId: quoteTarget.key?.id,
+                                        participant: quoteTarget.sender || quoteTarget.key?.participant || quoteTarget.key?.remoteJid || '',
+                                        quotedMessage: quoteTarget.message || {},
                                 },
                                 body: { text: txt },
                                 nativeFlowMessage: {
@@ -4086,7 +4087,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 await sendConfirmWithButtons(hisoka, m, txtOff, [
                                                         { text: '🏘️ Lihat Sisa Grup Aktif', id: `__cgrupsel__${featureKey}` },
                                                         { text: '↩️ Aktifkan Kembali', id: `__cgrupre__${featureKey}__${targetJid}` },
-                                                ]);
+                                                ], { quoteBot: true });
                                         } catch (e) {
                                                 await tolak(hisoka, m, `❌ Gagal nonaktifkan fitur: ${e.message}`);
                                         }
@@ -4196,7 +4197,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 await sendConfirmWithButtons(hisoka, m, txtRe, [
                                                         { text: '🏘️ Lihat Status Grup', id: `__cgrupsel__${featureKey}` },
                                                         { text: '❌ Nonaktifkan Lagi', id: `__cgrupoff__${featureKey}__${targetJid}` },
-                                                ]);
+                                                ], { quoteBot: true });
                                         } catch (e) {
                                                 await tolak(hisoka, m, `❌ Gagal aktifkan fitur: ${e.message}`);
                                         }
