@@ -1423,7 +1423,7 @@ async function sendConfirmWithButtons(hisoka, m, txt, buttons, opts = {}) {
         if (!sent) await tolak(hisoka, m, txt);
 }
 
-async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, buttons, opts = {}) {
+async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, rows, opts = {}) {
         const quoteSource = (opts.quoteBot && m.quoted?.key?.id) ? m.quoted : m;
         const contextInfo = quoteSource.key?.id ? {
                 stanzaId: quoteSource.key.id,
@@ -1431,6 +1431,9 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, buttons, opts 
                 quotedMessage: quoteSource.raw || quoteSource.message || {},
         } : {};
         const fileName = opts.fileName || 'audio.mp3';
+        const listTitle = opts.listTitle || '🎵 Pilih Aksi';
+        const sectionTitle = opts.sectionTitle || 'Opsi';
+        const sections = [{ title: sectionTitle, rows }];
         let sent = false;
         try {
                 const audioMedia = await prepareWAMessageMedia(
@@ -1448,10 +1451,12 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, buttons, opts 
                                                         header: { hasMediaAttachment: true, ...audioMedia },
                                                         body: { text: bodyTxt },
                                                         nativeFlowMessage: {
-                                                                buttons: buttons.map(b => ({
-                                                                        name: 'quick_reply',
-                                                                        buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
-                                                                }))
+                                                                buttons: [
+                                                                        {
+                                                                                name: 'single_select',
+                                                                                buttonParamsJson: JSON.stringify({ title: listTitle, sections })
+                                                                        }
+                                                                ]
                                                         }
                                                 }
                                         }
@@ -4449,10 +4454,14 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `╰──────────────────────────────`;
                                         await sendAudioWithButtons(hisoka, m, r.audioBuf, bodyTxt,
                                                 [
-                                                        { text: '🎲 Random Lagi', id: '__musikai_random__' },
-                                                        { text: '🎵 Menu Musik AI', id: '__musikai_menu__' },
+                                                        { header: '🎲', title: 'Random Lagi', description: 'Generate musik baru secara random', id: '__musikai_random__' },
+                                                        { header: '🎵', title: 'Menu Musik AI', description: 'Lihat menu lengkap Musik AI', id: '__musikai_menu__' },
                                                 ],
-                                                { fileName: `${trackTitle} (v${r.index}).mp3` }
+                                                {
+                                                        fileName: `${trackTitle} (v${r.index}).mp3`,
+                                                        listTitle: '🎵 Pilih Aksi',
+                                                        sectionTitle: 'Aksi Lanjutan',
+                                                }
                                         );
                                 }
 

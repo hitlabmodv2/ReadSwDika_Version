@@ -1,6 +1,33 @@
 {
   "errors": [
     {
+      "fingerprint": "command:musikai::Timeout: musik tidak selesai dalam N.N menit",
+      "source": "command:musikai",
+      "message": "Timeout: musik tidak selesai dalam 2.5 menit",
+      "stack": "Error: Timeout: musik tidak selesai dalam 2.5 menit\n    at ChatMusicAPI.waitAll (/home/runner/workspace/src/scrape/chatmusic.cjs:230:39)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async _generateMusik (file:///home/runner/workspace/src/handler/message.js?t=1779274152264:4344:48)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779274152264:7400:41)",
+      "count": 1,
+      "firstSeen": "2026-05-20T10:53:52.595Z",
+      "lastSeen": "2026-05-20T10:53:52.595Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[MusicAI] Error:\u001b[Nm Timeout: musik tidak selesai dalam N.N menit",
+      "source": "console.error",
+      "message": "\u001b[31m[MusicAI] Error:\u001b[39m Timeout: musik tidak selesai dalam 2.5 menit",
+      "stack": "Error: \u001b[31m[MusicAI] Error:\u001b[39m Timeout: musik tidak selesai dalam 2.5 menit\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779274152264:7402:49)",
+      "count": 1,
+      "firstSeen": "2026-05-20T10:53:52.592Z",
+      "lastSeen": "2026-05-20T10:53:52.592Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[CrashGuard] Message handler timed out (Ns), skipping.\u001b[Nm",
+      "source": "console.error",
+      "message": "\u001b[31m[CrashGuard] Message handler timed out (120s), skipping.\u001b[39m",
+      "stack": "Error: \u001b[31m[CrashGuard] Message handler timed out (120s), skipping.\u001b[39m\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at file:///home/runner/workspace/index.js:1752:57",
+      "count": 1,
+      "firstSeen": "2026-05-20T10:53:12.051Z",
+      "lastSeen": "2026-05-20T10:53:12.051Z"
+    },
+    {
       "fingerprint": "Animasu::[Animasu] ❌ Gagal fetch API posts: Request failed with status code N",
       "source": "Animasu",
       "message": "[Animasu] ❌ Gagal fetch API posts: Request failed with status code 403",
