@@ -4380,20 +4380,23 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         }
                                 }
 
-                                // Audio VN
+                                // Audio Button (bukan VN, supaya tampil judul + durasi)
                                 for (const r of results) {
+                                        const trackTitle = r.track?.title || params.title || 'musik';
+                                        const trackStyle = r.track?.style || params.musicStyle || 'pop';
                                         try {
                                                 await hisoka.sendMessage(m.from, {
                                                         audio: r.audioBuf,
-                                                        mimetype: 'audio/ogg; codecs=opus',
-                                                        ptt: true,
-                                                        fileName: `${params.title || 'musik'}_v${r.index}.ogg`,
+                                                        mimetype: 'audio/mpeg',
+                                                        ptt: false,
+                                                        fileName: `${trackTitle} (v${r.index}).mp3`,
                                                 }, { quoted: m });
                                         } catch (_) {
                                                 await hisoka.sendMessage(m.from, {
                                                         audio: r.audioBuf,
-                                                        mimetype: 'audio/mpeg',
-                                                        fileName: `${params.title || 'musik'}_v${r.index}.mp3`,
+                                                        mimetype: 'audio/mp4',
+                                                        ptt: false,
+                                                        fileName: `${trackTitle} (v${r.index}).m4a`,
                                                 }, { quoted: m }).catch(() => {});
                                         }
                                 }
@@ -4410,7 +4413,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         `│ 🎸 *Genre*  : ${genreLabel}\n` +
                                         `│ ${modeLabel}\n` +
                                         `│\n` +
-                                        `│ 2 variasi audio VN sudah dikirim ↑\n` +
+                                        `│ 2 variasi audio sudah dikirim ↑\n` +
                                         `│ Mau generate lagi?\n` +
                                         `╰──────────────────────────────`,
                                         [
@@ -4484,7 +4487,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 `╭──『 🎵 *MUSIK AI* 』\n` +
                                 `│\n` +
                                 `│ Generate lagu original pakai AI.\n` +
-                                `│ Hasil: *2 variasi audio VN* + cover art.\n` +
+                                `│ Hasil: *2 variasi audio* + cover art.\n` +
                                 `│\n` +
                                 `│ Tekan *Random* untuk generate langsung,\n` +
                                 `│ atau ketik manual:\n` +
@@ -7365,7 +7368,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `╭──『 🎵 *MUSIK AI* 』\n` +
                                                 `│\n` +
                                                 `│ Generate lagu original pakai AI.\n` +
-                                                `│ Hasil: *2 variasi audio VN* + cover art.\n` +
+                                                `│ Hasil: *2 variasi audio* + cover art.\n` +
                                                 `│\n` +
                                                 `│ Tekan *Random* untuk generate langsung,\n` +
                                                 `│ atau ketik manual:\n` +
