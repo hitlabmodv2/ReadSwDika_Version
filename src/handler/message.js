@@ -1387,28 +1387,37 @@ function saveCekautoTimestamp(featureKey, jid) {
 }
 
 async function sendConfirmWithButtons(hisoka, m, txt, buttons, opts = {}) {
-        const quoteTarget = (opts.quoteBot && m.quoted) ? m.quoted : m;
+        const quoteSource = (opts.quoteBot && m.quoted?.key?.id) ? m.quoted : m;
+        const contextInfo = quoteSource.key?.id ? {
+                stanzaId: quoteSource.key.id,
+                participant: quoteSource.sender || quoteSource.key?.participant || quoteSource.key?.remoteJid || '',
+                quotedMessage: quoteSource.raw || quoteSource.message || {},
+        } : {};
         let sent = false;
         try {
-                const ephemeral = await hisoka.getEphemeral(m.from).catch(() => ({}));
-                await hisoka.sendMessage(
+                const msg = generateWAMessageFromContent(
                         m.from,
                         {
-                                interactiveMessage: {
-                                        body: { text: txt },
-                                        nativeFlowMessage: {
-                                                buttons: buttons.map(b => ({
-                                                        name: 'quick_reply',
-                                                        buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
-                                                }))
+                                viewOnceMessage: {
+                                        message: {
+                                                messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                interactiveMessage: {
+                                                        contextInfo,
+                                                        body: { text: txt },
+                                                        nativeFlowMessage: {
+                                                                buttons: buttons.map(b => ({
+                                                                        name: 'quick_reply',
+                                                                        buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
+                                                                }))
+                                                        }
+                                                }
                                         }
                                 }
                         },
-                        {
-                                quoted: quoteTarget,
-                                ephemeralExpiration: m.content?.contextInfo?.expiration || ephemeral.expiration,
-                        }
+                        {},
+                        {}
                 );
+                await hisoka.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
                 sent = true;
         } catch (_) {}
         if (!sent) await tolak(hisoka, m, txt);
