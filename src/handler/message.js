@@ -4314,6 +4314,174 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         }
                 }
 
+                // ─── MusicAI generate helper ──────────────────────────────────────────
+                const _generateMusik = async (hisoka, m, params) => {
+                        const { ChatMusicAPI, buildCaption } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } }).catch(() => {});
+
+                        const txtLoading =
+                                `🎵 *Generate Musik AI...*\n` +
+                                `│ Judul : *${params.title}*\n` +
+                                `│ Genre : *${params.musicStyle || 'pop'}*\n` +
+                                `│ Mode  : *${params.isInstrumental ? 'Instrumental' : 'Dengan Vokal'}*\n` +
+                                `│\n` +
+                                `│ ⏳ Proses ~20-40 detik...`;
+                        const loadingMsg = await hisoka.sendMessage(m.from, { text: txtLoading }, { quoted: m }).catch(() => null);
+
+                        const _editLoading = async (txt) => {
+                                if (!loadingMsg?.key) return;
+                                try { await hisoka.sendMessage(m.from, { text: txt, edit: loadingMsg.key }); } catch (_) {}
+                        };
+
+                        try {
+                                const api = new ChatMusicAPI();
+                                await api.login();
+                                await _editLoading(`🎵 Login OK. Mengirim ke AI...\n│ Judul : *${params.title}*\n│ ⏳ Tunggu sebentar...`);
+
+                                const taskIds = await api.generate(params);
+                                await _editLoading(`🎵 AI sedang menciptakan musik...\n│ Task  : ${taskIds.length} variasi\n│ ⏳ Polling...`);
+
+                                const tracks = await api.waitAll(taskIds, (done, total) => {
+                                        _editLoading(`🎵 Progress: *${done}/${total}* variasi selesai...\n│ ⏳ Menunggu sisanya...`).catch(() => {});
+                                });
+
+                                await _editLoading(`✅ Selesai! Mengunduh cover & audio...`);
+
+                                const downloads = await Promise.allSettled(
+                                        tracks.map(async (track, i) => {
+                                                const [coverBuf, audioBuf] = await Promise.all([
+                                                        track.cover_image ? api.downloadBuffer(track.cover_image).catch(() => null) : null,
+                                                        api.downloadBuffer(track.music_file),
+                                                ]);
+                                                return { track, index: i + 1, coverBuf, audioBuf };
+                                        })
+                                );
+
+                                const results = downloads.filter(r => r.status === 'fulfilled').map(r => r.value);
+                                if (!results.length) throw new Error('Semua download gagal');
+
+                                // Hapus loading
+                                if (loadingMsg?.key) {
+                                        try { await hisoka.sendMessage(m.from, { delete: loadingMsg.key }); } catch (_) {}
+                                }
+
+                                // Album cover
+                                const coverItems = results
+                                        .filter(r => r.coverBuf)
+                                        .map(r => ({ image: r.coverBuf, caption: buildCaption(r.track, r.index, results.length, params) }));
+
+                                if (coverItems.length > 0) {
+                                        try {
+                                                await hisoka.sendMessage(m.from, { albumMessage: coverItems }, { quoted: m });
+                                        } catch (_) {
+                                                for (const item of coverItems) {
+                                                        await hisoka.sendMessage(m.from, { image: item.image, caption: item.caption }, { quoted: m }).catch(() => {});
+                                                }
+                                        }
+                                }
+
+                                // Audio VN
+                                for (const r of results) {
+                                        try {
+                                                await hisoka.sendMessage(m.from, {
+                                                        audio: r.audioBuf,
+                                                        mimetype: 'audio/ogg; codecs=opus',
+                                                        ptt: true,
+                                                        fileName: `${params.title || 'musik'}_v${r.index}.ogg`,
+                                                }, { quoted: m });
+                                        } catch (_) {
+                                                await hisoka.sendMessage(m.from, {
+                                                        audio: r.audioBuf,
+                                                        mimetype: 'audio/mpeg',
+                                                        fileName: `${params.title || 'musik'}_v${r.index}.mp3`,
+                                                }, { quoted: m }).catch(() => {});
+                                        }
+                                }
+
+                                await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
+                                logCommand(m, hisoka, 'musikai');
+                        } catch (err) {
+                                if (loadingMsg?.key) {
+                                        try { await hisoka.sendMessage(m.from, { delete: loadingMsg.key }); } catch (_) {}
+                                }
+                                throw err;
+                        }
+                };
+
+                // ─── Button callbacks: MusicAI ─────────────────────────────────────────
+                if (typeof m.text === 'string' && m.text === '__musikai_random__') {
+                        try {
+                                const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                const preset = new ChatMusicAPI().getRandomPreset();
+                                await _generateMusik(hisoka, m, preset);
+                        } catch (err) {
+                                console.error('\x1b[31m[MusicAI] Error:\x1b[39m', err.message);
+                                logError(err, 'callback:musikai_random');
+                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
+                                await sendConfirmWithButtons(hisoka, m,
+                                        `❌ *Gagal generate musik*\n\n_${err.message}_`,
+                                        [{ text: '🔁 Coba Random Lagi', id: '__musikai_random__' }],
+                                        { quoteBot: true }
+                                );
+                        }
+                        return;
+                }
+
+                if (typeof m.text === 'string' && m.text === '__musikai_help__') {
+                        const pfx = m.prefix || '.';
+                        await sendConfirmWithButtons(hisoka, m,
+                                `╭──『 📖 *CARA PAKAI MUSIK AI* 』\n` +
+                                `│\n` +
+                                `│ *Format:*\n` +
+                                `│ ${pfx}musikai [judul] | [lirik]\n` +
+                                `│ ${pfx}musikai [judul] | [lirik] | [genre]\n` +
+                                `│\n` +
+                                `│ *Contoh:*\n` +
+                                `│ ${pfx}musikai Hujan Malam | Hujan turun\n` +
+                                `│   deras malam ini | sad pop\n` +
+                                `│\n` +
+                                `│ *Kalau gak ada lirik* (instrumental):\n` +
+                                `│ ${pfx}musikai Senja Sunyi | | lofi\n` +
+                                `│\n` +
+                                `│ *Genre contoh:*\n` +
+                                `│ pop, rock, jazz, rnb, lofi, acoustic,\n` +
+                                `│ ballad, indie, dance, folk, soul, funk\n` +
+                                `│\n` +
+                                `│ Atau langsung tekan tombol random! ↓\n` +
+                                `╰──────────────────────────────`,
+                                [
+                                        { text: '🎲 Generate Random Sekarang', id: '__musikai_random__' },
+                                        { text: '↩️ Kembali ke Menu', id: '__musikai_menu__' },
+                                ],
+                                { quoteBot: true }
+                        );
+                        return;
+                }
+
+                if (typeof m.text === 'string' && m.text === '__musikai_menu__') {
+                        const pfx = m.prefix || '.';
+                        await sendConfirmWithButtons(hisoka, m,
+                                `╭──『 🎵 *MUSIK AI* 』\n` +
+                                `│\n` +
+                                `│ Generate lagu original pakai AI.\n` +
+                                `│ Hasil: *2 variasi audio VN* + cover art.\n` +
+                                `│\n` +
+                                `│ Tekan *Random* untuk generate langsung,\n` +
+                                `│ atau ketik manual:\n` +
+                                `│ _${pfx}musikai judul | lirik | genre_\n` +
+                                `│\n` +
+                                `│ ✨ Tiap random = kombinasi unik!\n` +
+                                `╰──────────────────────────────`,
+                                [
+                                        { text: '🎲 Generate Random', id: '__musikai_random__' },
+                                        { text: '📖 Cara Pakai Custom', id: '__musikai_help__' },
+                                ],
+                                { quoteBot: true }
+                        );
+                        return;
+                }
+                // ──────────────────────────────────────────────────────────────────────
+
                 switch (m.command) {
 
                         case 'hidetag':
@@ -7169,161 +7337,55 @@ export default async function ({ message, type: messagesType }, hisoka) {
 
                         case 'musikai':
                         case 'aimusik': {
+                                const pfx = m.prefix || '.';
+                                const input = (query || '').trim();
+
+                                if (!input) {
+                                        await sendConfirmWithButtons(hisoka, m,
+                                                `╭──『 🎵 *MUSIK AI* 』\n` +
+                                                `│\n` +
+                                                `│ Generate lagu original pakai AI.\n` +
+                                                `│ Hasil: *2 variasi audio VN* + cover art.\n` +
+                                                `│\n` +
+                                                `│ Tekan *Random* untuk generate langsung,\n` +
+                                                `│ atau ketik manual:\n` +
+                                                `│ _${pfx}musikai judul | lirik | genre_\n` +
+                                                `│\n` +
+                                                `│ ✨ Tiap random = kombinasi unik!\n` +
+                                                `╰──────────────────────────────`,
+                                                [
+                                                        { text: '🎲 Generate Random', id: '__musikai_random__' },
+                                                        { text: '📖 Cara Pakai Custom', id: '__musikai_help__' },
+                                                ]
+                                        );
+                                        break;
+                                }
+
                                 try {
-                                        const pfx = m.prefix || '.';
-                                        const input = (query || '').trim();
-
-                                        if (!input) {
-                                                await tolak(hisoka, m,
-                                                        `╭──『 🎵 *MUSIK AI* 』\n` +
-                                                        `│\n` +
-                                                        `│ Generate lagu original pakai AI.\n` +
-                                                        `│ Hasilnya *2 variasi audio VN* + cover.\n` +
-                                                        `│\n` +
-                                                        `│ *Format:*\n` +
-                                                        `│ ${pfx}musikai [judul] | [lirik]\n` +
-                                                        `│ ${pfx}musikai [judul] | [lirik] | [genre]\n` +
-                                                        `│ ${pfx}musikai random\n` +
-                                                        `│\n` +
-                                                        `│ *Contoh:*\n` +
-                                                        `│ ${pfx}musikai Hujan Malam | Hujan turun deras\n` +
-                                                        `│   malam ini, kenangan kita pergi | sad pop\n` +
-                                                        `│ ${pfx}musikai random\n` +
-                                                        `│\n` +
-                                                        `│ *Genre contoh:* pop, rock, jazz, rnb,\n` +
-                                                        `│ lofi, acoustic, ballad, indie, dance\n` +
-                                                        `╰──────────────────────────────`
-                                                );
-                                                break;
-                                        }
-
-                                        const { ChatMusicAPI, buildCaption } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
-
+                                        const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                         let params = {};
                                         if (input.toLowerCase() === 'random') {
-                                                const api0 = new ChatMusicAPI();
-                                                params = api0.getRandomPreset();
+                                                params = new ChatMusicAPI().getRandomPreset();
                                         } else {
                                                 const parts = input.split('|').map(s => s.trim());
-                                                params.title      = parts[0] || 'My Song';
-                                                params.lyrics     = parts[1] || '';
-                                                params.musicStyle = parts[2] || 'pop';
+                                                params.title          = parts[0] || 'My Song';
+                                                params.lyrics         = parts[1] || '';
+                                                params.musicStyle     = parts[2] || 'pop';
                                                 params.isInstrumental = !parts[1] ? 1 : 0;
-                                                params.prompt     = `${params.musicStyle} indonesia`;
+                                                params.prompt         = `${params.musicStyle} indonesia`;
                                         }
-
-                                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } }).catch(() => {});
-                                        const loadingMsg = await tolak(hisoka, m,
-                                                `🎵 *Memulai generate musik AI...*\n` +
-                                                `│ Judul : *${params.title}*\n` +
-                                                `│ Genre : *${params.musicStyle || 'pop'}*\n` +
-                                                `│ Mode  : *${params.isInstrumental ? 'Instrumental' : 'Dengan Vokal'}*\n` +
-                                                `│\n` +
-                                                `│ ⏳ Proses ~20-40 detik...`
-                                        );
-
-                                        const api = new ChatMusicAPI();
-                                        await api.login();
-
-                                        if (loadingMsg?.key) {
-                                                try { await m.reply({ edit: loadingMsg.key, text: `🎵 Login OK. Mengirim request ke AI...\n│ Judul : *${params.title}*\n│ ⏳ Tunggu sebentar...` }); } catch (_) {}
-                                        }
-
-                                        const taskIds = await api.generate(params);
-
-                                        if (loadingMsg?.key) {
-                                                try { await m.reply({ edit: loadingMsg.key, text: `🎵 AI sedang menciptakan musik...\n│ Task  : ${taskIds.length} variasi\n│ ⏳ Polling progress...` }); } catch (_) {}
-                                        }
-
-                                        let completedCount = 0;
-                                        const tracks = await api.waitAll(taskIds, (done, total) => {
-                                                completedCount = done;
-                                                if (loadingMsg?.key) {
-                                                        m.reply({ edit: loadingMsg.key, text: `🎵 Progress: *${done}/${total}* variasi selesai...\n│ ⏳ Menunggu sisanya...` }).catch(() => {});
-                                                }
-                                        });
-
-                                        if (loadingMsg?.key) {
-                                                try { await m.reply({ edit: loadingMsg.key, text: `✅ *Musik selesai!* Mengunduh cover & audio...` }); } catch (_) {}
-                                        }
-
-                                        // Download semua cover dan audio paralel
-                                        const downloads = await Promise.allSettled(
-                                                tracks.map(async (track, i) => {
-                                                        const [coverBuf, audioBuf] = await Promise.all([
-                                                                track.cover_image
-                                                                        ? api.downloadBuffer(track.cover_image).catch(() => null)
-                                                                        : null,
-                                                                api.downloadBuffer(track.music_file),
-                                                        ]);
-                                                        return { track, index: i + 1, coverBuf, audioBuf };
-                                                })
-                                        );
-
-                                        const results = downloads
-                                                .filter(r => r.status === 'fulfilled')
-                                                .map(r => r.value);
-
-                                        if (!results.length) throw new Error('Semua download gagal');
-
-                                        // Hapus loading message
-                                        if (loadingMsg?.key) {
-                                                try { await hisoka.sendMessage(m.from, { delete: loadingMsg.key }); } catch (_) {}
-                                        }
-
-                                        // Kirim album cover dulu (kalau ada cover)
-                                        const coverItems = results
-                                                .filter(r => r.coverBuf)
-                                                .map(r => ({
-                                                        image: r.coverBuf,
-                                                        caption: buildCaption(r.track, r.index, results.length, params),
-                                                }));
-
-                                        if (coverItems.length > 0) {
-                                                try {
-                                                        await hisoka.sendMessage(m.from, { albumMessage: coverItems }, { quoted: m });
-                                                } catch (_) {
-                                                        // fallback satu per satu
-                                                        for (const item of coverItems) {
-                                                                await hisoka.sendMessage(m.from, { image: item.image, caption: item.caption }, { quoted: m }).catch(() => {});
-                                                        }
-                                                }
-                                        }
-
-                                        // Kirim audio VN satu per satu
-                                        for (const r of results) {
-                                                try {
-                                                        await hisoka.sendMessage(m.from, {
-                                                                audio: r.audioBuf,
-                                                                mimetype: 'audio/ogg; codecs=opus',
-                                                                ptt: true,
-                                                                fileName: `${params.title || 'musik'}_v${r.index}.ogg`,
-                                                        }, { quoted: m });
-                                                } catch (audioErr) {
-                                                        // fallback: kirim sebagai file audio biasa
-                                                        await hisoka.sendMessage(m.from, {
-                                                                audio: r.audioBuf,
-                                                                mimetype: 'audio/mpeg',
-                                                                fileName: `${params.title || 'musik'}_v${r.index}.mp3`,
-                                                        }, { quoted: m }).catch(() => {});
-                                                }
-                                        }
-
-                                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
-                                        logCommand(m, hisoka, 'musikai');
+                                        await _generateMusik(hisoka, m, params);
                                 } catch (error) {
                                         console.error('\x1b[31m[MusicAI] Error:\x1b[39m', error.message);
                                         logError(error, 'command:musikai');
                                         await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
-                                        await tolak(hisoka, m,
-                                                `❌ *Gagal generate musik AI*\n\n` +
-                                                `_${error.message}_\n\n` +
-                                                `Coba lagi dengan: *.musikai random*`
+                                        await sendConfirmWithButtons(hisoka, m,
+                                                `❌ *Gagal generate musik AI*\n\n_${error.message}_`,
+                                                [{ text: '🔁 Coba Random Lagi', id: '__musikai_random__' }]
                                         );
                                 }
                                 break;
                         }
-
                         case 'geniusdetail':
                         case 'gdetail':
                         case 'detailgenius': {
