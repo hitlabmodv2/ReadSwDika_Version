@@ -1652,10 +1652,12 @@ async function sendCekautoGrupMsg(hisoka, m) {
         const totalMati  = CEKAUTO_GROUP_FITUR_LIST.length - totalAktif;
 
         const renderCategory = (list) =>
-                list.map(f => {
-                        const isOn = f.checkFn(cfg, jid);
-                        return `  ${isOn ? '🟢' : '🔴'}  *${f.nama}*`;
-                }).join('\n');
+                [...list]
+                        .sort((a, b) => (b.checkFn(cfg, jid) ? 1 : 0) - (a.checkFn(cfg, jid) ? 1 : 0))
+                        .map(f => {
+                                const isOn = f.checkFn(cfg, jid);
+                                return `  ${isOn ? '🟢' : '🔴'}  *${f.nama}*`;
+                        }).join('\n');
 
         let txt =
                 `╔══════════════════════════════╗\n` +
