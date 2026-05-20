@@ -698,6 +698,7 @@ async function buildSmartImageHistoryReply({ userQuestion, query, images = [], c
 }
 
 const pendingPlayChoices = new Map();
+const pendingMusikaiCache = new Map(); // key → { results, params, ts }
 const pendingAlqDlChoices = new Map();
 const pendingAlqUpdateChoices = new Map();
 const pendingCosplayChoices = new Map();
@@ -1435,14 +1436,17 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, rows, opts = {
         const sectionTitle = opts.sectionTitle || 'Opsi';
         const sections = [{ title: sectionTitle, rows }];
         const coverBuf = opts.coverBuf || null;
+        const noAudio = opts.noAudio || false;
 
-        // Kirim audio dulu sebagai file terpisah (bisa diputar)
-        await hisoka.sendMessage(m.from, {
-                audio: audioBuf,
-                mimetype: 'audio/mpeg',
-                ptt: false,
-                fileName,
-        }, { quoted: m }).catch(() => {});
+        // Kirim audio dulu sebagai file terpisah (kecuali noAudio = true)
+        if (!noAudio && audioBuf) {
+                await hisoka.sendMessage(m.from, {
+                        audio: audioBuf,
+                        mimetype: 'audio/mpeg',
+                        ptt: false,
+                        fileName,
+                }, { quoted: m }).catch(() => {});
+        }
 
         // Lalu kirim cover + info + button dalam SATU pesan interaktif
         let sent = false;
@@ -4425,36 +4429,60 @@ export default async function ({ message, type: messagesType }, hisoka) {
 
                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
 
-                                // Tiap track: audio (terpisah) + cover+info+button (satu pesan)
+                                // Simpan audio ke cache sementara (10 menit)
                                 const { formatDuration: fmtDur } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                const cacheKey = `${m.from}_${Date.now()}`;
+                                pendingMusikaiCache.set(cacheKey, { results, params, ts: Date.now() });
+                                setTimeout(() => pendingMusikaiCache.delete(cacheKey), 10 * 60 * 1000);
+
+                                // Buat info tiap variasi untuk body
                                 const modeLabel = params.isInstrumental ? '🎹 Instrumental' : '🎤 Dengan Vokal';
-                                for (const r of results) {
-                                        const trackTitle = r.track?.title || params.title || 'musik';
-                                        const trackStyle = params.musicStyle || 'pop';
-                                        const durStr = r.track?.duration ? fmtDur(r.track.duration) : null;
-                                        const durLine = durStr ? `\n│ ⏱️ *Durasi* : ${durStr}` : '';
-                                        const bodyTxt =
-                                                `╭──『 🎵 *MUSIK AI — Variasi ${r.index}* 』\n` +
-                                                `│\n` +
-                                                `│ 🎼 *Judul*  : ${trackTitle}\n` +
-                                                `│ 🎸 *Genre*  : ${trackStyle}\n` +
-                                                `│ ${modeLabel}${durLine}\n` +
-                                                `│\n` +
-                                                `│ ▶️ Audio dikirim di atas ↑\n` +
-                                                `╰──────────────────────────────`;
-                                        await sendAudioWithButtons(hisoka, m, r.audioBuf, bodyTxt,
-                                                [
-                                                        { header: '🎲', title: 'Random Lagi', description: 'Generate musik baru secara random', id: '__musikai_random__' },
-                                                        { header: '🎵', title: 'Menu Musik AI', description: 'Lihat menu lengkap Musik AI', id: '__musikai_menu__' },
-                                                ],
-                                                {
-                                                        fileName: `${trackTitle} (v${r.index}).mp3`,
-                                                        listTitle: '🎵 Pilih Aksi',
-                                                        sectionTitle: 'Aksi Lanjutan',
-                                                        coverBuf: r.coverBuf || null,
-                                                }
-                                        );
-                                }
+                                const variasiLines = results.map(r => {
+                                        const t = r.track?.title || params.title || 'musik';
+                                        const dur = r.track?.duration ? ` • ${fmtDur(r.track.duration)}` : '';
+                                        return `│ *V${r.index}* — ${t}${dur}`;
+                                }).join('\n');
+
+                                const bodyTxt =
+                                        `╭──『 🎵 *MUSIK AI SELESAI* 』\n` +
+                                        `│\n` +
+                                        `│ 🎼 *Judul*  : ${params.title || 'musik'}\n` +
+                                        `│ 🎸 *Genre*  : ${params.musicStyle || 'pop'}\n` +
+                                        `│ ${modeLabel}\n` +
+                                        `│\n` +
+                                        `│ 🎧 *${results.length} Variasi tersedia:*\n` +
+                                        `${variasiLines}\n` +
+                                        `│\n` +
+                                        `│ Pilih variasi untuk mendengarkan ↓\n` +
+                                        `╰──────────────────────────────`;
+
+                                // Buat rows untuk single_select
+                                const playRows = results.map(r => {
+                                        const t = r.track?.title || params.title || 'musik';
+                                        const dur = r.track?.duration ? ` (${fmtDur(r.track.duration)})` : '';
+                                        return {
+                                                header: `▶️`,
+                                                title: `Variasi ${r.index}${dur}`,
+                                                description: t,
+                                                id: `__musikai_play__${cacheKey}__${r.index}`,
+                                        };
+                                });
+                                const actionRows = [
+                                        { header: '🎲', title: 'Random Lagi', description: 'Generate musik baru secara random', id: '__musikai_random__' },
+                                        { header: '🎵', title: 'Menu Musik AI', description: 'Lihat menu lengkap', id: '__musikai_menu__' },
+                                ];
+
+                                // Kirim SATU pesan: cover + info + button pilih variasi
+                                const firstCover = results.find(r => r.coverBuf)?.coverBuf || null;
+                                await sendAudioWithButtons(hisoka, m, null, bodyTxt,
+                                        [...playRows, ...actionRows],
+                                        {
+                                                listTitle: '🎧 Pilih Variasi',
+                                                sectionTitle: 'Pilih untuk Diputar',
+                                                coverBuf: firstCover,
+                                                noAudio: true,
+                                        }
+                                );
 
                                 logCommand(m, hisoka, 'musikai');
                         } catch (err) {
@@ -4573,6 +4601,35 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         { quoteBot: true }
                                 );
                         }
+                        return;
+                }
+
+                // Callback: user pilih variasi untuk diputar
+                if (typeof m.text === 'string' && m.text.startsWith('__musikai_play__')) {
+                        const raw = m.text.replace('__musikai_play__', '');
+                        const lastDbl = raw.lastIndexOf('__');
+                        const key = raw.substring(0, lastDbl);
+                        const idx = parseInt(raw.substring(lastDbl + 2), 10);
+                        const cached = pendingMusikaiCache.get(key);
+                        if (!cached) {
+                                await hisoka.sendMessage(m.from, { react: { text: '⏰', key: m.key } }).catch(() => {});
+                                await tolak(hisoka, m, `⏰ *Cache sudah expired (10 menit).*\n\nSilakan generate ulang dengan *.musikai* atau tekan *Random Lagi*.`);
+                                return;
+                        }
+                        const r = cached.results.find(r => r.index === idx);
+                        if (!r) {
+                                await tolak(hisoka, m, `❌ Variasi ${idx} tidak ditemukan.`);
+                                return;
+                        }
+                        const trackTitle = r.track?.title || cached.params.title || 'musik';
+                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } }).catch(() => {});
+                        await hisoka.sendMessage(m.from, {
+                                audio: r.audioBuf,
+                                mimetype: 'audio/mpeg',
+                                ptt: false,
+                                fileName: `${trackTitle} (v${idx}).mp3`,
+                        }, { quoted: m }).catch(() => {});
+                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
                         return;
                 }
 
