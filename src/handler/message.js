@@ -4456,42 +4456,45 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         `│ Pilih variasi untuk mendengarkan ↓\n` +
                                         `╰──────────────────────────────`;
 
-                                // Buat rows untuk single_select — tampilan rapi & lengkap
+                                // Buat rows untuk single_select — tampilan dekoratif & rapi
                                 const genreLabel = params.musicStyle || 'pop';
-                                const playRows = results.map(r => {
+                                const numEmoji = ['1️⃣','2️⃣','3️⃣','4️⃣'];
+                                const playRows = results.map((r, i) => {
                                         const t = r.track?.title || params.title || 'musik';
                                         const dur = r.track?.duration ? fmtDur(r.track.duration) : null;
-                                        const modeBadge = params.isInstrumental ? 'Instrumental' : 'Vokal';
-                                        const descParts = [genreLabel, modeBadge, dur].filter(Boolean);
+                                        const modeBadge = params.isInstrumental ? '🎹 Instrumental' : '🎤 Vokal';
+                                        const durBadge = dur ? `⏱ ${dur}` : '';
+                                        const descLine = [modeBadge, durBadge].filter(Boolean).join('  ·  ');
                                         return {
-                                                header: `▶️  Variasi ${r.index}${dur ? '  •  ' + dur : ''}`,
-                                                title: t,
-                                                description: descParts.join('  •  '),
+                                                header: `${numEmoji[i] || `V${r.index}`}  ───  ▶  Play Variasi ${r.index}`,
+                                                title: `「 ${t} 」`,
+                                                description: `🎸 ${genreLabel}  ·  ${descLine}`,
                                                 id: `__musikai_play__${cacheKey}__${r.index}`,
                                         };
                                 });
                                 const actionRows = [
                                         {
-                                                header: '🎲  Generate Lagi',
-                                                title: 'Random Genre Baru',
-                                                description: 'Pilih genre & buat lagu baru secara random',
+                                                header: '─────────────────────────',
+                                                title: '🎲  Random Genre Baru',
+                                                description: '✦ Pilih genre → generate lagu unik baru',
                                                 id: '__musikai_random__',
                                         },
                                         {
-                                                header: '🎵  Menu Utama',
-                                                title: 'Menu Musik AI',
-                                                description: 'Lihat semua opsi & cara pakai',
+                                                header: '─────────────────────────',
+                                                title: '🎵  Menu Musik AI',
+                                                description: '✦ Lihat semua opsi & cara pakai manual',
                                                 id: '__musikai_menu__',
                                         },
                                 ];
 
+                                const titleLabel = params.title || 'Hasil Musik';
                                 // Kirim SATU pesan: cover + info + button pilih variasi
                                 const firstCover = results.find(r => r.coverBuf)?.coverBuf || null;
                                 await sendAudioWithButtons(hisoka, m, null, bodyTxt,
                                         [...playRows, ...actionRows],
                                         {
-                                                listTitle: '🎧 Dengarkan Sekarang',
-                                                sectionTitle: `🎼 ${params.title || 'Hasil Musik'} — Pilih Variasi`,
+                                                listTitle: `🎧 Dengarkan — ${titleLabel}`,
+                                                sectionTitle: `╔═ 🎵 PILIH VARIASI ══════╗`,
                                                 coverBuf: firstCover,
                                                 noAudio: true,
                                         }
