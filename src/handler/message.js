@@ -1423,6 +1423,56 @@ async function sendConfirmWithButtons(hisoka, m, txt, buttons, opts = {}) {
         if (!sent) await tolak(hisoka, m, txt);
 }
 
+async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, buttons, opts = {}) {
+        const quoteSource = (opts.quoteBot && m.quoted?.key?.id) ? m.quoted : m;
+        const contextInfo = quoteSource.key?.id ? {
+                stanzaId: quoteSource.key.id,
+                participant: quoteSource.sender || quoteSource.key?.participant || quoteSource.key?.remoteJid || '',
+                quotedMessage: quoteSource.raw || quoteSource.message || {},
+        } : {};
+        const fileName = opts.fileName || 'audio.mp3';
+        let sent = false;
+        try {
+                const audioMedia = await prepareWAMessageMedia(
+                        { document: audioBuf, mimetype: 'audio/mpeg', fileName },
+                        { upload: hisoka.waUploadToServer }
+                );
+                const msg = generateWAMessageFromContent(
+                        m.from,
+                        {
+                                viewOnceMessage: {
+                                        message: {
+                                                messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                interactiveMessage: {
+                                                        contextInfo,
+                                                        header: { hasMediaAttachment: true, ...audioMedia },
+                                                        body: { text: bodyTxt },
+                                                        nativeFlowMessage: {
+                                                                buttons: buttons.map(b => ({
+                                                                        name: 'quick_reply',
+                                                                        buttonParamsJson: JSON.stringify({ display_text: b.text, id: b.id })
+                                                                }))
+                                                        }
+                                                }
+                                        }
+                                }
+                        },
+                        {},
+                        {}
+                );
+                await hisoka.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
+                sent = true;
+        } catch (_) {}
+        if (!sent) {
+                await hisoka.sendMessage(m.from, {
+                        audio: audioBuf,
+                        mimetype: 'audio/mpeg',
+                        ptt: false,
+                        fileName,
+                }, { quoted: m }).catch(() => {});
+        }
+}
+
 function formatRelativeTime(ts) {
         if (!ts) return null;
         const diff = Date.now() - ts;
@@ -4380,47 +4430,31 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         }
                                 }
 
-                                // Audio Button (bukan VN, supaya tampil judul + durasi)
-                                for (const r of results) {
-                                        const trackTitle = r.track?.title || params.title || 'musik';
-                                        const trackStyle = r.track?.style || params.musicStyle || 'pop';
-                                        try {
-                                                await hisoka.sendMessage(m.from, {
-                                                        audio: r.audioBuf,
-                                                        mimetype: 'audio/mpeg',
-                                                        ptt: false,
-                                                        fileName: `${trackTitle} (v${r.index}).mp3`,
-                                                }, { quoted: m });
-                                        } catch (_) {
-                                                await hisoka.sendMessage(m.from, {
-                                                        audio: r.audioBuf,
-                                                        mimetype: 'audio/mp4',
-                                                        ptt: false,
-                                                        fileName: `${trackTitle} (v${r.index}).m4a`,
-                                                }, { quoted: m }).catch(() => {});
-                                        }
-                                }
-
                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
 
-                                // Button setelah hasil
+                                // Tiap audio dikirim sebagai 1 pesan: audio + info + tombol
                                 const modeLabel = params.isInstrumental ? '🎹 Instrumental' : '🎤 Dengan Vokal';
-                                const genreLabel = params.musicStyle || 'pop';
-                                await sendConfirmWithButtons(hisoka, m,
-                                        `╭──『 ✅ *MUSIK AI SELESAI* 』\n` +
-                                        `│\n` +
-                                        `│ 🎼 *Judul*  : ${params.title}\n` +
-                                        `│ 🎸 *Genre*  : ${genreLabel}\n` +
-                                        `│ ${modeLabel}\n` +
-                                        `│\n` +
-                                        `│ 2 variasi audio sudah dikirim ↑\n` +
-                                        `│ Mau generate lagi?\n` +
-                                        `╰──────────────────────────────`,
-                                        [
-                                                { text: '🎲 Random Lagi', id: '__musikai_random__' },
-                                                { text: '🎵 Menu Musik AI', id: '__musikai_menu__' },
-                                        ]
-                                );
+                                for (const r of results) {
+                                        const trackTitle = r.track?.title || params.title || 'musik';
+                                        const trackStyle = r.track?.style || params.musicStyle || params.prompt || 'pop';
+                                        const trackTags = r.track?.tags ? `\n│ 🏷️ *Tags*   : ${r.track.tags}` : '';
+                                        const bodyTxt =
+                                                `╭──『 🎵 *MUSIK AI — Variasi ${r.index}* 』\n` +
+                                                `│\n` +
+                                                `│ 🎼 *Judul*  : ${trackTitle}\n` +
+                                                `│ 🎸 *Genre*  : ${trackStyle}\n` +
+                                                `│ ${modeLabel}${trackTags}\n` +
+                                                `│\n` +
+                                                `│ ▶️ Tekan file di atas untuk memutar\n` +
+                                                `╰──────────────────────────────`;
+                                        await sendAudioWithButtons(hisoka, m, r.audioBuf, bodyTxt,
+                                                [
+                                                        { text: '🎲 Random Lagi', id: '__musikai_random__' },
+                                                        { text: '🎵 Menu Musik AI', id: '__musikai_menu__' },
+                                                ],
+                                                { fileName: `${trackTitle} (v${r.index}).mp3` }
+                                        );
+                                }
 
                                 logCommand(m, hisoka, 'musikai');
                         } catch (err) {
