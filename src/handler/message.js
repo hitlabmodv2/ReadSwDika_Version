@@ -1690,10 +1690,11 @@ async function sendCekautoGrupMsg(hisoka, m) {
 
         const hasPp = Object.keys(botPpMedia).length > 0;
 
-        const replyCtx = m.key?.id ? {
-                stanzaId: m.key.id,
-                participant: m.sender || m.key?.participant || '',
-                quotedMessage: m.message || {},
+        const quoteSource = m.quoted || m;
+        const replyCtx = quoteSource.key?.id ? {
+                stanzaId: quoteSource.key.id,
+                participant: quoteSource.sender || quoteSource.key?.participant || quoteSource.key?.remoteJid || '',
+                quotedMessage: quoteSource.message || {},
         } : {};
 
         const allOffRow = {
