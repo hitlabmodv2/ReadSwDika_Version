@@ -1434,7 +1434,8 @@ async function sendAudioWithButtons(hisoka, m, audioBuf, bodyTxt, rows, opts = {
         const fileName = opts.fileName || 'audio.mp3';
         const listTitle = opts.listTitle || '🎵 Pilih Aksi';
         const sectionTitle = opts.sectionTitle || 'Opsi';
-        const sections = [{ title: sectionTitle, rows }];
+        // Dukung multi-section (opts.sections) atau single section dari rows + sectionTitle
+        const sections = opts.sections || [{ title: sectionTitle, rows }];
         const coverBuf = opts.coverBuf || null;
         const noAudio = opts.noAudio || false;
 
@@ -4456,45 +4457,78 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         `│ Pilih variasi untuk mendengarkan ↓\n` +
                                         `╰──────────────────────────────`;
 
-                                // Buat rows untuk single_select — tampilan dekoratif & rapi
+                                // ── Multi-section single_select ─────────────────────────────────
+                                const { MODELS: MusicModels } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                 const genreLabel = params.musicStyle || 'pop';
                                 const numEmoji = ['1️⃣','2️⃣','3️⃣','4️⃣'];
-                                const playRows = results.map((r, i) => {
+                                const activeModelId = params.modelId || 6;
+                                const activeModel = MusicModels.find(md => md.id === activeModelId)?.version || 'v5.0';
+
+                                // Section 1 — Pilih variasi + format
+                                const variasiRows = [];
+                                results.forEach((r, i) => {
                                         const t = r.track?.title || params.title || 'musik';
                                         const dur = r.track?.duration ? fmtDur(r.track.duration) : null;
                                         const modeBadge = params.isInstrumental ? '🎹 Instrumental' : '🎤 Vokal';
-                                        const durBadge = dur ? `⏱ ${dur}` : '';
-                                        const descLine = [modeBadge, durBadge].filter(Boolean).join('  ·  ');
-                                        return {
-                                                header: `${numEmoji[i] || `V${r.index}`}  ───  ▶  Play Variasi ${r.index}`,
-                                                title: `「 ${t} 」`,
-                                                description: `🎸 ${genreLabel}  ·  ${descLine}`,
-                                                id: `__musikai_play__${cacheKey}__${r.index}`,
-                                        };
+                                        const durTxt = dur ? `  ·  ⏱ ${dur}` : '';
+                                        variasiRows.push(
+                                                {
+                                                        header: `${numEmoji[i] || `V${r.index}`}  ───  🎵 MP3  ·  Variasi ${r.index}`,
+                                                        title: `「 ${t} 」`,
+                                                        description: `🎸 ${genreLabel}  ·  ${modeBadge}${durTxt}`,
+                                                        id: `__musikai_play__${cacheKey}__${r.index}__mp3`,
+                                                },
+                                                {
+                                                        header: `${numEmoji[i] || `V${r.index}`}  ───  🎙️ VN  ·  Variasi ${r.index}`,
+                                                        title: `「 ${t} 」`,
+                                                        description: `🎸 ${genreLabel}  ·  ${modeBadge}${durTxt}`,
+                                                        id: `__musikai_play__${cacheKey}__${r.index}__vn`,
+                                                }
+                                        );
                                 });
+
+                                // Section 2 — Ganti Model AI
+                                const modelRows = MusicModels.map(md => ({
+                                        header: md.id === activeModelId
+                                                ? `✅  Aktif Sekarang  ───  ${md.version}`
+                                                : `🤖  Ganti ke  ───  ${md.version}`,
+                                        title: md.id === activeModelId
+                                                ? `🔵 Model ${md.version}  (sedang dipakai)`
+                                                : `⚪ Model ${md.version}`,
+                                        description: md.id === activeModelId
+                                                ? `✦ Generate ulang dengan model yang sama`
+                                                : `✦ Generate ulang lagu ini pakai model ${md.version}`,
+                                        id: `__musikai_model__${cacheKey}__${md.id}`,
+                                }));
+
+                                // Section 3 — Aksi lainnya
                                 const actionRows = [
                                         {
-                                                header: '─────────────────────────',
-                                                title: '🎲  Random Genre Baru',
-                                                description: '✦ Pilih genre → generate lagu unik baru',
+                                                header: '🎲  ───────────────────────',
+                                                title: 'Random Genre Baru',
+                                                description: '✦ Pilih genre → generate lagu baru',
                                                 id: '__musikai_random__',
                                         },
                                         {
-                                                header: '─────────────────────────',
-                                                title: '🎵  Menu Musik AI',
+                                                header: '🎵  ───────────────────────',
+                                                title: 'Menu Musik AI',
                                                 description: '✦ Lihat semua opsi & cara pakai manual',
                                                 id: '__musikai_menu__',
                                         },
                                 ];
 
+                                const multiSections = [
+                                        { title: `╔═ 🎧 PILIH VARIASI & FORMAT ══╗`, rows: variasiRows },
+                                        { title: `╔═ 🤖 MODEL AI  ·  Aktif: ${activeModel} ══╗`, rows: modelRows },
+                                        { title: `╔═ ✦ AKSI LAINNYA ══════════╗`, rows: actionRows },
+                                ];
+
                                 const titleLabel = params.title || 'Hasil Musik';
-                                // Kirim SATU pesan: cover + info + button pilih variasi
                                 const firstCover = results.find(r => r.coverBuf)?.coverBuf || null;
-                                await sendAudioWithButtons(hisoka, m, null, bodyTxt,
-                                        [...playRows, ...actionRows],
+                                await sendAudioWithButtons(hisoka, m, null, bodyTxt, [],
                                         {
                                                 listTitle: `🎧 Dengarkan — ${titleLabel}`,
-                                                sectionTitle: `╔═ 🎵 PILIH VARIASI ══════╗`,
+                                                sections: multiSections,
                                                 coverBuf: firstCover,
                                                 noAudio: true,
                                         }
@@ -4620,32 +4654,66 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         return;
                 }
 
-                // Callback: user pilih variasi untuk diputar
+                // Callback: user pilih variasi untuk diputar (format mp3 / vn)
                 if (typeof m.text === 'string' && m.text.startsWith('__musikai_play__')) {
                         const raw = m.text.replace('__musikai_play__', '');
                         const lastDbl = raw.lastIndexOf('__');
-                        const key = raw.substring(0, lastDbl);
-                        const idx = parseInt(raw.substring(lastDbl + 2), 10);
+                        const lastSeg = raw.substring(lastDbl + 2);
+                        let key, idx, fmt;
+                        if (lastSeg === 'mp3' || lastSeg === 'vn') {
+                                // Format baru: cacheKey__idx__fmt
+                                fmt = lastSeg;
+                                const rest = raw.substring(0, lastDbl);
+                                const secLast = rest.lastIndexOf('__');
+                                key = rest.substring(0, secLast);
+                                idx = parseInt(rest.substring(secLast + 2), 10);
+                        } else {
+                                // Format lama (backward compat): cacheKey__idx
+                                fmt = 'mp3';
+                                key = raw.substring(0, lastDbl);
+                                idx = parseInt(lastSeg, 10);
+                        }
                         const cached = pendingMusikaiCache.get(key);
                         if (!cached) {
                                 await hisoka.sendMessage(m.from, { react: { text: '⏰', key: m.key } }).catch(() => {});
                                 await tolak(hisoka, m, `⏰ *Cache sudah expired (10 menit).*\n\nSilakan generate ulang dengan *.musikai* atau tekan *Random Lagi*.`);
                                 return;
                         }
-                        const r = cached.results.find(r => r.index === idx);
+                        const r = cached.results.find(rv => rv.index === idx);
                         if (!r) {
                                 await tolak(hisoka, m, `❌ Variasi ${idx} tidak ditemukan.`);
                                 return;
                         }
                         const trackTitle = r.track?.title || cached.params.title || 'musik';
-                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } }).catch(() => {});
+                        const isVN = fmt === 'vn';
+                        await hisoka.sendMessage(m.from, { react: { text: isVN ? '🎙️' : '🎵', key: m.key } }).catch(() => {});
                         await hisoka.sendMessage(m.from, {
                                 audio: r.audioBuf,
-                                mimetype: 'audio/mpeg',
-                                ptt: false,
-                                fileName: `${trackTitle} (v${idx}).mp3`,
+                                mimetype: isVN ? 'audio/ogg; codecs=opus' : 'audio/mpeg',
+                                ptt: isVN,
+                                fileName: isVN ? undefined : `${trackTitle} (v${idx}).mp3`,
                         }, { quoted: m }).catch(() => {});
                         await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
+                        return;
+                }
+
+                // Callback: user pilih model AI → generate ulang dengan model berbeda
+                if (typeof m.text === 'string' && m.text.startsWith('__musikai_model__')) {
+                        const raw = m.text.replace('__musikai_model__', '');
+                        const lastDbl = raw.lastIndexOf('__');
+                        const key = raw.substring(0, lastDbl);
+                        const modelId = parseInt(raw.substring(lastDbl + 2), 10);
+                        const cached = pendingMusikaiCache.get(key);
+                        if (!cached) {
+                                await hisoka.sendMessage(m.from, { react: { text: '⏰', key: m.key } }).catch(() => {});
+                                await tolak(hisoka, m, `⏰ *Cache expired.* Silakan generate ulang dengan *.musikai*`);
+                                return;
+                        }
+                        const { MODELS: MusicModels } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                        const modelVer = MusicModels.find(md => md.id === modelId)?.version || `id:${modelId}`;
+                        await hisoka.sendMessage(m.from, { react: { text: '🤖', key: m.key } }).catch(() => {});
+                        const newParams = { ...cached.params, modelId };
+                        await _generateMusik(hisoka, m, newParams, `🤖 Generate ulang dengan model *${modelVer}*...`);
                         return;
                 }
 
