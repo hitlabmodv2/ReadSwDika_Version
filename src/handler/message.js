@@ -4399,6 +4399,26 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 }
 
                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } }).catch(() => {});
+
+                                // Button setelah hasil
+                                const modeLabel = params.isInstrumental ? '🎹 Instrumental' : '🎤 Dengan Vokal';
+                                const genreLabel = params.musicStyle || 'pop';
+                                await sendConfirmWithButtons(hisoka, m,
+                                        `╭──『 ✅ *MUSIK AI SELESAI* 』\n` +
+                                        `│\n` +
+                                        `│ 🎼 *Judul*  : ${params.title}\n` +
+                                        `│ 🎸 *Genre*  : ${genreLabel}\n` +
+                                        `│ ${modeLabel}\n` +
+                                        `│\n` +
+                                        `│ 2 variasi audio VN sudah dikirim ↑\n` +
+                                        `│ Mau generate lagi?\n` +
+                                        `╰──────────────────────────────`,
+                                        [
+                                                { text: '🎲 Random Lagi', id: '__musikai_random__' },
+                                                { text: '🎵 Menu Musik AI', id: '__musikai_menu__' },
+                                        ]
+                                );
+
                                 logCommand(m, hisoka, 'musikai');
                         } catch (err) {
                                 if (loadingMsg?.key) {
