@@ -30,3 +30,15 @@ id = "fYOAtV5XY413QgtQbsvQE"
 uri = "file://Hujan_Malam_v2.mp3"
 type = "audio"
 title = "Hujan Malam | 21 Mei 2026 | Sad Pop, Melancholic Rain Vibes — Versi 2 (4:24)"
+
+[[outputs]]
+id = "DGJ0lDqrKqMvtjuN_DNbX"
+uri = "file://Kienai_Namida_v1.mp3"
+type = "audio"
+title = "消えない涙 (Kienai Namida) | 21 Mei 2026 | Japanese Sad Ballad, Anime OST — Versi 1 (5:10)"
+
+[[outputs]]
+id = "VxaYsl80o09Mw1M1DLYnn"
+uri = "file://Kienai_Namida_v2.mp3"
+type = "audio"
+title = "消えない涙 (Kienai Namida) | 21 Mei 2026 | Japanese Sad Ballad, Anime OST — Versi 2 (5:49)"
