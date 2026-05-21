@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 21/05/2026, 10.12.29  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 21/05/2026, 10.13.07  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 28
-  Total Kejadian Error       : 383
+  Total Kejadian Error       : 385
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [28 jenis, 383 kejadian total]
+  DAFTAR ERROR LENGKAP  [28 jenis, 385 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -30,9 +30,9 @@
 │
 │  DETAIL
 │  Sumber      : callback:musikai_random
-│  Frekuensi   : 2x (duplikat digabung)
+│  Frekuensi   : 3x (duplikat digabung)
 │  Pertama     : 21/05/2026, 10.11.40
-│  Terakhir    : 21/05/2026, 10.12.29
+│  Terakhir    : 21/05/2026, 10.13.07
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  TypeError: api.aiRandomPreset is not a function
@@ -47,9 +47,9 @@
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 2x (duplikat digabung)
+│  Frekuensi   : 3x (duplikat digabung)
 │  Pertama     : 21/05/2026, 10.11.40
-│  Terakhir    : 21/05/2026, 10.12.29
+│  Terakhir    : 21/05/2026, 10.13.07
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[MusicAI Random] Error:[39m api.aiRandomPreset is not a function
@@ -534,6 +534,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 28 jenis, 383 kejadian
-  Terakhir diperbarui: 21/05/2026, 10.12.29
+  End of Report  —  Total: 28 jenis, 385 kejadian
+  Terakhir diperbarui: 21/05/2026, 10.13.07
 ════════════════════════════════════════════════════════════════════════

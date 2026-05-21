@@ -5,18 +5,18 @@
       "source": "callback:musikai_random",
       "message": "api.aiRandomPreset is not a function",
       "stack": "TypeError: api.aiRandomPreset is not a function\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779358282334:4649:58)",
-      "count": 2,
+      "count": 3,
       "firstSeen": "2026-05-21T10:11:40.287Z",
-      "lastSeen": "2026-05-21T10:12:29.675Z"
+      "lastSeen": "2026-05-21T10:13:07.983Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[MusicAI Random] Error:\u001b[Nm api.aiRandomPreset is not a function",
       "source": "console.error",
       "message": "\u001b[31m[MusicAI Random] Error:\u001b[39m api.aiRandomPreset is not a function",
       "stack": "Error: \u001b[31m[MusicAI Random] Error:\u001b[39m api.aiRandomPreset is not a function\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779358282334:4657:41)",
-      "count": 2,
+      "count": 3,
       "firstSeen": "2026-05-21T10:11:40.282Z",
-      "lastSeen": "2026-05-21T10:12:29.670Z"
+      "lastSeen": "2026-05-21T10:13:07.976Z"
     },
     {
       "fingerprint": "AlqanimeNotif::[AlqanimeNotif] ❌ Gagal fetch homepage: timeout of Nms exceeded",

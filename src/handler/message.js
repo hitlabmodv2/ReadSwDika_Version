@@ -4639,7 +4639,9 @@ export default async function ({ message, type: messagesType }, hisoka) {
                 // 🤖 Random: AI pilih semua (genre + judul + lirik) langsung generate
                 if (typeof m.text === 'string' && m.text === '__musikai_random__') {
                         try {
-                                const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                const _chatmusicPath = path.resolve('./src/scrape/chatmusic.cjs');
+                                delete _require.cache[_chatmusicPath];
+                                const { ChatMusicAPI } = _require(_chatmusicPath);
                                 const api = new ChatMusicAPI();
 
                                 const aiLoadMsg = await hisoka.sendMessage(m.from, {
@@ -4676,7 +4678,9 @@ export default async function ({ message, type: messagesType }, hisoka) {
                 if (typeof m.text === 'string' && m.text.startsWith('__musikai_genre__')) {
                         const selectedGenre = m.text.replace('__musikai_genre__', '').trim();
                         try {
-                                const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                const _chatmusicPath2 = path.resolve('./src/scrape/chatmusic.cjs');
+                                delete _require.cache[_chatmusicPath2];
+                                const { ChatMusicAPI } = _require(_chatmusicPath2);
                                 const api = new ChatMusicAPI();
 
                                 // Kasih tahu user AI sedang buat lirik
