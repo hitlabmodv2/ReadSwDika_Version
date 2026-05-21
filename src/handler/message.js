@@ -13349,7 +13349,7 @@ infoText += `╰═════════════════════�
                                 const oldCmdLabel = oldCmdInfo?.remaining || 'Tidak ada data';
                                 const oldCmdExpire = oldCmdInfo?.expiresAtText || '-';
                                 if (upDurationInfo.ms === 'permanent') {
-                                        removeJadibotExpiry(upNum)
+                                        setPermanentJadibot(upNum, 'active')
                                         await sendUpBtn(
                                                 `╔══════════════════════╗\n` +
                                                 `║   ⏫  *U P B O T*   ║\n` +
