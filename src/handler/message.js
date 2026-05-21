@@ -699,6 +699,7 @@ async function buildSmartImageHistoryReply({ userQuestion, query, images = [], c
 
 const pendingPlayChoices = new Map();
 const pendingMusikaiCache = new Map(); // key → { results, params, ts }
+const pendingMusikaiParamCache = new Map(); // key → { params, ts } — pre-generate gender select
 const pendingAlqDlChoices = new Map();
 const pendingAlqUpdateChoices = new Map();
 const pendingCosplayChoices = new Map();
@@ -4632,6 +4633,50 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         return;
                 }
 
+                // Helper: tampilkan pilihan gender vokal (cewe / cowo)
+                const _showGenderSelect = async (params) => {
+                        const paramKey = `pgp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+                        pendingMusikaiParamCache.set(paramKey, { params, ts: Date.now() });
+                        setTimeout(() => pendingMusikaiParamCache.delete(paramKey), 10 * 60 * 1000);
+
+                        const genreLabel = params.musicStyle || 'pop';
+                        await sendAudioWithButtons(hisoka, m, null,
+                                `╭──『 🎤 *PILIH GENDER VOKAL* 』\n` +
+                                `│\n` +
+                                `│ 🎸 Genre  : *${genreLabel}*\n` +
+                                `│\n` +
+                                `│ Pilih suara penyanyi yang kamu inginkan:\n` +
+                                `│ 👩 *Cewek* — suara vokal perempuan\n` +
+                                `│ 👨 *Cowok* — suara vokal laki-laki\n` +
+                                `│\n` +
+                                `╰──────────────────────────────`,
+                                [],
+                                {
+                                        listTitle: '🎤 Pilih Gender Vokal',
+                                        sections: [
+                                                {
+                                                        title: '🎤 GENDER VOKAL',
+                                                        rows: [
+                                                                {
+                                                                        header: '👩  ───────────────────────',
+                                                                        title: 'Vokal Cewek',
+                                                                        description: '✦ Penyanyi perempuan — suara lembut & merdu',
+                                                                        id: `__musikai_gender__${paramKey}__cewe`,
+                                                                },
+                                                                {
+                                                                        header: '👨  ───────────────────────',
+                                                                        title: 'Vokal Cowok',
+                                                                        description: '✦ Penyanyi laki-laki — suara kuat & dalam',
+                                                                        id: `__musikai_gender__${paramKey}__cowo`,
+                                                                },
+                                                        ],
+                                                },
+                                        ],
+                                        noAudio: true,
+                                }
+                        );
+                };
+
                 // Callback setelah user pilih genre dari single_select
                 if (typeof m.text === 'string' && m.text.startsWith('__musikai_genre__')) {
                         const selectedGenre = m.text.replace('__musikai_genre__', '').trim();
@@ -4640,7 +4685,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 const preset = new ChatMusicAPI().getRandomPreset();
                                 preset.musicStyle = selectedGenre;
                                 preset.prompt = `${selectedGenre} indonesia, ${preset.prompt?.split(',').slice(1).join(',') || ''}`.trim();
-                                await _generateMusik(hisoka, m, preset);
+                                await _showGenderSelect(preset);
                         } catch (err) {
                                 console.error('\x1b[31m[MusicAI] Error:\x1b[39m', err.message);
                                 logError(err, 'callback:musikai_genre');
@@ -4651,6 +4696,26 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         { quoteBot: true }
                                 );
                         }
+                        return;
+                }
+
+                // Callback: user pilih gender vokal (cewe / cowo) → generate musik
+                if (typeof m.text === 'string' && m.text.startsWith('__musikai_gender__')) {
+                        const raw = m.text.replace('__musikai_gender__', '');
+                        const lastDbl = raw.lastIndexOf('__');
+                        const genderSeg = raw.substring(lastDbl + 2);
+                        const paramKey = raw.substring(0, lastDbl);
+                        const cached = pendingMusikaiParamCache.get(paramKey);
+                        if (!cached) {
+                                await hisoka.sendMessage(m.from, { react: { text: '⏰', key: m.key } }).catch(() => {});
+                                await tolak(hisoka, m, `⏰ *Sesi expired.* Silakan generate ulang dengan *.musikai* atau tekan *Random Lagi*.`);
+                                return;
+                        }
+                        const isCewe = genderSeg === 'cewe';
+                        const params = { ...cached.params, genderType: isCewe ? 1 : 0 };
+                        const genderLabel = isCewe ? '👩 Vokal Cewek' : '👨 Vokal Cowok';
+                        await hisoka.sendMessage(m.from, { react: { text: isCewe ? '👩' : '👨', key: m.key } }).catch(() => {});
+                        await _generateMusik(hisoka, m, params, `🎤 Generate dengan *${genderLabel}*...`);
                         return;
                 }
 
@@ -7658,14 +7723,19 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         }
                                         const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                         const parts = input.split('|').map(s => s.trim());
+                                        const hasLyrics = !!parts[1];
                                         const params = {
                                                 title:          parts[0] || 'My Song',
                                                 lyrics:         parts[1] || '',
                                                 musicStyle:     parts[2] || 'pop',
-                                                isInstrumental: !parts[1] ? 1 : 0,
+                                                isInstrumental: !hasLyrics ? 1 : 0,
                                                 prompt:         `${parts[2] || 'pop'} indonesia`,
                                         };
-                                        await _generateMusik(hisoka, m, params);
+                                        if (hasLyrics) {
+                                                await _showGenderSelect(params);
+                                        } else {
+                                                await _generateMusik(hisoka, m, params);
+                                        }
                                 } catch (error) {
                                         console.error('\x1b[31m[MusicAI] Error:\x1b[39m', error.message);
                                         logError(error, 'command:musikai');
