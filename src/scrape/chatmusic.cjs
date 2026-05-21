@@ -149,6 +149,25 @@ const _TITLE_NOUN = [
         'Detak', 'Nadi', 'Senyum', 'Air Mata', 'Pelukan',
 ];
 
+// ─── Genre pool Jepang ────────────────────────────────────────────────────
+const _GENRES_JP = [
+        'city pop', 'j-pop', 'j-folk', 'j-rock', 'anime ost', 'japanese indie',
+        'shibuya-kei', 'j-ballad', 'j-soul', 'visual kei', 'kawaii pop',
+        'j-ambient', 'japanese lo-fi', 'j-jazz', 'harajuku pop', 'ost rpg',
+        'japanese city pop acoustic', 'vocaloid inspired', 'j-indie pop', 'j-alternative',
+];
+
+// ─── Genre pool English/Western ───────────────────────────────────────────
+const _GENRES_EN = [
+        'indie pop', 'dream pop', 'alt pop', 'synth pop', 'chamber pop',
+        'indie folk', 'folk pop', 'singer songwriter', 'americana',
+        'rnb', 'neo soul', 'soul', 'alternative rnb',
+        'indie rock', 'alternative rock', 'soft rock', 'shoegaze',
+        'lofi hiphop', 'chillwave', 'bedroom pop', 'dreamy pop',
+        'ballad', 'piano ballad', 'orchestral pop', 'cinematic pop',
+        'jazz pop', 'smooth jazz', 'acoustic pop',
+];
+
 const MODELS = [
         { id: 6, version: 'v5.0' },
         { id: 5, version: 'v4.5-plus' },
@@ -476,15 +495,21 @@ LIRIK:
         /**
          * Random preset tapi judul + lirik di-generate otomatis oleh Gemmy AI
          * sesuai genre/mood/vibe yang diacak — lebih akurat & lirik panjang
-         * @returns {Promise<{title,prompt,musicStyle,genreLabel,lyrics,isInstrumental}>}
+         * @param {string|null} forceMode - 'vocal'|'instrumental'|null
+         * @param {'id'|'jp'|'en'} lang   - bahasa/gaya musik: id=Indonesia, jp=Jepang, en=English
+         * @returns {Promise<{title,prompt,musicStyle,genreLabel,lyrics,isInstrumental,_lang}>}
          */
-        async aiRandomPreset(forceMode = null) {
-                // 1. Acak genre/mood/vibe/instrument seperti biasa
+        async aiRandomPreset(forceMode = null, lang = 'id') {
                 const r = () => Math.random();
 
+                // Pilih pool genre sesuai bahasa
+                const genrePool = lang === 'jp' ? _GENRES_JP
+                        : lang === 'en' ? _GENRES_EN
+                        : _GENRES;
+
                 const genre = r() < 0.25
-                        ? `${this._pick(_GENRES)} ${this._pick(_GENRES)}`
-                        : this._pick(_GENRES);
+                        ? `${this._pick(genrePool)} ${this._pick(genrePool)}`
+                        : this._pick(genrePool);
                 const mood = r() < 0.3
                         ? this._pickN(_MOODS, 2).join(' and ')
                         : this._pick(_MOODS);
@@ -494,54 +519,35 @@ LIRIK:
                 const instr = r() < 0.4
                         ? this._pickN(_INSTRUMENTS, 2).join(' and ')
                         : this._pick(_INSTRUMENTS);
-                // forceMode: 'vocal' → 0, 'instrumental' → 1, null → acak
+
                 const isInstrumental = forceMode === 'instrumental' ? 1
                         : forceMode === 'vocal' ? 0
                         : (r() < 0.35 ? 1 : 0);
 
-                const prompt = `${genre} indonesia, ${mood}, ${vibe}, ${instr}`;
+                const langSuffix = lang === 'jp' ? 'japanese style'
+                        : lang === 'en' ? 'english style'
+                        : 'indonesia';
+                const prompt = `${genre} ${langSuffix}, ${mood}, ${vibe}, ${instr}`;
 
-                // 2. Minta Gemmy AI generate judul + lirik yang sesuai
-                const aiPrompt = isInstrumental
-                        ? `Kamu adalah penulis lagu profesional Indonesia.
-Berdasarkan info berikut:
-- Genre: ${genre}
-- Mood: ${mood}
-- Suasana: ${vibe}
-- Instrumen: ${instr}
-- Mode: Instrumental (tanpa lirik vokal)
-
-Buatkan judul lagu instrumental yang puitis (1-4 kata, bahasa Indonesia).
-Format jawaban persis:
-JUDUL: [judul lagu]
-GENRE_LABEL: [genre singkat max 30 karakter]`
-                        : `Kamu adalah penulis lagu profesional Indonesia.
-Berdasarkan info berikut:
-- Genre: ${genre}
-- Mood: ${mood}
-- Suasana/vibe: ${vibe}
-- Instrumen: ${instr}
-
-Buatkan:
-1. JUDUL lagu (1-4 kata, bahasa Indonesia, puitis, sesuai mood)
-2. LIRIK lengkap dengan struktur: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]
-
-Ketentuan lirik:
-- Minimal 55 baris total
-- Setiap section minimal 4 baris
-- Bahasa Indonesia yang puitis dan natural
-- Sesuai genre, mood, dan vibe
-- JANGAN masukkan kata kasar, SARA, narkoba, atau konten sensitif
-
-Format jawaban HARUS persis seperti ini:
-JUDUL: [judul lagu]
-GENRE_LABEL: [genre singkat max 30 karakter]
-LIRIK:
-[seluruh lirik di sini]`;
+                // Prompt AI sesuai bahasa
+                let aiPrompt;
+                if (lang === 'jp') {
+                        aiPrompt = isInstrumental
+                                ? `あなたはプロの日本人作曲家です。\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\nMode: Instrumental\n\nInstrumental曲のタイトルを考えてください（1〜4語、日本語またはローマ字）。\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 25 karakter]`
+                                : `あなたはプロの日本人作曲家・作詞家です。\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\n\n以下を作ってください:\n1. 曲のタイトル（1〜4語、日本語/英語/ローマ字OK）\n2. 日本語の歌詞（最低30行）\n   構成: [Verse 1], [Chorus], [Verse 2], [Chorus], [Bridge], [Outro]\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 25 karakter]\nLIRIK:\n[seluruh lirik]`;
+                } else if (lang === 'en') {
+                        aiPrompt = isInstrumental
+                                ? `You are a professional songwriter.\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\nMode: Instrumental\n\nCreate an evocative instrumental title (1-4 words, English).\n\nFormat EXACTLY:\nJUDUL: [title]\nGENRE_LABEL: [genre max 25 chars]`
+                                : `You are a professional English songwriter.\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\n\nCreate:\n1. Song TITLE (1-4 words, English, poetic)\n2. Full LYRICS in English (minimum 30 lines)\n   Structure: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]\n\nRules:\n- Natural English, poetic, fits the genre & mood\n- No explicit content\n\nFormat EXACTLY:\nJUDUL: [title]\nGENRE_LABEL: [genre max 25 chars]\nLIRIK:\n[full lyrics here]`;
+                } else {
+                        // Indonesia (default)
+                        aiPrompt = isInstrumental
+                                ? `Kamu adalah penulis lagu profesional Indonesia.\nGenre: ${genre}\nMood: ${mood}\nSuasana: ${vibe}\nInstrumen: ${instr}\nMode: Instrumental\n\nBuatkan judul instrumental yang puitis (1-4 kata, bahasa Indonesia).\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 30 karakter]`
+                                : `Kamu adalah penulis lagu profesional Indonesia.\nGenre: ${genre}\nMood: ${mood}\nSuasana/vibe: ${vibe}\nInstrumen: ${instr}\n\nBuatkan:\n1. JUDUL lagu (1-4 kata, bahasa Indonesia, puitis)\n2. LIRIK lengkap:\n   Struktur: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]\n   - Minimal 55 baris total\n   - Bahasa Indonesia puitis & natural\n   - JANGAN kata kasar, SARA, narkoba\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 30 karakter]\nLIRIK:\n[seluruh lirik]`;
+                }
 
                 const aiResult = await _gemmyInstance.ask(aiPrompt);
 
-                // 3. Parse hasil AI
                 const judulMatch = aiResult.match(/JUDUL:\s*(.+)/);
                 const genreMatch = aiResult.match(/GENRE_LABEL:\s*(.+)/);
                 const lirikMatch = aiResult.match(/LIRIK:\n([\s\S]+)/);
@@ -558,6 +564,7 @@ LIRIK:
                         lyrics,
                         isInstrumental,
                         _aiGenerated: true,
+                        _lang: lang,
                 };
         }
 }
@@ -588,4 +595,4 @@ function buildCaption(track, index, total, params) {
         return lines.join('\n');
 }
 
-module.exports = { ChatMusicAPI, MODELS, formatDuration, buildCaption };
+module.exports = { ChatMusicAPI, MODELS, formatDuration, buildCaption, _GENRES, _GENRES_JP, _GENRES_EN };

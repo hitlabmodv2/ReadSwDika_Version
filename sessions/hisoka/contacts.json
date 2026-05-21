@@ -8490,7 +8490,8 @@
     "id": "601161698656@s.whatsapp.net",
     "name": "Sham",
     "lid": "198113990053953@lid",
-    "jid": "601161698656@s.whatsapp.net"
+    "jid": "601161698656@s.whatsapp.net",
+    "notify": "Hau"
   },
   "60192102456@s.whatsapp.net": {
     "isContact": true,
@@ -10006,7 +10007,9 @@
     "id": "6285188150676@s.whatsapp.net",
     "name": "γυς ρου [ NOKOS 2 ]",
     "lid": "3638558740716@lid",
-    "jid": "6285188150676@s.whatsapp.net"
+    "jid": "6285188150676@s.whatsapp.net",
+    "notify": "pou",
+    "verifiedName": "pou"
   },
   "6281213919851@s.whatsapp.net": {
     "isContact": true,
@@ -14380,8 +14383,7 @@
     "name": "Hamdan",
     "lid": "239328697536578@lid",
     "jid": "6283134844523@s.whatsapp.net",
-    "notify": "Anda Siapa?",
-    "verifiedName": "Anda Siapa?"
+    "notify": "Anda Siapa?"
   },
   "6281289973507@s.whatsapp.net": {
     "isContact": true,
@@ -32765,5 +32767,20 @@
     "id": "69011719090285@lid",
     "lid": "69011719090285@lid",
     "imgUrl": "changed"
+  },
+  "179946412589259@lid": {
+    "id": "179946412589259@lid",
+    "lid": "179946412589259@lid",
+    "imgUrl": "removed"
+  },
+  "239620537204752@lid": {
+    "id": "239620537204752@lid",
+    "lid": "239620537204752@lid",
+    "imgUrl": "changed"
+  },
+  "178701056626923@lid": {
+    "id": "178701056626923@lid",
+    "lid": "178701056626923@lid",
+    "notify": "Stephanie Floriska"
   }
 }

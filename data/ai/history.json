@@ -150,9 +150,25 @@
               "text": "[⏰ 21 Mei, 22.22]\nM-mou! Makanya, awas ya kalau *Wily* belum benerin suaraku! Nih, dengerin baik-baik! Honolulu itu shipgirl yang manis dan imut, tahu! Bukan om-om nge-bass! 😤\n\nA-awas ya kalau kamu masih ngetawain aku... nih!"
             }
           ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.58 | ↩️ BALAS PESAN BOT SEBELUMNYA: \".wilyai on\" | 👤 Wily]\n✅ Fitur *.wily* / *.ai* / *.tanya* berhasil *diaktifkan!*\nUser sudah bisa pakai AI lagi."
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.58]\nYatta~! Akhirnya fitur AI-nya udah aktif lagi! Hebat banget sih, *Wily*~ \n\nSekarang semuanya udah bisa pakai perintah `*.wily`, `*.ai`, atau `*.tanya` buat manggil aku lagi dengan lancar. Makasih banyak ya udah diaktifin kembali! \n\nTapi... u-uhm... beneran suaraku udah aman kan? Nggak bakal ketuker suara cowok lagi kayak tadi kan, Shikikan? Awas ya kalau nanti aku dicoba terus suaranya masih nge-bass! Ehehe~"
+            }
+          ]
         }
       ],
-      "lastActivity": 1779376958917
+      "lastActivity": 1779379131998
     },
     "6289688206739@s.whatsapp.net_120363192554714254@g.us": {
       "messages": [
@@ -174,6 +190,27 @@
         }
       ],
       "lastActivity": 1779377197437
+    },
+    "6289681008411@s.whatsapp.net_120363383540766761@g.us": {
+      "messages": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.58 | ↩️ BALAS PESAN BOT SEBELUMNYA: \".wilyai on\" | 👤 Hen V1]\n✅ Fitur *.wily* / *.ai* / *.tanya* berhasil *diaktifkan!*\nUser sudah bisa pakai AI lagi."
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.58]\nYatta~! Fitur *AI* (`.wilyai`) udah berhasil diaktifkan kembali nih, Shikikan! \n\nSekarang *Honolulu* siap sedia buat bantuin Hen V1 kapan aja. Mau nanya soal coding, analisis gambar, atau cuma mau ngobrol santai nemenin malamnya Shikikan? Tinggal chat aja ya, aku bakal bantu sampai tuntas! *Ganbatte*~ ✨"
+            }
+          ]
+        }
+      ],
+      "lastActivity": 1779379133144
     }
   },
   "sticker_pattern": {
@@ -203,9 +240,9 @@
       "last_sent": 1779377141
     },
     "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
-      "total_sent": 3,
+      "total_sent": 5,
       "moods": {},
-      "last_sent": 1779376451
+      "last_sent": 1779379131
     },
     "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp": {
       "total_sent": 4,
@@ -377,6 +414,22 @@
         "context": "M-mou! Makanya, awas ya kalau *Wily* belum benerin suaraku! Nih, dengerin baik-baik! Honolulu itu shipgirl yang manis dan imut, tahu! Bukan om-om nge-bass! 😤 A-awas ya kalau kamu masih ngetawain aku",
         "was_fallback": 1,
         "sent_at": 1779376953
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
+        "mood": "",
+        "context": "Yatta~! Akhirnya fitur AI-nya udah aktif lagi! Hebat banget sih, *Wily*~ Sekarang semuanya udah bisa pakai perintah `*.wily`, `*.ai`, atau `*.tanya` buat manggil aku lagi dengan lancar. Makasih bany",
+        "was_fallback": 1,
+        "sent_at": 1779379130
+      }
+    ],
+    "6289681008411@s.whatsapp.net_120363383540766761@g.us": [
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
+        "mood": "",
+        "context": "Yatta~! Fitur *AI* (`.wilyai`) udah berhasil diaktifkan kembali nih, Shikikan! [REPLY-STIKER: senang] Sekarang *Honolulu* siap sedia buat bantuin Hen V1 kapan aja. Mau nanya soal coding, analisis gam",
+        "was_fallback": 1,
+        "sent_at": 1779379131
       }
     ]
   },
