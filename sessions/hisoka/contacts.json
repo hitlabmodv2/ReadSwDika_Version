@@ -10002,9 +10002,7 @@
     "id": "6285188150676@s.whatsapp.net",
     "name": "γυς ρου [ NOKOS 2 ]",
     "lid": "3638558740716@lid",
-    "jid": "6285188150676@s.whatsapp.net",
-    "notify": "pou",
-    "verifiedName": "pou"
+    "jid": "6285188150676@s.whatsapp.net"
   },
   "6281213919851@s.whatsapp.net": {
     "isContact": true,
@@ -11134,8 +11132,7 @@
     "id": "6287860371877@s.whatsapp.net",
     "name": "! Fuma Kotaro",
     "lid": "200356231442552@lid",
-    "jid": "6287860371877@s.whatsapp.net",
-    "notify": "Fuma Kotaro"
+    "jid": "6287860371877@s.whatsapp.net"
   },
   "62882018264557@s.whatsapp.net": {
     "isContact": true,
@@ -20130,8 +20127,7 @@
     "id": "6281373851970@s.whatsapp.net",
     "name": "! Rossa",
     "lid": "240651866259622@lid",
-    "jid": "6281373851970@s.whatsapp.net",
-    "notify": "𝔖𝔈𝔄 𝔇𝔈 ℭ𝔄𝔏𝔏𝔜"
+    "jid": "6281373851970@s.whatsapp.net"
   },
   "6289529561872@s.whatsapp.net": {
     "isContact": true,
@@ -23135,7 +23131,8 @@
     "id": "6281368074650@s.whatsapp.net",
     "name": "▶︎ •၊၊||၊|။||||။‌‌‌‌‌၊|•↻",
     "lid": "63462487134320@lid",
-    "jid": "6281368074650@s.whatsapp.net"
+    "jid": "6281368074650@s.whatsapp.net",
+    "notify": "⚔️"
   },
   "6285777382210@s.whatsapp.net": {
     "isContact": true,
@@ -24764,7 +24761,8 @@
     "id": "6285860196593@s.whatsapp.net",
     "name": "! Gibran V2 ( JADIBOT REACTIONSW )",
     "lid": "7465408147570@lid",
-    "jid": "6285860196593@s.whatsapp.net"
+    "jid": "6285860196593@s.whatsapp.net",
+    "notify": "Asmodarty"
   },
   "6287883798644@s.whatsapp.net": {
     "isContact": true,
@@ -27143,8 +27141,7 @@
     "id": "18258961472@s.whatsapp.net",
     "name": "Hamdan [ NOKOS ]",
     "lid": "54392187277397@lid",
-    "jid": "18258961472@s.whatsapp.net",
-    "notify": "Anda Siapa??"
+    "jid": "18258961472@s.whatsapp.net"
   },
   "6281291049902@s.whatsapp.net": {
     "isContact": true,
@@ -31950,8 +31947,7 @@
   "240651866259622@lid": {
     "id": "240651866259622@lid",
     "lid": "240651866259622@lid",
-    "imgUrl": "changed",
-    "notify": "𝔖𝔈𝔄 𝔇𝔈 ℭ𝔄𝔏𝔏𝔜"
+    "imgUrl": "changed"
   },
   "225816596197423@lid": {
     "id": "225816596197423@lid",
@@ -32264,8 +32260,7 @@
   "239328697536578@lid": {
     "id": "239328697536578@lid",
     "lid": "239328697536578@lid",
-    "notify": "Anda Siapa?",
-    "verifiedName": "Anda Siapa?"
+    "notify": "Anda Siapa?"
   },
   "105647689494768@lid": {
     "id": "105647689494768@lid",
@@ -32377,29 +32372,24 @@
     "lid": "184438998700210@lid",
     "imgUrl": "changed"
   },
-  "126551429521430@lid": {
-    "id": "126551429521430@lid",
-    "lid": "126551429521430@lid",
-    "imgUrl": "changed"
-  },
-  "70180000559197@lid": {
-    "id": "70180000559197@lid",
-    "lid": "70180000559197@lid",
-    "imgUrl": "changed"
+  "269960320389148@lid": {
+    "id": "269960320389148@lid",
+    "lid": "269960320389148@lid",
+    "imgUrl": "removed"
   },
   "174577888038922@lid": {
     "id": "174577888038922@lid",
     "lid": "174577888038922@lid",
     "notify": "γυς ρου"
   },
-  "208667026669737@lid": {
-    "id": "208667026669737@lid",
-    "lid": "208667026669737@lid",
-    "imgUrl": "removed"
+  "37336654069836@lid": {
+    "id": "37336654069836@lid",
+    "lid": "37336654069836@lid",
+    "imgUrl": "changed"
   },
-  "4088876019895@lid": {
-    "id": "4088876019895@lid",
-    "lid": "4088876019895@lid",
+  "207373906001945@lid": {
+    "id": "207373906001945@lid",
+    "lid": "207373906001945@lid",
     "imgUrl": "changed"
   }
 }
