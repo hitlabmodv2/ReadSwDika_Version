@@ -4504,10 +4504,16 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 // Section 3 — Aksi lainnya
                                 const actionRows = [
                                         {
-                                                header: '🎲  ───────────────────────',
-                                                title: 'Random Genre Baru',
-                                                description: '✦ Pilih genre → generate lagu baru',
+                                                header: '🤖  ───────────────────────',
+                                                title: '✨ AI Random Sekarang',
+                                                description: '✦ AI pilih genre + judul + lirik otomatis, langsung generate!',
                                                 id: '__musikai_random__',
+                                        },
+                                        {
+                                                header: '🎨  ───────────────────────',
+                                                title: 'Pilih Genre Manual',
+                                                description: '✦ Pilih sendiri genre-nya, AI buatkan judul & liriknya',
+                                                id: '__musikai_pickgenre__',
                                         },
                                         {
                                                 header: '🎵  ───────────────────────',
@@ -4599,12 +4605,15 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                 } : {},
                                                                 body: {
                                                                         text:
-                                                                                `╭──『 🎲 *MUSIK AI — PILIH GENRE* 』\n` +
+                                                                                `╭──『 🎨 *MUSIK AI — PILIH GENRE MANUAL* 』\n` +
                                                                                 `│\n` +
-                                                                                `│ Pilih genre musik yang kamu mau.\n` +
-                                                                                `│ Judul & lirik akan di-random otomatis.\n` +
+                                                                                `│ Pilih genre musiknya.\n` +
+                                                                                `│ 🤖 AI akan otomatis buatkan:\n` +
+                                                                                `│  • Judul yang sesuai genre\n` +
+                                                                                `│  • Lirik lengkap (50+ baris)\n` +
                                                                                 `│\n` +
-                                                                                `│ ✨ Tekan tombol di bawah untuk memilih!\n` +
+                                                                                `│ 💡 Mau AI pilih semua? Tekan\n` +
+                                                                                `│    *✨ AI Random Sekarang* di menu!\n` +
                                                                                 `╰──────────────────────────────`,
                                                                 },
                                                                 nativeFlowMessage: {
@@ -4627,7 +4636,38 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         await hisoka.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
                 };
 
+                // 🤖 Random: AI pilih semua (genre + judul + lirik) langsung generate
                 if (typeof m.text === 'string' && m.text === '__musikai_random__') {
+                        try {
+                                const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                const api = new ChatMusicAPI();
+
+                                const aiLoadMsg = await hisoka.sendMessage(m.from, {
+                                        text: `🤖 *AI sedang meracik lagu...*\n│ 🎲 Acak genre, mood & vibe\n│ ✍️ Tulis judul & lirik\n│ ⏳ Tunggu ~5-10 detik...`
+                                }, { quoted: m }).catch(() => null);
+
+                                const preset = await api.aiRandomPreset();
+
+                                if (aiLoadMsg?.key) {
+                                        try { await hisoka.sendMessage(m.from, { delete: aiLoadMsg.key }); } catch (_) {}
+                                }
+
+                                await _generateMusik(hisoka, m, preset);
+                        } catch (err) {
+                                console.error('\x1b[31m[MusicAI Random] Error:\x1b[39m', err.message);
+                                logError(err, 'callback:musikai_random');
+                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
+                                await sendConfirmWithButtons(hisoka, m,
+                                        `❌ *Gagal generate musik*\n\n_${err.message}_`,
+                                        [{ text: '🔁 Coba Lagi', id: '__musikai_random__' }],
+                                        { quoteBot: true }
+                                );
+                        }
+                        return;
+                }
+
+                // 🎨 Pilih Genre Manual: tampilkan daftar genre dulu
+                if (typeof m.text === 'string' && m.text === '__musikai_pickgenre__') {
                         await _showGenreSelect();
                         return;
                 }
