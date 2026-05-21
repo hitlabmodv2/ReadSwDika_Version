@@ -522,3 +522,107 @@ export async function extractReplyStickersFromText(text, opts = {}) {
     return { cleanText, stickers };
 }
 
+// ════════════════════════════════════════════════════════════
+//  VOICE NOTE / TTS
+//  Marker: [VN: text], [VN-JP: text], [VN-EN: text], [VN-XX: text]
+//  Pakai msedge-tts, generate MP3 buffer
+//  Return: { cleanText, voiceNotes: [{ buffer, text, lang }] }
+// ════════════════════════════════════════════════════════════
+
+const VN_VOICES = {
+    'id': 'id-ID-ArdiNeural',
+    'jp': 'ja-JP-NanamiNeural',
+    'en': 'en-US-JennyNeural',
+    'xx': 'id-ID-ArdiNeural',
+};
+
+async function textToSpeechBuffer(text, voice) {
+    const { MsEdgeTTS, OUTPUT_FORMAT } = await import('msedge-tts');
+    const tts = new MsEdgeTTS();
+    await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+    const readable = tts.toStream(text);
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        readable.on('data', chunk => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+        readable.on('end', () => resolve(Buffer.concat(chunks)));
+        readable.on('close', () => resolve(Buffer.concat(chunks)));
+        readable.on('error', reject);
+    });
+}
+
+export async function extractVoiceNotesFromText(text) {
+    const voiceNotes = [];
+    let cleanText = String(text || '');
+
+    const regex = /\[VN(?:-(JP|EN|XX|ID))?:\s*([^\]]{1,500})\]/gi;
+    const matches = [...cleanText.matchAll(regex)];
+
+    for (const match of matches) {
+        const fullMarker = match[0];
+        const langTag    = (match[1] || 'id').toLowerCase();
+        const vnText     = match[2].trim();
+        cleanText = cleanText.split(fullMarker).join('');
+
+        if (!vnText) continue;
+
+        const voice = VN_VOICES[langTag] || VN_VOICES['id'];
+
+        try {
+            const buffer = await textToSpeechBuffer(vnText, voice);
+            if (!buffer || buffer.length < 100) throw new Error('Buffer TTS kosong');
+            voiceNotes.push({ buffer, text: vnText, lang: langTag });
+            console.log(`[AITool/VN] ✅ "${vnText.substring(0, 60)}" → ${(buffer.length / 1024).toFixed(1)} KB (${voice})`);
+        } catch (e) {
+            console.error(`[AITool/VN] ❌ Gagal generate TTS "${vnText.substring(0, 60)}": ${e.message}`);
+        }
+    }
+
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n').trim();
+    return { cleanText, voiceNotes };
+}
+
+// ════════════════════════════════════════════════════════════
+//  STICKER FROM IMAGE SEARCH
+//  Marker: [STIKER: keyword]
+//  Cari gambar → convert ke WebP sticker WA
+//  Return: { cleanText, stickers: [{ buffer }] }
+// ════════════════════════════════════════════════════════════
+
+export async function extractStickersFromText(text) {
+    const stickers = [];
+    let cleanText = String(text || '');
+
+    const regex = /\[(?:STIKER|STICKER):\s*([^\]]{1,200})\]/gi;
+    const matches = [...cleanText.matchAll(regex)];
+
+    for (const match of matches) {
+        const fullMarker = match[0];
+        const query      = match[1].trim();
+        cleanText = cleanText.split(fullMarker).join('');
+
+        if (!query) continue;
+
+        try {
+            const { searchAndGetImage } = await import('./imageSearch.js');
+            const found = await searchAndGetImage(query);
+            if (!found || !found.buffer) throw new Error('Gambar tidak ditemukan');
+
+            const { Sticker, StickerTypes } = await import('wa-sticker-formatter');
+            const sticker = new Sticker(found.buffer, {
+                pack:   'Wily Bot',
+                author: 'AI Sticker',
+                type:   StickerTypes.FULL,
+                quality: 50,
+            });
+            const buffer = await sticker.toBuffer();
+            if (!buffer || buffer.length < 100) throw new Error('Buffer sticker kosong');
+            stickers.push({ buffer, query });
+            console.log(`[AITool/STIKER] ✅ "${query}" → ${(buffer.length / 1024).toFixed(1)} KB sticker`);
+        } catch (e) {
+            console.error(`[AITool/STIKER] ❌ Gagal buat stiker "${query}": ${e.message}`);
+        }
+    }
+
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n').trim();
+    return { cleanText, stickers };
+}

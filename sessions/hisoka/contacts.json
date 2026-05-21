@@ -11891,8 +11891,7 @@
     "name": "! Fadli",
     "lid": "176549462564879@lid",
     "jid": "6285956660403@s.whatsapp.net",
-    "notify": "Cosmouz",
-    "verifiedName": "Cosmouz"
+    "notify": "Cosmouz"
   },
   "6283166143208@s.whatsapp.net": {
     "isContact": true,
@@ -32705,6 +32704,26 @@
   "130507245367537@lid": {
     "id": "130507245367537@lid",
     "lid": "130507245367537@lid",
+    "imgUrl": "changed"
+  },
+  "12215205789715@lid": {
+    "id": "12215205789715@lid",
+    "lid": "12215205789715@lid",
+    "imgUrl": "changed"
+  },
+  "191323814494236@lid": {
+    "id": "191323814494236@lid",
+    "lid": "191323814494236@lid",
+    "imgUrl": "changed"
+  },
+  "142605799149699@lid": {
+    "id": "142605799149699@lid",
+    "lid": "142605799149699@lid",
+    "imgUrl": "changed"
+  },
+  "203375475994735@lid": {
+    "id": "203375475994735@lid",
+    "lid": "203375475994735@lid",
     "imgUrl": "changed"
   }
 }
