@@ -102,9 +102,41 @@
               "text": "[⏰ 21 Mei, 22.16]\nMou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣\n\n    *Wily* dengerin baik-baik ya, ini khusus buat kamu yang udah beresin sistem aku malam ini. Awas ya kalau diledek!"
             }
           ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.18 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Mou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣 *Wily* dengerin baik-baik ya, ini khusus buat kamu yang ...\" | 👤 Wily]\nMana engga ada error"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.18]\nKyaaa~! B-bukan *error* kok, Shikikan! Honolulu cuma... tadi beneran kelewat malu pas mau kirim, jadi jariku agak gemeteran... 🫣\n\nNih, suaraku! Dengerin baik-baik ya, khusus buat *Wily* yang udah beresin sistem aku malam ini. Awas aja kalau diledekin!"
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.19 | ↩️ BALAS PESAN BOT SEBELUMNYA | 👤 Wily]\nMalah suara cowo bjir :v mox lu"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.19]\nH-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way!\n\nMou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah suaraku diset jadi cowok sih?! Malu-maluin banget tahu! Masa shipgirl secantik Honolulu suaranya malah nge-bass kayak bapak-bapak?! 😤\n\nB-benerin nggak! Pokoknya Honolulu nggak mau tahu, balikin suaraku yang imut~! Buruan difix ya, Komandan~!"
+            }
+          ]
         }
       ],
-      "lastActivity": 1779376610705
+      "lastActivity": 1779376753536
     }
   },
   "sticker_pattern": {
@@ -129,9 +161,9 @@
       "last_sent": 1779102763
     },
     "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp": {
-      "total_sent": 2,
+      "total_sent": 3,
       "moods": {},
-      "last_sent": 1779376608
+      "last_sent": 1779376669
     },
     "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
       "total_sent": 3,
@@ -139,9 +171,9 @@
       "last_sent": 1779376451
     },
     "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp": {
-      "total_sent": 3,
+      "total_sent": 4,
       "moods": {},
-      "last_sent": 1779376216
+      "last_sent": 1779376752
     },
     "https://cdn.ornzora.eu.cc/6853b306-6f51-47f4-8b7a-694a6c4ed618-HONOLULU.webp": {
       "total_sent": 1,
@@ -273,6 +305,20 @@
         "context": "Mou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣 *Wily* dengerin baik-baik ya, ini khusus buat kamu yang udah beresin sistem aku malam ini. Awas ya kalau dilede",
         "was_fallback": 1,
         "sent_at": 1779376608
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
+        "mood": "",
+        "context": "Kyaaa~! B-bukan *error* kok, Shikikan! Honolulu cuma... tadi beneran kelewat malu pas mau kirim, jadi jariku agak gemeteran... 🫣 Nih, suaraku! Dengerin baik-baik ya, khusus buat *Wily* yang udah ber",
+        "was_fallback": 1,
+        "sent_at": 1779376669
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp",
+        "mood": "",
+        "context": "H-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way! [REPLY-STIKER: kesel] Mou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah suaraku diset jadi cowok sih?! Malu-ma",
+        "was_fallback": 1,
+        "sent_at": 1779376752
       }
     ]
   },

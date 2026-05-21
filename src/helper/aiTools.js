@@ -623,10 +623,10 @@ export async function extractReplyStickersFromText(text, opts = {}) {
 // ════════════════════════════════════════════════════════════
 
 const VN_VOICES = {
-    'id': 'id-ID-ArdiNeural',
+    'id': 'id-ID-GadisNeural',
     'jp': 'ja-JP-NanamiNeural',
-    'en': 'en-US-JennyNeural',
-    'xx': 'id-ID-ArdiNeural',
+    'en': 'en-US-AriaNeural',
+    'xx': 'id-ID-GadisNeural',
 };
 
 async function textToSpeechBuffer(text, voice) {
