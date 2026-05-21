@@ -2,7 +2,16 @@
 
 const axios = require('axios');
 
-// ─── Gemmy AI (Gemini 2.5 Flash, free via Firebase) ──────────────────────
+// ─── Gemmy AI (Gemini — 3 model dengan auto-fallback) ────────────────────
+// Urutan: 1) gemini-2.5-flash-preview (latest)
+//         2) gemini-2.5-flash          (stable)
+//         3) gemini-1.5-pro            (pro fallback)
+const _GEMMY_MODELS = [
+        'gemini-2.5-flash-preview-05-20',
+        'gemini-2.5-flash',
+        'gemini-1.5-pro',
+];
+
 class GemmyAI {
         constructor() {
                 this.authToken = null;
@@ -34,26 +43,50 @@ class GemmyAI {
                 return this.authToken;
         }
 
-        async chat(prompt) {
-                const token = await this.getAuthToken();
+        async _callModel(model, prompt, token) {
                 const { data } = await axios.post(
                         'https://asia-northeast3-gemmy-ai-bdc03.cloudfunctions.net/gemini',
                         {
-                                model: 'gemini-2.5-flash',
+                                model,
                                 stream: false,
                                 request: {
                                         contents: [{ role: 'user', parts: [{ text: prompt }] }],
                                         generationConfig: { maxOutputTokens: 4096 }
                                 }
                         },
-                        { headers: {
-                                'accept-encoding': 'gzip',
-                                'authorization': `Bearer ${token}`,
-                                'content-type': 'application/json; charset=UTF-8',
-                                'user-agent': 'okhttp/5.3.2',
-                        }}
+                        {
+                                headers: {
+                                        'accept-encoding': 'gzip',
+                                        'authorization': `Bearer ${token}`,
+                                        'content-type': 'application/json; charset=UTF-8',
+                                        'user-agent': 'okhttp/5.3.2',
+                                },
+                                timeout: 30000,
+                        }
                 );
-                return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                if (!text) throw new Error(`Model ${model} tidak menghasilkan teks`);
+                return text;
+        }
+
+        async chat(prompt) {
+                let token = await this.getAuthToken();
+                let lastErr;
+                for (const model of _GEMMY_MODELS) {
+                        try {
+                                const result = await this._callModel(model, prompt, token);
+                                return result;
+                        } catch (err) {
+                                console.warn(`[GemmyAI] Model ${model} gagal: ${err.message} — mencoba model berikutnya...`);
+                                lastErr = err;
+                                // Jika token expired/invalid, refresh dulu sebelum lanjut
+                                if (err.response?.status === 401 || err.response?.status === 403) {
+                                        this.authToken = null;
+                                        try { token = await this.getAuthToken(); } catch (_) {}
+                                }
+                        }
+                }
+                throw new Error(`Semua model Gemmy AI gagal. Error terakhir: ${lastErr?.message || 'unknown'}`);
         }
 }
 
