@@ -454,26 +454,26 @@ const MOOD_TO_STIKER = {
     flustered:  { list: 'honolulu', idx: 9  },  // malu berat / flustered / deg-degan
     kaget:      { list: 'honolulu', idx: 6  },  // kaget positif
     senang:     { list: 'honolulu', idx: 3  },  // ceria ringan
-    senyum:     { list: 'honolulu', idx: 3  },  // senyum hangat / wholesome
+    senyum:     { list: 'honolulu', idx: 1  },  // senyum kecil / lembut
     manja:      { list: 'honolulu', idx: 9  },  // manja / minta perhatian
-    hype:       { list: 'honolulu', idx: 33 },  // hype / excited / gaskeun
+    hype:       { list: 'honolulu', idx: 32 },  // semangat / genki mode
     ngambek:    { list: 'honolulu', idx: 11 },  // ngambek / mou~ / cemberut imut
-    galak:      { list: 'honolulu', idx: 34 },  // galak full mode
+    galak:      { list: 'honolulu', idx: 33 },  // galak full mode
     kesel:      { list: 'honolulu', idx: 11 },  // kesel lucu
     ngamuk:     { list: 'honolulu', idx: 10 },  // ngamuk lucu
     bingung:    { list: 'honolulu', idx: 18 },  // bingung total / IDK
-    sedih:      { list: 'honolulu', idx: 35 },  // menahan nangis
+    sedih:      { list: 'honolulu', idx: 34 },  // menahan nangis
     mikir:      { list: 'honolulu', idx: 5  },  // mikir / skeptis
     smug:       { list: 'honolulu', idx: 4  },  // smug / puas
     jahil:      { list: 'honolulu', idx: 8  },  // jahil / ngejek
     capek:      { list: 'honolulu', idx: 15 },  // capek total / drop
-    protective: { list: 'honolulu', idx: 37 },  // protective mode
-    semangat:   { list: 'honolulu', idx: 33 },  // semangat / genki mode
-    setuju:     { list: 'honolulu', idx: 43 },  // ngangguk setuju pelan
+    protective: { list: 'honolulu', idx: 36 },  // protective mode
+    semangat:   { list: 'honolulu', idx: 32 },  // semangat / genki mode
+    setuju:     { list: 'honolulu', idx: 41 },  // ngangguk setuju pelan
     absurd:     { list: 'honolulu', idx: 13 },  // zamn / chaotic
     jutek:      { list: 'honolulu', idx: 12 },  // datar / males respon
-    tenang:     { list: 'honolulu', idx: 36 },  // stoic / tenang total
-    facepalm:   { list: 'honolulu', idx: 42 },  // facepalm / hopeless
+    tenang:     { list: 'honolulu', idx: 35 },  // stoic / tenang total
+    facepalm:   { list: 'honolulu', idx: 40 },  // facepalm / hopeless
 };
 
 /**
