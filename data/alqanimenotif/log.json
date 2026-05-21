@@ -1,6 +1,54 @@
 {
   "terkirim": [
     {
+      "id": "koala-enikki::33",
+      "judul": "Koala Enikki",
+      "epNum": 33,
+      "waktuKirim": "2026-05-21T14:20:49.825Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1987/152302l.jpg",
+      "url": "https://alqanime.net/koala-enikki/"
+    },
+    {
+      "id": "himekishi-wa-barbaroi-no-yome::7",
+      "judul": "Himekishi wa Barbaroi no Yome",
+      "epNum": 7,
+      "waktuKirim": "2026-05-21T14:20:46.731Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1229/155022l.jpg",
+      "url": "https://alqanime.net/himekishi-wa-barbaroi-no-yome/"
+    },
+    {
+      "id": "iya-na-kao-sare-nagara-opantsu-misete-moraitai-returns::4",
+      "judul": "Iya na Kao sare nagara Opantsu Misete Moraitai Returns",
+      "epNum": 4,
+      "waktuKirim": "2026-05-21T14:20:43.579Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1667/154598l.jpg",
+      "url": "https://alqanime.net/iya-na-kao-sare-nagara-opantsu-misete-moraitai-returns/"
+    },
+    {
+      "id": "ganso-bandori-chan::33",
+      "judul": "Ganso! Bandori-chan",
+      "epNum": 33,
+      "waktuKirim": "2026-05-21T14:20:40.253Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1754/143490l.jpg",
+      "url": "https://alqanime.net/ganso-bandori-chan/"
+    },
+    {
       "id": "kyonyuu-ga-futari-inai-to-bokki-shinai-otto-no-tame-ni-tomodachi-wo-tsuretekita-tsuma::1",
       "judul": "Kyonyuu ga Futari Inai to Bokki Shinai Otto no Tame ni Tomodachi wo Tsuretekita Tsuma Batch (– 02)",
       "epNum": 1,
