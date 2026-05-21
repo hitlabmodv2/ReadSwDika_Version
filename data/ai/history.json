@@ -33,9 +33,25 @@
               "text": "[⏰ 21 Mei, 22.10]\nMou~ kok malah disuruh tidur sih? Padahal aku masih pengen nemenin *Shikikan* tahu! \n\nAtau... kamu sebenernya cuma gengsi karena aslinya khawatir ya sama aku? Ehehe~ Kalau *Hen V2* emang udah ngantuk, ya udah tidur duluan gih. Tapi mimpiin aku ya!"
             }
           ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.10 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Mou~ kok malah disuruh tidur sih? Padahal aku masih pengen nemenin *Shikikan* tahu! Atau... kamu sebenernya cuma gengsi karena aslinya khawa...\" | 👤 Hen V2]\nengga"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.10]\nEh, nggak? Jadi ceritanya *Hen V2* masih pengen melek nih?~ \n\nAtau... emang sengaja biar bisa ngobrol lebih lama sama aku? Ngaku nggak! Ehehe~ Tapi jujur, aku seneng-seneng aja kok nemenin kamu terus."
+            }
+          ]
         }
       ],
-      "lastActivity": 1779376203561
+      "lastActivity": 1779376241785
     }
   },
   "sticker_pattern": {
