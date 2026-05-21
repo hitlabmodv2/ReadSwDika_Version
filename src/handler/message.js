@@ -4402,27 +4402,69 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 await api.login();
                                 await _editLoading(`🎵 Login OK. Mengirim ke AI...\n│ Judul : *${params.title}*\n│ ⏳ Tunggu sebentar...`);
 
-                                const taskIds = await api.generate(params);
-                                await _editLoading(`🎵 AI sedang menciptakan musik...\n│ Task  : ${taskIds.length} variasi\n│ ⏳ Polling...`);
+                                const isVokal = !params.isInstrumental;
 
-                                const tracks = await api.waitAll(taskIds, (done, total) => {
-                                        _editLoading(`🎵 Progress: *${done}/${total}* variasi selesai...\n│ ⏳ Menunggu sisanya...`).catch(() => {});
-                                });
+                                let allResults = [];
 
-                                await _editLoading(`✅ Selesai! Mengunduh cover & audio...`);
+                                if (isVokal) {
+                                        // Generate cewe (genderType:1) dan cowo (genderType:0) secara paralel
+                                        await _editLoading(`🎵 Generate *cewe & cowo* secara paralel...\n│ Judul : *${params.title}*\n│ ⏳ Proses ~30-60 detik...`);
+                                        const [taskIdsCowo, taskIdsCewe] = await Promise.all([
+                                                api.generate({ ...params, genderType: 0 }),
+                                                api.generate({ ...params, genderType: 1 }),
+                                        ]);
+                                        const allIds = [...taskIdsCowo, ...taskIdsCewe];
+                                        await _editLoading(`🎵 AI sedang menciptakan musik...\n│ Task  : ${allIds.length} variasi (cewe+cowo)\n│ ⏳ Polling...`);
+                                        const allTracks = await api.waitAll(allIds, (done, total) => {
+                                                _editLoading(`🎵 Progress: *${done}/${total}* variasi selesai...\n│ ⏳ Menunggu sisanya...`).catch(() => {});
+                                        });
+                                        await _editLoading(`✅ Selesai! Mengunduh audio...`);
+                                        const tracksCowo = allTracks.slice(0, taskIdsCowo.length);
+                                        const tracksCewe = allTracks.slice(taskIdsCowo.length);
+                                        const dlCowo = await Promise.allSettled(
+                                                tracksCowo.map(async (track, i) => {
+                                                        const [coverBuf, audioBuf] = await Promise.all([
+                                                                track.cover_image ? api.downloadBuffer(track.cover_image).catch(() => null) : null,
+                                                                api.downloadBuffer(track.music_file),
+                                                        ]);
+                                                        return { track, index: i + 1, gender: 'cowo', coverBuf, audioBuf };
+                                                })
+                                        );
+                                        const dlCewe = await Promise.allSettled(
+                                                tracksCewe.map(async (track, i) => {
+                                                        const [coverBuf, audioBuf] = await Promise.all([
+                                                                track.cover_image ? api.downloadBuffer(track.cover_image).catch(() => null) : null,
+                                                                api.downloadBuffer(track.music_file),
+                                                        ]);
+                                                        // index offset: cewe mulai dari cowo.length+1
+                                                        return { track, index: taskIdsCowo.length + i + 1, gender: 'cewe', coverBuf, audioBuf };
+                                                })
+                                        );
+                                        allResults = [
+                                                ...dlCowo.filter(r => r.status === 'fulfilled').map(r => r.value),
+                                                ...dlCewe.filter(r => r.status === 'fulfilled').map(r => r.value),
+                                        ];
+                                } else {
+                                        // Instrumental — generate sekali saja
+                                        const taskIds = await api.generate(params);
+                                        await _editLoading(`🎵 AI sedang menciptakan musik...\n│ Task  : ${taskIds.length} variasi\n│ ⏳ Polling...`);
+                                        const tracks = await api.waitAll(taskIds, (done, total) => {
+                                                _editLoading(`🎵 Progress: *${done}/${total}* variasi selesai...\n│ ⏳ Menunggu sisanya...`).catch(() => {});
+                                        });
+                                        await _editLoading(`✅ Selesai! Mengunduh cover & audio...`);
+                                        const downloads = await Promise.allSettled(
+                                                tracks.map(async (track, i) => {
+                                                        const [coverBuf, audioBuf] = await Promise.all([
+                                                                track.cover_image ? api.downloadBuffer(track.cover_image).catch(() => null) : null,
+                                                                api.downloadBuffer(track.music_file),
+                                                        ]);
+                                                        return { track, index: i + 1, gender: null, coverBuf, audioBuf };
+                                                })
+                                        );
+                                        allResults = downloads.filter(r => r.status === 'fulfilled').map(r => r.value);
+                                }
 
-                                const downloads = await Promise.allSettled(
-                                        tracks.map(async (track, i) => {
-                                                const [coverBuf, audioBuf] = await Promise.all([
-                                                        track.cover_image ? api.downloadBuffer(track.cover_image).catch(() => null) : null,
-                                                        api.downloadBuffer(track.music_file),
-                                                ]);
-                                                return { track, index: i + 1, coverBuf, audioBuf };
-                                        })
-                                );
-
-                                const results = downloads.filter(r => r.status === 'fulfilled').map(r => r.value);
-                                if (!results.length) throw new Error('Semua download gagal');
+                                if (!allResults.length) throw new Error('Semua download gagal');
 
                                 // Hapus loading
                                 if (loadingMsg?.key) {
@@ -4434,16 +4476,56 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 // Simpan audio ke cache sementara (10 menit)
                                 const { formatDuration: fmtDur } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                 const cacheKey = `${m.from}_${Date.now()}`;
-                                pendingMusikaiCache.set(cacheKey, { results, params, ts: Date.now() });
+                                pendingMusikaiCache.set(cacheKey, { results: allResults, params, ts: Date.now() });
                                 setTimeout(() => pendingMusikaiCache.delete(cacheKey), 10 * 60 * 1000);
 
                                 // Buat info tiap variasi untuk body
-                                const modeLabel = params.isInstrumental ? '🎹 Instrumental' : '🎤 Dengan Vokal';
-                                const variasiLines = results.map(r => {
-                                        const t = r.track?.title || params.title || 'musik';
-                                        const dur = r.track?.duration ? ` • ${fmtDur(r.track.duration)}` : '';
-                                        return `│ *V${r.index}* — ${t}${dur}`;
-                                }).join('\n');
+                                const modeLabel = isVokal ? '🎤 Dengan Vokal (Cewe & Cowo)' : '🎹 Instrumental';
+                                const { MODELS: MusicModels } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+                                const genreLabel = params.musicStyle || 'pop';
+                                const numEmoji = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣'];
+                                const activeModelId = params.modelId || 6;
+                                const activeModel = MusicModels.find(md => md.id === activeModelId)?.version || 'v5.0';
+
+                                const buildVariasiRows = (results, genderLabel, genderEmoji) =>
+                                        results.flatMap((r, i) => {
+                                                const t = r.track?.title || params.title || 'musik';
+                                                const dur = r.track?.duration ? fmtDur(r.track.duration) : null;
+                                                const durTxt = dur ? `  ·  ⏱ ${dur}` : '';
+                                                const varNum = i + 1;
+                                                return [
+                                                        {
+                                                                header: `${genderEmoji}  ───  🎵 MP3  ·  Variasi ${varNum}`,
+                                                                title: `「 ${t} 」`,
+                                                                description: `🎸 ${genreLabel}  ·  ${genderLabel}${durTxt}`,
+                                                                id: `__musikai_play__${cacheKey}__${r.index}__mp3`,
+                                                        },
+                                                        {
+                                                                header: `${genderEmoji}  ───  🎙️ VN  ·  Variasi ${varNum}`,
+                                                                title: `「 ${t} 」`,
+                                                                description: `🎸 ${genreLabel}  ·  ${genderLabel}${durTxt}`,
+                                                                id: `__musikai_play__${cacheKey}__${r.index}__vn`,
+                                                        },
+                                                ];
+                                        });
+
+                                let variasiSections;
+                                if (isVokal) {
+                                        const resultsCowo = allResults.filter(r => r.gender === 'cowo');
+                                        const resultsCewe = allResults.filter(r => r.gender === 'cewe');
+                                        variasiSections = [];
+                                        if (resultsCowo.length) variasiSections.push({
+                                                title: `╔═ 👨 VOKAL COWOK ══════════════╗`,
+                                                rows: buildVariasiRows(resultsCowo, '👨 Vokal Cowok', '👨'),
+                                        });
+                                        if (resultsCewe.length) variasiSections.push({
+                                                title: `╔═ 👩 VOKAL CEWEK ══════════════╗`,
+                                                rows: buildVariasiRows(resultsCewe, '👩 Vokal Cewek', '👩'),
+                                        });
+                                } else {
+                                        const variasiRows = buildVariasiRows(allResults, '🎹 Instrumental', '🎹');
+                                        variasiSections = [{ title: `╔═ 🎧 PILIH VARIASI & FORMAT ══╗`, rows: variasiRows }];
+                                }
 
                                 const bodyTxt =
                                         `╭──『 🎵 *MUSIK AI SELESAI* 』\n` +
@@ -4452,43 +4534,21 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         `│ 🎸 *Genre*  : ${params.musicStyle || 'pop'}\n` +
                                         `│ ${modeLabel}\n` +
                                         `│\n` +
-                                        `│ 🎧 *${results.length} Variasi tersedia:*\n` +
-                                        `${variasiLines}\n` +
+                                        `│ 🎧 *${allResults.length} Variasi tersedia:*\n` +
+                                        (isVokal
+                                                ? `│ 👨 Cowok: ${allResults.filter(r=>r.gender==='cowo').length} variasi\n` +
+                                                  `│ 👩 Cewek: ${allResults.filter(r=>r.gender==='cewe').length} variasi\n`
+                                                : allResults.map(r => {
+                                                        const t = r.track?.title || params.title || 'musik';
+                                                        const dur = r.track?.duration ? ` • ${fmtDur(r.track.duration)}` : '';
+                                                        return `│ *V${r.index}* — ${t}${dur}`;
+                                                }).join('\n') + '\n'
+                                        ) +
                                         `│\n` +
                                         `│ Pilih variasi untuk mendengarkan ↓\n` +
                                         `╰──────────────────────────────`;
 
-                                // ── Multi-section single_select ─────────────────────────────────
-                                const { MODELS: MusicModels } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
-                                const genreLabel = params.musicStyle || 'pop';
-                                const numEmoji = ['1️⃣','2️⃣','3️⃣','4️⃣'];
-                                const activeModelId = params.modelId || 6;
-                                const activeModel = MusicModels.find(md => md.id === activeModelId)?.version || 'v5.0';
-
-                                // Section 1 — Pilih variasi + format
-                                const variasiRows = [];
-                                results.forEach((r, i) => {
-                                        const t = r.track?.title || params.title || 'musik';
-                                        const dur = r.track?.duration ? fmtDur(r.track.duration) : null;
-                                        const modeBadge = params.isInstrumental ? '🎹 Instrumental' : '🎤 Vokal';
-                                        const durTxt = dur ? `  ·  ⏱ ${dur}` : '';
-                                        variasiRows.push(
-                                                {
-                                                        header: `${numEmoji[i] || `V${r.index}`}  ───  🎵 MP3  ·  Variasi ${r.index}`,
-                                                        title: `「 ${t} 」`,
-                                                        description: `🎸 ${genreLabel}  ·  ${modeBadge}${durTxt}`,
-                                                        id: `__musikai_play__${cacheKey}__${r.index}__mp3`,
-                                                },
-                                                {
-                                                        header: `${numEmoji[i] || `V${r.index}`}  ───  🎙️ VN  ·  Variasi ${r.index}`,
-                                                        title: `「 ${t} 」`,
-                                                        description: `🎸 ${genreLabel}  ·  ${modeBadge}${durTxt}`,
-                                                        id: `__musikai_play__${cacheKey}__${r.index}__vn`,
-                                                }
-                                        );
-                                });
-
-                                // Section 2 — Ganti Model AI
+                                // Section Model AI
                                 const modelRows = MusicModels.map(md => ({
                                         header: md.id === activeModelId
                                                 ? `✅  Aktif Sekarang  ───  ${md.version}`
@@ -4502,7 +4562,6 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         id: `__musikai_model__${cacheKey}__${md.id}`,
                                 }));
 
-                                // Section 3 — Aksi lainnya
                                 const actionRows = [
                                         {
                                                 header: '🎲  ───────────────────────',
@@ -4519,13 +4578,13 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 ];
 
                                 const multiSections = [
-                                        { title: `╔═ 🎧 PILIH VARIASI & FORMAT ══╗`, rows: variasiRows },
+                                        ...variasiSections,
                                         { title: `╔═ 🤖 MODEL AI  ·  Aktif: ${activeModel} ══╗`, rows: modelRows },
                                         { title: `╔═ ✦ AKSI LAINNYA ══════════╗`, rows: actionRows },
                                 ];
 
                                 const titleLabel = params.title || 'Hasil Musik';
-                                const firstCover = results.find(r => r.coverBuf)?.coverBuf || null;
+                                const firstCover = allResults.find(r => r.coverBuf)?.coverBuf || null;
                                 await sendAudioWithButtons(hisoka, m, null, bodyTxt, [],
                                         {
                                                 listTitle: `🎧 Dengarkan — ${titleLabel}`,
@@ -4685,7 +4744,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 const preset = new ChatMusicAPI().getRandomPreset();
                                 preset.musicStyle = selectedGenre;
                                 preset.prompt = `${selectedGenre} indonesia, ${preset.prompt?.split(',').slice(1).join(',') || ''}`.trim();
-                                await _showGenderSelect(preset);
+                                await _generateMusik(hisoka, m, preset);
                         } catch (err) {
                                 console.error('\x1b[31m[MusicAI] Error:\x1b[39m', err.message);
                                 logError(err, 'callback:musikai_genre');
@@ -4696,26 +4755,6 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         { quoteBot: true }
                                 );
                         }
-                        return;
-                }
-
-                // Callback: user pilih gender vokal (cewe / cowo) → generate musik
-                if (typeof m.text === 'string' && m.text.startsWith('__musikai_gender__')) {
-                        const raw = m.text.replace('__musikai_gender__', '');
-                        const lastDbl = raw.lastIndexOf('__');
-                        const genderSeg = raw.substring(lastDbl + 2);
-                        const paramKey = raw.substring(0, lastDbl);
-                        const cached = pendingMusikaiParamCache.get(paramKey);
-                        if (!cached) {
-                                await hisoka.sendMessage(m.from, { react: { text: '⏰', key: m.key } }).catch(() => {});
-                                await tolak(hisoka, m, `⏰ *Sesi expired.* Silakan generate ulang dengan *.musikai* atau tekan *Random Lagi*.`);
-                                return;
-                        }
-                        const isCewe = genderSeg === 'cewe';
-                        const params = { ...cached.params, genderType: isCewe ? 1 : 0 };
-                        const genderLabel = isCewe ? '👩 Vokal Cewek' : '👨 Vokal Cowok';
-                        await hisoka.sendMessage(m.from, { react: { text: isCewe ? '👩' : '👨', key: m.key } }).catch(() => {});
-                        await _generateMusik(hisoka, m, params, `🎤 Generate dengan *${genderLabel}*...`);
                         return;
                 }
 
@@ -7723,19 +7762,14 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         }
                                         const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
                                         const parts = input.split('|').map(s => s.trim());
-                                        const hasLyrics = !!parts[1];
                                         const params = {
                                                 title:          parts[0] || 'My Song',
                                                 lyrics:         parts[1] || '',
                                                 musicStyle:     parts[2] || 'pop',
-                                                isInstrumental: !hasLyrics ? 1 : 0,
+                                                isInstrumental: !parts[1] ? 1 : 0,
                                                 prompt:         `${parts[2] || 'pop'} indonesia`,
                                         };
-                                        if (hasLyrics) {
-                                                await _showGenderSelect(params);
-                                        } else {
-                                                await _generateMusik(hisoka, m, params);
-                                        }
+                                        await _generateMusik(hisoka, m, params);
                                 } catch (error) {
                                         console.error('\x1b[31m[MusicAI] Error:\x1b[39m', error.message);
                                         logError(error, 'command:musikai');
