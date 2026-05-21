@@ -18,3 +18,15 @@ id = "uWp9dk9U1x2IFne39iKEK"
 uri = "file://Janji_Selamanya_v2.mp3"
 type = "audio"
 title = "Janji Selamanya | 21 Mei 2026 | Indonesian Slow Rock Ballad — Versi 2 (4:28)"
+
+[[outputs]]
+id = "Z4jnlE9vjopm0KWaLqTKw"
+uri = "file://Hujan_Malam_v1.mp3"
+type = "audio"
+title = "Hujan Malam | 21 Mei 2026 | Sad Pop, Melancholic Rain Vibes — Versi 1 (5:23)"
+
+[[outputs]]
+id = "fYOAtV5XY413QgtQbsvQE"
+uri = "file://Hujan_Malam_v2.mp3"
+type = "audio"
+title = "Hujan Malam | 21 Mei 2026 | Sad Pop, Melancholic Rain Vibes — Versi 2 (4:24)"
