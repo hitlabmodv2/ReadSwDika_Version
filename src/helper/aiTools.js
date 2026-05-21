@@ -18,6 +18,99 @@
  *  Terima kasih sudah support.
  * ───────────────────────────────
  */
+
+import axios from 'axios';
+import path from 'path';
+import fs from 'fs';
+import { exec } from 'child_process';
+import util from 'util';
+import { selectStickerByMood, isValidStickerUrl } from './stickerMap.js';
+import { logStickerSent } from './aiStickerStory.js';
+
+const execAsync = util.promisify(exec);
+
+const WILY_VERBOSE_AITOOLS = process.env.WILY_VERBOSE_LOGS === 'true' || process.env.BOT_DEBUG_LOG === 'true';
+function aiToolsLog(...args)   { if (WILY_VERBOSE_AITOOLS) console.log(...args); }
+function aiToolsError(...args) { console.error(...args); }
+
+const TMP_DIR = path.join(process.cwd(), 'tmp');
+function ensureTmp() {
+    if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
+}
+
+function assertYtdlpReady() {
+    const bin = path.join(process.cwd(), 'bin', 'yt-dlp');
+    if (!fs.existsSync(bin)) throw new Error('yt-dlp binary tidak ditemukan. Jalankan perintah download dulu sekali.');
+    return bin;
+}
+
+const _stickerCooldowns = new Map();
+const STICKER_COOLDOWN_MS = 60 * 1000;
+function isStickerOnCooldown(sessionKey) {
+    if (!sessionKey) return false;
+    const last = _stickerCooldowns.get(sessionKey);
+    return last ? (Date.now() - last) < STICKER_COOLDOWN_MS : false;
+}
+function markStickerSent(sessionKey) {
+    if (sessionKey) _stickerCooldowns.set(sessionKey, Date.now());
+}
+
+async function searchAndDownloadAudio(query, opts = {}) {
+    const ytdlpBin = opts.ytdlpBin || assertYtdlpReady();
+    ensureTmp();
+
+    const yts = (await import('yt-search')).default;
+    const res = await yts(query);
+    const video = (res.videos || [])[0];
+    if (!video) throw new Error(`Tidak ada hasil YouTube untuk query: "${query}"`);
+
+    const { url, title, author, duration } = video;
+    if (duration.seconds > 600) throw new Error(`Durasi terlalu panjang (${duration.timestamp}), max 10 menit`);
+
+    const tmpId = Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const outFile = path.join(TMP_DIR, `ai_song_${tmpId}.mp3`);
+    const outTemplate = path.join(TMP_DIR, `ai_song_${tmpId}.%(ext)s`);
+
+    await execAsync(
+        `"${ytdlpBin}" --js-runtimes node --no-playlist -x --audio-format mp3 --audio-quality 5 -o "${outTemplate}" "${url}"`,
+        { timeout: 120000 }
+    );
+
+    if (!fs.existsSync(outFile)) throw new Error('File audio tidak terbuat oleh yt-dlp');
+    const buffer = fs.readFileSync(outFile);
+    try { fs.unlinkSync(outFile); } catch (_) {}
+
+    return { buffer, title, channel: author?.name || 'Unknown', duration: duration.seconds, url };
+}
+
+async function searchAndDownloadVideo(query, opts = {}) {
+    const ytdlpBin = opts.ytdlpBin || assertYtdlpReady();
+    ensureTmp();
+
+    const yts = (await import('yt-search')).default;
+    const res = await yts(query);
+    const video = (res.videos || [])[0];
+    if (!video) throw new Error(`Tidak ada hasil YouTube untuk query: "${video}"`);
+
+    const { url, title, author, duration } = video;
+    if (duration.seconds > 300) throw new Error(`Durasi terlalu panjang (${duration.timestamp}), max 5 menit untuk video`);
+
+    const tmpId = Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const outFile = path.join(TMP_DIR, `ai_video_${tmpId}.mp4`);
+    const outTemplate = path.join(TMP_DIR, `ai_video_${tmpId}.%(ext)s`);
+
+    await execAsync(
+        `"${ytdlpBin}" --js-runtimes node --no-playlist -f "bestvideo[ext=mp4][height<=480]+bestaudio[ext=m4a]/best[ext=mp4][height<=480]/best" --merge-output-format mp4 -o "${outTemplate}" "${url}"`,
+        { timeout: 180000 }
+    );
+
+    if (!fs.existsSync(outFile)) throw new Error('File video tidak terbuat oleh yt-dlp');
+    const buffer = fs.readFileSync(outFile);
+    try { fs.unlinkSync(outFile); } catch (_) {}
+
+    return { buffer, title, channel: author?.name || 'Unknown', duration: duration.seconds, url };
+}
+
 export async function extractSongsFromText(text, opts = {}) {
     const songs = [];
     let cleanText = String(text || '');
