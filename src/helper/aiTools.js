@@ -633,13 +633,13 @@ async function textToSpeechBuffer(text, voice) {
     const { MsEdgeTTS, OUTPUT_FORMAT } = await import('msedge-tts');
     const tts = new MsEdgeTTS();
     await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
-    const readable = tts.toStream(text);
+    const { audioStream } = tts.toStream(text);
     return new Promise((resolve, reject) => {
         const chunks = [];
-        readable.on('data', chunk => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
-        readable.on('end', () => resolve(Buffer.concat(chunks)));
-        readable.on('close', () => resolve(Buffer.concat(chunks)));
-        readable.on('error', reject);
+        audioStream.on('data', chunk => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+        audioStream.on('end', () => resolve(Buffer.concat(chunks)));
+        audioStream.on('close', () => resolve(Buffer.concat(chunks)));
+        audioStream.on('error', reject);
     });
 }
 

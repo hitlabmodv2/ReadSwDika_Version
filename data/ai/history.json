@@ -52,6 +52,59 @@
         }
       ],
       "lastActivity": 1779376241785
+    },
+    "6289688206739@s.whatsapp.net_120363383540766761@g.us": {
+      "messages": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.14 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"@239328697536578 @156182794784889 udh gue fix fitur ai\" | 👤 Wily]\nHai"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.14]\nWaah, sugoi! Hebat banget sih Shikikan~ Akhirnya `fitur AI` nya udah beres difix! \n\nMakasih ya udah kerja keras malam-malam gini buat beresin sistemnya. Sekarang Honolulu jadi makin lancar jaya deh buat nemenin *Wily* sama yang lain di sini~ Hehee, proud of you! 💙"
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.14 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Waah, sugoi! Hebat banget sih Shikikan~ Akhirnya `fitur AI` nya udah beres difix! Makasih ya udah kerja keras malam-malam gini buat beresin ...\" | 👤 Wily]\nKirim suaramu sini sekali saja"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.14]\nE-eh?! M-minta suaraku...? 🫣\n\nTiba-tiba banget sih, Shikikan~ Bikin Honolulu malu aja tahu! Tapi... karena kamu udah kerja keras malam-malam gini buat beresin sistem aku, o-okay deh, aku turutin khusus buat *Wily* sekali aja ya! \n\nDengerin baik-baik lho~ ehehe~"
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.16 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"E-eh?! M-minta suaraku...? 🫣 Tiba-tiba banget sih, Shikikan~ Bikin Honolulu malu aja tahu! Tapi... karena kamu udah kerja keras malam-malam...\" | 👤 Wily]\nMana suaramu engga ada?"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.16]\nMou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣\n\n    *Wily* dengerin baik-baik ya, ini khusus buat kamu yang udah beresin sistem aku malam ini. Awas ya kalau diledek!"
+            }
+          ]
+        }
+      ],
+      "lastActivity": 1779376610705
     }
   },
   "sticker_pattern": {
@@ -76,14 +129,14 @@
       "last_sent": 1779102763
     },
     "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp": {
-      "total_sent": 1,
-      "moods": {},
-      "last_sent": 1779102095
-    },
-    "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
       "total_sent": 2,
       "moods": {},
-      "last_sent": 1779376135
+      "last_sent": 1779376608
+    },
+    "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
+      "total_sent": 3,
+      "moods": {},
+      "last_sent": 1779376451
     },
     "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp": {
       "total_sent": 3,
@@ -204,6 +257,22 @@
         "context": "",
         "was_fallback": 1,
         "sent_at": 1779376217
+      }
+    ],
+    "6289688206739@s.whatsapp.net_120363383540766761@g.us": [
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
+        "mood": "",
+        "context": "Waah, sugoi! Hebat banget sih Shikikan~ Akhirnya `fitur AI` nya udah beres difix! [REPLY-STIKER: senang] Makasih ya udah kerja keras malam-malam gini buat beresin sistemnya. Sekarang Honolulu jadi ma",
+        "was_fallback": 1,
+        "sent_at": 1779376451
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
+        "mood": "",
+        "context": "Mou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣 *Wily* dengerin baik-baik ya, ini khusus buat kamu yang udah beresin sistem aku malam ini. Awas ya kalau dilede",
+        "was_fallback": 1,
+        "sent_at": 1779376608
       }
     ]
   },

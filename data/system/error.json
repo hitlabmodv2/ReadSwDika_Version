@@ -1,6 +1,24 @@
 {
   "errors": [
     {
+      "fingerprint": "AITool/VN::[AITool/VN] ❌ Gagal generate TTS \"司令官、いつもお仕事お疲れ様。ホノルルの声、ちゃんと届いてる？大好きだよ、ehehe~\": readable.on is not a function",
+      "source": "AITool/VN",
+      "message": "[AITool/VN] ❌ Gagal generate TTS \"司令官、いつもお仕事お疲れ様。ホノルルの声、ちゃんと届いてる？大好きだよ、ehehe~\": readable.on is not a function",
+      "stack": "Error: [AITool/VN] ❌ Gagal generate TTS \"司令官、いつもお仕事お疲れ様。ホノルルの声、ちゃんと届いてる？大好きだよ、ehehe~\": readable.on is not a function\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at extractVoiceNotesFromText (file:///home/runner/workspace/src/helper/aiTools.js:669:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async processAIMediaAndSend (file:///home/runner/workspace/src/handler/message.js?t=1779376113112:805:19)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779376113112:2605:85)",
+      "count": 1,
+      "firstSeen": "2026-05-21T15:16:49.368Z",
+      "lastSeen": "2026-05-21T15:16:49.368Z"
+    },
+    {
+      "fingerprint": "AITool/VN::[AITool/VN] ❌ Gagal generate TTS \"Eh... m-mendadak banget sih Shikikan minta suaraku? Bikin ma\": readable.on is not a fu",
+      "source": "AITool/VN",
+      "message": "[AITool/VN] ❌ Gagal generate TTS \"Eh... m-mendadak banget sih Shikikan minta suaraku? Bikin ma\": readable.on is not a function",
+      "stack": "Error: [AITool/VN] ❌ Gagal generate TTS \"Eh... m-mendadak banget sih Shikikan minta suaraku? Bikin ma\": readable.on is not a function\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at extractVoiceNotesFromText (file:///home/runner/workspace/src/helper/aiTools.js:669:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async processAIMediaAndSend (file:///home/runner/workspace/src/handler/message.js?t=1779376113112:805:19)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779376113112:2605:85)",
+      "count": 1,
+      "firstSeen": "2026-05-21T15:14:53.208Z",
+      "lastSeen": "2026-05-21T15:14:53.208Z"
+    },
+    {
       "fingerprint": "console.error::\u001b[Nm[HotReload] Gagal load 'src/handler/message.js':\u001b[Nm The requested module '../helper/aiTools.js' does not provide an",
       "source": "console.error",
       "message": "\u001b[31m[HotReload] Gagal load 'src/handler/message.js':\u001b[39m The requested module '../helper/aiTools.js' does not provide an export named 'extractStickersFromText'",
