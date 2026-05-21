@@ -1,96 +1,12 @@
 'use strict';
 
-const axios = require('axios');
+const axios  = require('axios');
+const path   = require('path');
+const { Gemini } = require(path.resolve('./src/scrape/gemini.cjs'));
 
-// ─── Gemmy AI (Gemini — 3 model dengan auto-fallback) ────────────────────
-// Urutan: 1) gemini-2.5-flash-preview (latest)
-//         2) gemini-2.5-flash          (stable)
-//         3) gemini-1.5-pro            (pro fallback)
-const _GEMMY_MODELS = [
-        'gemini-2.5-flash-preview-05-20',
-        'gemini-2.5-flash',
-        'gemini-1.5-pro',
-];
-
-class GemmyAI {
-        constructor() {
-                this.authToken = null;
-                this.tokenExpiry = null;
-        }
-
-        async getAuthToken() {
-                if (this.authToken && this.tokenExpiry && Date.now() < this.tokenExpiry - 300000) return this.authToken;
-                const { data } = await axios.post(
-                        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAxof8_SbpDcww38NEQRhNh0Pzvbphh-IQ',
-                        { clientType: 'CLIENT_TYPE_ANDROID' },
-                        { headers: {
-                                'accept-encoding': 'gzip',
-                                'accept-language': 'in-ID, en-US',
-                                'connection': 'Keep-Alive',
-                                'content-type': 'application/json',
-                                'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 10; SM-J700F Build/QQ3A.200805.001)',
-                                'x-android-cert': '037CD2976D308B4EFD63EC63C48DC6E7AB7E5AF2',
-                                'x-android-package': 'com.jetkite.gemmy',
-                                'x-client-version': 'Android/Fallback/X24000001/FirebaseCore-Android',
-                                'x-firebase-appcheck': 'eyJlcnJvciI6IlVOS05PV05fRVJST1IifQ==',
-                                'x-firebase-client': 'H4sIAAAAAAAAAKtWykhNLCpJSk0sKVayio7VUSpLLSrOzM9TslIyUqoFAFyivEQfAAAA',
-                                'x-firebase-gmpid': '1:652803432695:android:c4341db6033e62814f33f2',
-                        }}
-                );
-                if (!data.idToken) throw new Error('Gagal dapat token Gemmy AI');
-                this.authToken = data.idToken;
-                this.tokenExpiry = Date.now() + 3600 * 1000;
-                return this.authToken;
-        }
-
-        async _callModel(model, prompt, token) {
-                const { data } = await axios.post(
-                        'https://asia-northeast3-gemmy-ai-bdc03.cloudfunctions.net/gemini',
-                        {
-                                model,
-                                stream: false,
-                                request: {
-                                        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                                        generationConfig: { maxOutputTokens: 4096 }
-                                }
-                        },
-                        {
-                                headers: {
-                                        'accept-encoding': 'gzip',
-                                        'authorization': `Bearer ${token}`,
-                                        'content-type': 'application/json; charset=UTF-8',
-                                        'user-agent': 'okhttp/5.3.2',
-                                },
-                                timeout: 30000,
-                        }
-                );
-                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                if (!text) throw new Error(`Model ${model} tidak menghasilkan teks`);
-                return text;
-        }
-
-        async chat(prompt) {
-                let token = await this.getAuthToken();
-                let lastErr;
-                for (const model of _GEMMY_MODELS) {
-                        try {
-                                const result = await this._callModel(model, prompt, token);
-                                return result;
-                        } catch (err) {
-                                console.warn(`[GemmyAI] Model ${model} gagal: ${err.message} — mencoba model berikutnya...`);
-                                lastErr = err;
-                                // Jika token expired/invalid, refresh dulu sebelum lanjut
-                                if (err.response?.status === 401 || err.response?.status === 403) {
-                                        this.authToken = null;
-                                        try { token = await this.getAuthToken(); } catch (_) {}
-                                }
-                        }
-                }
-                throw new Error(`Semua model Gemmy AI gagal. Error terakhir: ${lastErr?.message || 'unknown'}`);
-        }
-}
-
-const _gemmyInstance = new GemmyAI();
+// ─── Singleton Gemini (pakai gemini.cjs — token pool x3, fallback akurat) ─
+// Model chain: gemini-flash-latest → gemini-pro-latest → gemini-2.5-flash
+const _gemmyInstance = new Gemini();
 
 // ─── Pool besar untuk auto-generate kombinasi bebas ───────────────────────
 
@@ -535,7 +451,7 @@ GENRE_LABEL: [genre singkat max 30 karakter]
 LIRIK:
 [seluruh lirik di sini]`;
 
-                const aiResult = await _gemmyInstance.chat(aiPrompt);
+                const aiResult = await _gemmyInstance.ask(aiPrompt);
 
                 // 3. Parse hasil AI
                 const judulMatch = aiResult.match(/JUDUL:\s*(.+)/);
