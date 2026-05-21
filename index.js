@@ -648,19 +648,34 @@ async function main() {
 
                         let groupCount = 0;
                         let adminCount = 0;
-                        try {
-                                const allGroups = Object.values(await hisoka.groupFetchAllParticipating());
-                                allGroups.forEach(g => {
-                                        cacheLidFromParticipants(g?.participants);
-                                        groups.write(g.id, g);
-                                });
-                                groupCount = allGroups.length;
-                                saveBotAdminStatus(hisoka, allGroups);
-                                const botAdminData = loadBotAdminData();
-                                adminCount = Object.values(botAdminData).filter(Boolean).length;
-                        } catch (err) {
-                                console.error('\x1b[31m[Groups] Gagal fetch grup:\x1b[39m', err?.message || err);
-                        }
+                        const fetchGroupsWithRetry = async (retries = 5, delayMs = 8000) => {
+                                for (let attempt = 1; attempt <= retries; attempt++) {
+                                        try {
+                                                await new Promise(r => setTimeout(r, delayMs));
+                                                const allGroups = Object.values(await hisoka.groupFetchAllParticipating());
+                                                allGroups.forEach(g => {
+                                                        cacheLidFromParticipants(g?.participants);
+                                                        groups.write(g.id, g);
+                                                });
+                                                groupCount = allGroups.length;
+                                                saveBotAdminStatus(hisoka, allGroups);
+                                                const botAdminData = loadBotAdminData();
+                                                adminCount = Object.values(botAdminData).filter(Boolean).length;
+                                                return;
+                                        } catch (err) {
+                                                const isRateLimit = err?.message?.includes('rate-overlimit') || err?.message?.includes('rate');
+                                                if (isRateLimit && attempt < retries) {
+                                                        const wait = delayMs * attempt;
+                                                        console.warn(`\x1b[33m[Groups] Rate-limit, retry ${attempt}/${retries} dalam ${wait / 1000}s...\x1b[39m`);
+                                                        await new Promise(r => setTimeout(r, wait));
+                                                } else {
+                                                        console.error('\x1b[31m[Groups] Gagal fetch grup:\x1b[39m', err?.message || err);
+                                                        return;
+                                                }
+                                        }
+                                }
+                        };
+                        await fetchGroupsWithRetry();
 
                         const config2 = loadConfig();
                         const autoOnline2 = config2.autoOnline || {};

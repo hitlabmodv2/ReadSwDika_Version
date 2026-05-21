@@ -8,31 +8,84 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 20/05/2026, 14.22.34  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 21/05/2026, 05.59.46  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
-  Total Jenis Error (unik)  : 13
-  Total Kejadian Error       : 61
+  Total Jenis Error (unik)  : 25
+  Total Kejadian Error       : 378
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [13 jenis, 61 kejadian total]
+  DAFTAR ERROR LENGKAP  [25 jenis, 378 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #001  —  unhandledRejection
+│  #001  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[Groups] Gagal fetch grup:[39m rate-overlimit
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 117x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.40.20
+│  Terakhir    : 21/05/2026, 05.59.46
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[Groups] Gagal fetch grup:[39m rate-overlimit
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at EventEmitter.<anonymous> (file:///home/runner/workspace/index.js:662:41)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #002  —  unhandledRejection
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  Timed Out
+│
+│  DETAIL
+│  Sumber      : unhandledRejection
+│  Frekuensi   : 1x (baru terjadi)
+│  Pertama     : 21/05/2026, 05.37.22
+│  Terakhir    : 21/05/2026, 05.37.22
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: Timed Out
+│     at /home/runner/workspace/node_modules/socketon/lib/Utils/generics.js:153:32
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #003  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Timed Out
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 1x (baru terjadi)
+│  Pertama     : 21/05/2026, 05.37.22
+│  Terakhir    : 21/05/2026, 05.37.22
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Timed Out
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at process.<anonymous> (file:///home/runner/workspace/src/helper/crashGuard.js:131:17)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #004  —  command:hd
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  Connection Closed
 │
 │  DETAIL
-│  Sumber      : unhandledRejection
-│  Frekuensi   : 1x (baru terjadi)
-│  Pertama     : 20/05/2026, 14.22.34
-│  Terakhir    : 20/05/2026, 14.22.34
+│  Sumber      : command:hd
+│  Frekuensi   : 2x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.34.46
+│  Terakhir    : 21/05/2026, 05.35.10
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: Connection Closed
@@ -41,16 +94,178 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #002  —  console.error
+│  #005  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[Handler] Error on command "hd":[39m Connection Closed
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 2x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.34.46
+│  Terakhir    : 21/05/2026, 05.35.09
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[Handler] Error on command "hd":[39m Connection Closed
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at default (file:///home/runner/workspace/src/handler/message.js?t=1779341618516:16283:25)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #006  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[HD] Error:[39m Timed Out
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 2x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.34.46
+│  Terakhir    : 21/05/2026, 05.35.09
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[HD] Error:[39m Timed Out
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at default (file:///home/runner/workspace/src/handler/message.js?t=1779341618516:15272:49)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #007  —  command:s
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  Connection Closed
+│
+│  DETAIL
+│  Sumber      : command:s
+│  Frekuensi   : 1x (baru terjadi)
+│  Pertama     : 21/05/2026, 05.34.46
+│  Terakhir    : 21/05/2026, 05.34.46
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: Connection Closed
+│     at sendRawMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:63:19)
+│     at sendNode (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:82:16)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #008  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[Handler] Error on command "s":[39m Connection Closed
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 1x (baru terjadi)
+│  Pertama     : 21/05/2026, 05.34.46
+│  Terakhir    : 21/05/2026, 05.34.46
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[Handler] Error on command "s":[39m Connection Closed
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at default (file:///home/runner/workspace/src/handler/message.js?t=1779341618516:16283:25)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #009  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[Sticker] Error:[39m Timed Out
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 1x (baru terjadi)
+│  Pertama     : 21/05/2026, 05.34.46
+│  Terakhir    : 21/05/2026, 05.34.46
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[Sticker] Error:[39m Timed Out
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at default (file:///home/runner/workspace/src/handler/message.js?t=1779341618516:12943:49)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #010  —  console.error
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [31m[Groups] Gagal fetch grup:[39m Timed Out
+│
+│  DETAIL
+│  Sumber      : console.error
+│  Frekuensi   : 3x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.28.16
+│  Terakhir    : 21/05/2026, 05.37.28
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [31m[Groups] Gagal fetch grup:[39m Timed Out
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at EventEmitter.<anonymous> (file:///home/runner/workspace/index.js:662:41)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #011  —  AlqanimeNotif
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [AlqanimeNotif] ❌ Gagal fetch homepage: Request failed with status code 429
+│
+│  DETAIL
+│  Sumber      : AlqanimeNotif
+│  Frekuensi   : 155x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.26.05
+│  Terakhir    : 21/05/2026, 05.54.08
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [AlqanimeNotif] ❌ Gagal fetch homepage: Request failed with status code 429
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at Object.cariEpisodeBaru (/home/runner/workspace/src/scrape/alqanime-monitor.cjs:337:17)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #012  —  AlqanimeNotif
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  [AlqanimeNotif] Gagal kirim ke 120363419402989015@g.us: Connection Closed
+│
+│  DETAIL
+│  Sumber      : AlqanimeNotif
+│  Frekuensi   : 19x (duplikat digabung)
+│  Pertama     : 21/05/2026, 05.26.03
+│  Terakhir    : 21/05/2026, 05.49.16
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: [AlqanimeNotif] Gagal kirim ke 120363419402989015@g.us: Connection Closed
+│     at console.error (file:///home/runner/workspace/index.js:366:27)
+│     at file:///home/runner/workspace/index.js:926:89
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #013  —  unhandledRejection
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+│  PESAN ERROR
+│  Connection Closed
+│
+│  DETAIL
+│  Sumber      : unhandledRejection
+│  Frekuensi   : 7x (duplikat digabung)
+│  Pertama     : 20/05/2026, 14.22.34
+│  Terakhir    : 21/05/2026, 05.52.55
+│
+│  STACK TRACE (3 baris pertama)
+│  ▶  Error: Connection Closed
+│     at sendRawMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:63:19)
+│     at sendNode (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:82:16)
+└───────────────────────────────────────────────────────────────────────
+
+┌───────────────────────────────────────────────────────────────────────
+│  #014  —  console.error
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Connection Closed
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 1x (baru terjadi)
+│  Frekuensi   : 7x (duplikat digabung)
 │  Pertama     : 20/05/2026, 14.22.34
-│  Terakhir    : 20/05/2026, 14.22.34
+│  Terakhir    : 21/05/2026, 05.52.55
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Connection Closed
@@ -59,7 +274,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #003  —  command:musikai
+│  #015  —  command:musikai
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.
@@ -77,7 +292,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #004  —  console.error
+│  #016  —  console.error
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [31m[MusicAI] Error:[39m Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.
@@ -95,7 +310,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #005  —  command:musikai
+│  #017  —  command:musikai
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  Timeout: musik tidak selesai dalam 2.5 menit
@@ -113,7 +328,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #006  —  console.error
+│  #018  —  console.error
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [31m[MusicAI] Error:[39m Timeout: musik tidak selesai dalam 2.5 menit
@@ -131,7 +346,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #007  —  console.error
+│  #019  —  console.error
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [31m[CrashGuard] Message handler timed out (120s), skipping.[39m
@@ -149,7 +364,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #008  —  Animasu
+│  #020  —  Animasu
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [Animasu] ❌ Gagal fetch API posts: Request failed with status code 403
@@ -167,7 +382,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #009  —  console.error
+│  #021  —  console.error
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [31m[HotReload] ✗ Gagal reload 'src/handler/message.js', pakai versi lama.[39m
@@ -185,7 +400,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #010  —  console.error
+│  #022  —  console.error
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [31m[HotReload] Gagal load 'src/handler/message.js':[39m The requested module './antiporn.js' does not provide an export named 'getAllAntiPornGroups'
@@ -203,7 +418,7 @@
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #011  —  MALNews
+│  #023  —  MALNews
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [MALNews] Error scheduler: Cannot find module 'axios'
@@ -224,7 +439,7 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #012  —  TVOneNews
+│  #024  —  TVOneNews
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [TVOneNews] Error scheduler: Cannot find module 'axios'
@@ -245,7 +460,7 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
-│  #013  —  AlqanimeNotif
+│  #025  —  AlqanimeNotif
 ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
 │  PESAN ERROR
 │  [AlqanimeNotif] Error scheduler: Cannot find module 'axios'
@@ -266,6 +481,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 13 jenis, 61 kejadian
-  Terakhir diperbarui: 20/05/2026, 14.22.34
+  End of Report  —  Total: 25 jenis, 378 kejadian
+  Terakhir diperbarui: 21/05/2026, 05.59.46
 ════════════════════════════════════════════════════════════════════════

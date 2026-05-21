@@ -1,6 +1,114 @@
 {
   "terkirim": [
     {
+      "id": "isekai-nonbiri-nouka-season-2::0",
+      "judul": "Isekai Nonbiri Nouka Season 2",
+      "epNum": 7,
+      "waktuKirim": "2026-05-21T05:26:20.671Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://myanimelist.net/images/anime/1983/132329l.jpg",
+      "url": "https://alqanime.net/isekai-nonbiri-nouka-season-2/"
+    },
+    {
+      "id": "dekoboko-majo-no-oyako-jijou::1",
+      "judul": "Dekoboko Majo no Oyako Jijou BD Batch (– 12)",
+      "epNum": 1,
+      "waktuKirim": "2026-05-21T05:26:18.505Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1918/138185l.jpg",
+      "url": "https://alqanime.net/dekoboko-majo-no-oyako-jijou/"
+    },
+    {
+      "id": "dorohedoro-season-2::10",
+      "judul": "Dorohedoro Season 2",
+      "epNum": 10,
+      "waktuKirim": "2026-05-21T05:26:16.450Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1448/147351l.jpg",
+      "url": "https://alqanime.net/dorohedoro-season-2/"
+    },
+    {
+      "id": "re-zero-kara-hajimeru-isekai-seikatsu-4th-season::7",
+      "judul": "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season",
+      "epNum": 7,
+      "waktuKirim": "2026-05-21T05:26:14.357Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1540/155824l.jpg",
+      "url": "https://alqanime.net/re-zero-kara-hajimeru-isekai-seikatsu-4th-season/"
+    },
+    {
+      "id": "jidou-hanbaiki-ni-umarekawatta-ore-wa-meikyuu-wo-samayou-3rd-season::8",
+      "judul": "Jidou Hanbaiki ni Umarekawatta Ore wa Meikyuu wo Samayou 3rd Season",
+      "epNum": 8,
+      "waktuKirim": "2026-05-21T05:26:12.310Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1905/156697l.jpg",
+      "url": "https://alqanime.net/jidou-hanbaiki-ni-umarekawatta-ore-wa-meikyuu-wo-samayou-3rd-season/"
+    },
+    {
+      "id": "nigashita-sakana-wa-ookikatta-ga-tsuriageta-sakana-ga-ookisugita-ken::8",
+      "judul": "Nigashita Sakana wa Ookikatta ga Tsuriageta Sakana ga Ookisugita Ken",
+      "epNum": 8,
+      "waktuKirim": "2026-05-21T05:26:10.118Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1045/157132l.jpg",
+      "url": "https://alqanime.net/nigashita-sakana-wa-ookikatta-ga-tsuriageta-sakana-ga-ookisugita-ken/"
+    },
+    {
+      "id": "ganbare-nakamura-kun::9",
+      "judul": "Ganbare! Nakamura-kun!!",
+      "epNum": 9,
+      "waktuKirim": "2026-05-21T05:26:08.039Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1201/155682l.jpg",
+      "url": "https://alqanime.net/ganbare-nakamura-kun/"
+    },
+    {
+      "id": "otaku-ni-yasashii-gal-wa-inai::7",
+      "judul": "Otaku ni Yasashii Gal wa Inai!?",
+      "epNum": 7,
+      "waktuKirim": "2026-05-21T05:26:05.766Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1956/155456l.jpg",
+      "url": "https://alqanime.net/otaku-ni-yasashii-gal-wa-inai/"
+    },
+    {
+      "id": "saikyou-no-ousama-nidome-no-jinsei-wa-nani-wo-suru-season-2::8",
+      "judul": "Saikyou no Ousama, Nidome no Jinsei wa Nani wo Suru? Season 2",
+      "epNum": 8,
+      "waktuKirim": "2026-05-21T05:26:03.707Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1738/156028l.jpg",
+      "url": "https://alqanime.net/saikyou-no-ousama-nidome-no-jinsei-wa-nani-wo-suru-season-2/"
+    },
+    {
       "id": "kanojo-okarishimasu-5th-season::7",
       "judul": "Kanojo, Okarishimasu 5th Season",
       "epNum": 7,
