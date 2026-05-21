@@ -1,6 +1,18 @@
 {
   "terkirim": [
     {
+      "id": "naruto::1",
+      "judul": "Naruto BD Batch (– 220)",
+      "epNum": 1,
+      "waktuKirim": "2026-05-21T09:09:29.521Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1141/142503l.jpg",
+      "url": "https://alqanime.net/naruto/"
+    },
+    {
       "id": "isekai-nonbiri-nouka-season-2::0",
       "judul": "Isekai Nonbiri Nouka Season 2",
       "epNum": 7,

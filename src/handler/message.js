@@ -12947,6 +12947,104 @@ infoText += `╰═════════════════════�
                                 break;
                         }
 
+                        case 'tovn': {
+                                try {
+                                        const audioTypes = ['audioMessage', 'documentMessage'];
+                                        const isAudio = m.isQuoted && audioTypes.includes(quoted.type);
+                                        if (!isAudio) {
+                                                await tolak(hisoka, m, `❌ Reply pesan audio/MP3 untuk dijadikan voice note!\n\nContoh: reply file MP3 lalu ketik *${pfx}tovn*`);
+                                                break;
+                                        }
+
+                                        const quotedMime = quoted?.content?.mimetype || quoted?.msg?.mimetype || '';
+                                        const isAlreadyVN = quotedMime.includes('ogg') && quoted?.msg?.ptt;
+                                        if (isAlreadyVN) {
+                                                await tolak(hisoka, m, '❌ File ini sudah berupa voice note!');
+                                                break;
+                                        }
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+
+                                        const audioBuffer = await downloadMediaMessage(
+                                                { ...m.quoted, message: m.quoted.raw },
+                                                'buffer',
+                                                {},
+                                                { logger: hisoka.logger, reuploadRequest: hisoka.updateMediaMessage }
+                                        );
+
+                                        if (!audioBuffer || audioBuffer.length === 0) {
+                                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                                await tolak(hisoka, m, '❌ Gagal download audio.');
+                                                break;
+                                        }
+
+                                        const { toVoiceNote } = _require(path.resolve('./src/scrape/audioconvert.cjs'));
+                                        const vnBuffer = await toVoiceNote(audioBuffer, quotedMime || 'audio/mpeg');
+
+                                        await hisoka.sendMessage(m.from, {
+                                                audio: vnBuffer,
+                                                mimetype: 'audio/ogg; codecs=opus',
+                                                ptt: true
+                                        }, { quoted: m });
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                } catch (error) {
+                                        console.error('\x1b[31m[ToVN] Error:\x1b[39m', error.message);
+                                        await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                        await tolak(hisoka, m, `❌ Gagal konversi ke VN: ${error.message}`);
+                                }
+                                break;
+                        }
+
+                        case 'tomp3': {
+                                try {
+                                        const audioTypes = ['audioMessage', 'documentMessage'];
+                                        const isAudio = m.isQuoted && audioTypes.includes(quoted.type);
+                                        if (!isAudio) {
+                                                await tolak(hisoka, m, `❌ Reply voice note atau audio untuk dijadikan MP3!\n\nContoh: reply voice note lalu ketik *${pfx}tomp3*`);
+                                                break;
+                                        }
+
+                                        const quotedMime = quoted?.content?.mimetype || quoted?.msg?.mimetype || '';
+                                        const isMP3 = quotedMime.includes('mpeg') || quotedMime.includes('mp3');
+                                        if (isMP3 && !quoted?.msg?.ptt) {
+                                                await tolak(hisoka, m, '❌ File ini sudah berupa MP3!');
+                                                break;
+                                        }
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+
+                                        const audioBuffer = await downloadMediaMessage(
+                                                { ...m.quoted, message: m.quoted.raw },
+                                                'buffer',
+                                                {},
+                                                { logger: hisoka.logger, reuploadRequest: hisoka.updateMediaMessage }
+                                        );
+
+                                        if (!audioBuffer || audioBuffer.length === 0) {
+                                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                                await tolak(hisoka, m, '❌ Gagal download audio.');
+                                                break;
+                                        }
+
+                                        const { toMP3 } = _require(path.resolve('./src/scrape/audioconvert.cjs'));
+                                        const mp3Buffer = await toMP3(audioBuffer, quotedMime || 'audio/ogg; codecs=opus');
+
+                                        await hisoka.sendMessage(m.from, {
+                                                audio: mp3Buffer,
+                                                mimetype: 'audio/mpeg',
+                                                ptt: false
+                                        }, { quoted: m });
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                } catch (error) {
+                                        console.error('\x1b[31m[ToMP3] Error:\x1b[39m', error.message);
+                                        await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                        await tolak(hisoka, m, `❌ Gagal konversi ke MP3: ${error.message}`);
+                                }
+                                break;
+                        }
+
                         case 'toimg': {
                                 try {
                                         const sharp = (await import('sharp')).default;

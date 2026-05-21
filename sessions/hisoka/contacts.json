@@ -20132,7 +20132,8 @@
     "id": "6281373851970@s.whatsapp.net",
     "name": "! Rossa",
     "lid": "240651866259622@lid",
-    "jid": "6281373851970@s.whatsapp.net"
+    "jid": "6281373851970@s.whatsapp.net",
+    "notify": "𝔖𝔈𝔄 𝔇𝔈 ℭ𝔄𝔏𝔏𝔜"
   },
   "6289529561872@s.whatsapp.net": {
     "isContact": true,
@@ -22667,7 +22668,8 @@
     "name": "Agan Rizkia",
     "lid": "81582920577063@lid",
     "jid": "6289688206739@s.whatsapp.net",
-    "notify": "Wily"
+    "notify": "Wily",
+    "verifiedName": "Wily"
   },
   "628889079192@s.whatsapp.net": {
     "isContact": true,
@@ -31954,7 +31956,8 @@
   "240651866259622@lid": {
     "id": "240651866259622@lid",
     "lid": "240651866259622@lid",
-    "imgUrl": "changed"
+    "imgUrl": "changed",
+    "notify": "𝔖𝔈𝔄 𝔇𝔈 ℭ𝔄𝔏𝔏𝔜"
   },
   "225816596197423@lid": {
     "id": "225816596197423@lid",
@@ -32508,5 +32511,10 @@
     "id": "233641959502008@lid",
     "lid": "233641959502008@lid",
     "imgUrl": "changed"
+  },
+  "168041266601984@lid": {
+    "id": "168041266601984@lid",
+    "lid": "168041266601984@lid",
+    "imgUrl": "removed"
   }
 }
