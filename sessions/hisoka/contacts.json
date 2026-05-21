@@ -2464,7 +2464,8 @@
     "id": "6285133006365@s.whatsapp.net",
     "name": "sunshine jpeg",
     "lid": "108358266814567@lid",
-    "jid": "6285133006365@s.whatsapp.net"
+    "jid": "6285133006365@s.whatsapp.net",
+    "notify": "sunsend"
   },
   "6285602957112@s.whatsapp.net": {
     "isContact": true,
@@ -32486,6 +32487,26 @@
   "28866559094941@lid": {
     "id": "28866559094941@lid",
     "lid": "28866559094941@lid",
+    "imgUrl": "changed"
+  },
+  "82120076693736@lid": {
+    "id": "82120076693736@lid",
+    "lid": "82120076693736@lid",
+    "imgUrl": "changed"
+  },
+  "91371201396894@lid": {
+    "id": "91371201396894@lid",
+    "lid": "91371201396894@lid",
+    "notify": "Lisa"
+  },
+  "69360030842946@lid": {
+    "id": "69360030842946@lid",
+    "lid": "69360030842946@lid",
+    "imgUrl": "removed"
+  },
+  "233641959502008@lid": {
+    "id": "233641959502008@lid",
+    "lid": "233641959502008@lid",
     "imgUrl": "changed"
   }
 }
