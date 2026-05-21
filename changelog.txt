@@ -1,9 +1,9 @@
 🤖 *WILY BOT — V18*
 _📅 21 Mei 2026_
 
-✨ *1 Fitur Baru*
-🔧 *4 Bug Fix*
-🚀 *2 Improvement*
+✨ *10 Fitur Baru*
+🔧 *9 Bug Fix*
+🚀 *7 Improvement*
 
 ━━━━━━━━━━━━━━━━━━━━━━
 ✨ *FITUR BARU*
@@ -15,6 +15,50 @@ _📅 21 Mei 2026_
 > Ganti model AI (v4 / v5 / v5.5) langsung dari hasil tanpa ulang input
 > Mode instrumental tersedia — tanpa vokal, fokus ke melodi
 > Alias: `.musikai` `.aimusik`
+
+> ⚙️ *Command `.cekauto`*
+> Cek status semua fitur auto bot dalam 1 pesan
+> Tampilkan mana yang aktif 🟢 dan nonaktif 🔴
+> Mencakup 21 fitur: AI, notif, anti-call, cleaner, dll
+> Alias: `.cekauto` `.cekfitur` `.autolist`
+
+> 🏘️ *Command `.cekauto gc`*
+> Versi grup dari `.cekauto` — cek & toggle fitur per grup
+> Lihat semua grup yang aktif untuk tiap fitur sekaligus
+> Aktifkan / nonaktifkan fitur untuk grup tertentu langsung
+> Matikan semua fitur grup dalam 1 klik
+
+> 🔞 *Anti-Porn*
+> Deteksi & hapus otomatis konten 18+ di grup
+> Pakai AI lokal, tanpa API key — gambar, stiker, video
+> Warning bertahap → auto-kick saat limit, owner bypass
+
+> 🌐 *Speedtest*
+> Test kecepatan internet bot secara realtime
+> Download, Upload, Ping, Jitter + info ISP & IP
+> Alias: `.speedtest` `.speed` `.cekspeed` `.testnet`
+
+> 📰 *MAL News*
+> Notifikasi berita anime dari MyAnimeList ke grup WA
+> Auto-translate judul & ringkasan ke Bahasa Indonesia
+> Aktifkan per grup: `.malnews`
+
+> 📺 *TVOne News*
+> Notifikasi berita terkini dari TVOne ke grup WA
+> Update otomatis, lengkap gambar, kategori & link
+> Aktifkan per grup: `.tvone`
+
+> 🖼️ *Command `.hd` / `.remini`*
+> Perjelas foto blur — kini bisa dipakai user Jadibot
+
+> 📡 *Command `.upswgc` — Kini bisa dipakai user Jadibot*
+> Upload status/story ke semua grup langsung dari jadibot
+> Support kirim gambar, video, audio, atau teks biasa
+> Muncul di menu jadibot seksi STATUS & STORY
+
+> 🤖 *AI Format WA*
+> Respons Gemini otomatis diformat pakai simbol WA
+> Bold, italic, bullet, header — rapi tanpa markdown
 
 ━━━━━━━━━━━━━━━━━━━━━━
 🔧 *BUG FIX*
@@ -43,77 +87,6 @@ _📅 21 Mei 2026_
 > Kini ada retry otomatis dengan delay bertahap (hingga 5x coba)
 > Bot lebih stabil dan tidak perlu restart manual
 
-━━━━━━━━━━━━━━━━━━━━━━
-🚀 *IMPROVEMENT*
-━━━━━━━━━━━━━━━━━━━━━━
-
-> 🎵 *Musik AI — Vokal Paralel*
-> Sebelumnya user harus pilih gender vokal dulu, baru generate
-> Kini pria & wanita di-generate *bersamaan* — semua variasi
-> langsung muncul tanpa langkah tambahan, lebih cepat & praktis
-
-> 🤖 *Jadibot — Auto-Start Lebih Akurat*
-> Jadibot lama (sebelum fitur data expiry ada) tidak lagi di-reset
-> durasinya saat restart — otomatis dijaga sebagai permanent
-
-━━━━━━━━━━━━━━━━━━━━━━
-🤖 *Wily-Bot* | *V18* | _21 Mei 2026_
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🤖 *WILY BOT — V17*
-_📅 15 Mei 2026_
-
-✨ *8 Fitur Baru*
-🔧 *11 Bug Fix*
-🚀 *5 Improvement*
-
-━━━━━━━━━━━━━━━━━━━━━━
-✨ *FITUR BARU*
-━━━━━━━━━━━━━━━━━━━━━━
-
-> 🔞 *Anti-Porn*
-> Deteksi & hapus otomatis konten 18+ di grup
-> Pakai AI lokal, tanpa API key — gambar, stiker, video
-> Warning bertahap → auto-kick saat limit, owner bypass
-
-> 🌐 *Speedtest*
-> Test kecepatan internet bot secara realtime
-> Download, Upload, Ping, Jitter + info ISP & IP
-> Alias: `.speedtest` `.speed` `.cekspeed` `.testnet`
-
-> 📰 *MAL News*
-> Notifikasi berita anime dari MyAnimeList ke grup WA
-> Auto-translate judul & ringkasan ke Bahasa Indonesia
-> Aktifkan per grup: `.malnews`
-
-> 📺 *TVOne News*
-> Notifikasi berita terkini dari TVOne ke grup WA
-> Update otomatis, lengkap gambar, kategori & link
-> Aktifkan per grup: `.tvone`
-
-> 🖼️ *Command .hd / .remini*
-> Perjelas foto blur — kini bisa dipakai user Jadibot
-
-> 📡 *Command .upswgc — Kini bisa dipakai user Jadibot*
-> Upload status/story ke semua grup langsung dari jadibot
-> Support kirim gambar, video, audio, atau teks biasa
-> Muncul di menu jadibot seksi STATUS & STORY
-
-> ⚙️ *Command .cekauto*
-> Cek status semua fitur auto bot dalam 1 pesan
-> Tampilkan mana yang aktif 🟢 dan nonaktif 🔴
-> Mencakup 21 fitur: AI, notif, anti-call, cleaner, dll
-> Alias: `.cekauto` `.cekfitur` `.autolist`
-
-> 🤖 *AI Format WA*
-> Respons Gemini otomatis diformat pakai simbol WA
-> Bold, italic, bullet, header — rapi tanpa markdown
-
-━━━━━━━━━━━━━━━━━━━━━━
-🔧 *BUG FIX*
-━━━━━━━━━━━━━━━━━━━━━━
-
 > 🎯 *No-Prefix Command*
 > Bot tidak lagi respons kalau ada kata tambahan di belakang
 > 29 command standalone kini dilindungi guard extra words
@@ -141,6 +114,15 @@ _📅 15 Mei 2026_
 🚀 *IMPROVEMENT*
 ━━━━━━━━━━━━━━━━━━━━━━
 
+> 🎵 *Musik AI — Vokal Paralel*
+> Sebelumnya user harus pilih gender vokal dulu, baru generate
+> Kini pria & wanita di-generate *bersamaan* — semua variasi
+> langsung muncul tanpa langkah tambahan, lebih cepat & praktis
+
+> 🤖 *Jadibot — Auto-Start Lebih Akurat*
+> Jadibot lama (sebelum fitur data expiry ada) tidak lagi di-reset
+> durasinya saat restart — otomatis dijaga sebagai permanent
+
 > 🎯 *`.ceksw`* — Tampilan diringkas, 1 baris per orang
 > 🎯 *`push.sh`* — Nomor menu diurutkan ulang per group
 > 📡 *Notif Grup* — Kirim parallel, dari ~20 detik jadi ~2 detik
@@ -148,4 +130,4 @@ _📅 15 Mei 2026_
 > 📋 *Menu Jadibot* — Seksi Sticker & Gambar diperbarui + `.hd`
 
 ━━━━━━━━━━━━━━━━━━━━━━
-🤖 *Wily-Bot* | *V17* | _15 Mei 2026_
+🤖 *Wily-Bot* | *V18* | _21 Mei 2026_
