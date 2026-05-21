@@ -1,6 +1,42 @@
 {
   "errors": [
     {
+      "fingerprint": "command:musikai::Generate gagal: Insufficient balance, please recharge.",
+      "source": "command:musikai",
+      "message": "Generate gagal: Insufficient balance, please recharge.",
+      "stack": "Error: Generate gagal: Insufficient balance, please recharge.\n    at ChatMusicAPI.generate (/home/runner/workspace/src/scrape/chatmusic.cjs:278:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async _generateMusik (file:///home/runner/workspace/src/handler/message.js?t=1779345034968:4415:61)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779345034968:7772:41)",
+      "count": 1,
+      "firstSeen": "2026-05-21T06:31:19.548Z",
+      "lastSeen": "2026-05-21T06:31:19.548Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[MusicAI] Error:\u001b[Nm Generate gagal: Insufficient balance, please recharge.",
+      "source": "console.error",
+      "message": "\u001b[31m[MusicAI] Error:\u001b[39m Generate gagal: Insufficient balance, please recharge.",
+      "stack": "Error: \u001b[31m[MusicAI] Error:\u001b[39m Generate gagal: Insufficient balance, please recharge.\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779345034968:7774:49)",
+      "count": 1,
+      "firstSeen": "2026-05-21T06:31:19.474Z",
+      "lastSeen": "2026-05-21T06:31:19.474Z"
+    },
+    {
+      "fingerprint": "command:musikai::Generate gagal: Frequent requests, please try again later",
+      "source": "command:musikai",
+      "message": "Generate gagal: Frequent requests, please try again later",
+      "stack": "Error: Generate gagal: Frequent requests, please try again later\n    at ChatMusicAPI.generate (/home/runner/workspace/src/scrape/chatmusic.cjs:278:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Promise.all (index 1)\n    at async _generateMusik (file:///home/runner/workspace/src/handler/message.js?t=1779344898686:4412:76)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779344898686:7772:41)",
+      "count": 3,
+      "firstSeen": "2026-05-21T06:28:55.756Z",
+      "lastSeen": "2026-05-21T06:30:10.535Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[MusicAI] Error:\u001b[Nm Generate gagal: Frequent requests, please try again later",
+      "source": "console.error",
+      "message": "\u001b[31m[MusicAI] Error:\u001b[39m Generate gagal: Frequent requests, please try again later",
+      "stack": "Error: \u001b[31m[MusicAI] Error:\u001b[39m Generate gagal: Frequent requests, please try again later\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779344898686:7774:49)",
+      "count": 3,
+      "firstSeen": "2026-05-21T06:28:55.684Z",
+      "lastSeen": "2026-05-21T06:30:10.529Z"
+    },
+    {
       "fingerprint": "console.error::\u001b[Nm[Groups] Gagal fetch grup:\u001b[Nm rate-overlimit",
       "source": "console.error",
       "message": "\u001b[31m[Groups] Gagal fetch grup:\u001b[39m rate-overlimit",

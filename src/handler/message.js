@@ -4407,12 +4407,12 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 let allResults = [];
 
                                 if (isVokal) {
-                                        // Generate cewe (genderType:1) dan cowo (genderType:0) secara paralel
-                                        await _editLoading(`🎵 Generate *cewe & cowo* secara paralel...\n│ Judul : *${params.title}*\n│ ⏳ Proses ~30-60 detik...`);
-                                        const [taskIdsCowo, taskIdsCewe] = await Promise.all([
-                                                api.generate({ ...params, genderType: 0 }),
-                                                api.generate({ ...params, genderType: 1 }),
-                                        ]);
+                                        // Generate cowo dulu, lalu cewe dengan jeda kecil agar tidak kena rate-limit
+                                        await _editLoading(`🎵 Generate vokal *cowo*...\n│ Judul : *${params.title}*\n│ ⏳ Proses ~30-60 detik...`);
+                                        const taskIdsCowo = await api.generate({ ...params, genderType: 0 });
+                                        await new Promise(r => setTimeout(r, 2500));
+                                        await _editLoading(`🎵 Generate vokal *cewe*...\n│ Judul : *${params.title}*\n│ ⏳ Hampir selesai...`);
+                                        const taskIdsCewe = await api.generate({ ...params, genderType: 1 });
                                         const allIds = [...taskIdsCowo, ...taskIdsCewe];
                                         await _editLoading(`🎵 AI sedang menciptakan musik...\n│ Task  : ${allIds.length} variasi (cewe+cowo)\n│ ⏳ Polling...`);
                                         const allTracks = await api.waitAll(allIds, (done, total) => {
