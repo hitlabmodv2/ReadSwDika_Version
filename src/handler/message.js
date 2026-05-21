@@ -4636,8 +4636,76 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         await hisoka.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
                 };
 
-                // 🤖 Random: AI pilih semua (genre + judul + lirik) langsung generate
+                // 🤖 Random: tampilkan pilihan Vokal / Instrumental dulu
                 if (typeof m.text === 'string' && m.text === '__musikai_random__') {
+                        const modeMsg = generateWAMessageFromContent(
+                                m.from,
+                                {
+                                        viewOnceMessage: {
+                                                message: {
+                                                        messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                        interactiveMessage: {
+                                                                contextInfo: m.key?.id ? {
+                                                                        stanzaId: m.key.id,
+                                                                        participant: m.sender || m.key?.participant || m.key?.remoteJid || '',
+                                                                        quotedMessage: m.raw || m.message || {},
+                                                                } : {},
+                                                                body: {
+                                                                        text:
+                                                                                `╭──『 🤖 *AI RANDOM MUSIK* 』\n` +
+                                                                                `│\n` +
+                                                                                `│ AI akan otomatis acak:\n` +
+                                                                                `│  🎸 Genre & mood musik\n` +
+                                                                                `│  🎵 Judul lagu yang sesuai\n` +
+                                                                                `│  📝 Lirik lengkap (50+ baris)\n` +
+                                                                                `│\n` +
+                                                                                `│ Pilih mode lagu:\n` +
+                                                                                `╰──────────────────────────────`,
+                                                                },
+                                                                nativeFlowMessage: {
+                                                                        buttons: [
+                                                                                {
+                                                                                        name: 'single_select',
+                                                                                        buttonParamsJson: JSON.stringify({
+                                                                                                title: '🎵 Pilih Mode Lagu',
+                                                                                                sections: [
+                                                                                                        {
+                                                                                                                title: '🎙️ Mode Lagu',
+                                                                                                                rows: [
+                                                                                                                        {
+                                                                                                                                header: '🎤 ─── Dengan Vokal ───────────',
+                                                                                                                                title: '🎤 Vokal',
+                                                                                                                                description: 'Lagu dengan lirik & suara penyanyi — AI buatkan judul + lirik otomatis',
+                                                                                                                                id: '__musikai_random__vocal__',
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                                header: '🎹 ─── Instrumental ──────────',
+                                                                                                                                title: '🎹 Instrumental',
+                                                                                                                                description: 'Musik tanpa vokal — AI pilihkan genre & suasana yang pas',
+                                                                                                                                id: '__musikai_random__instrumental__',
+                                                                                                                        },
+                                                                                                                ],
+                                                                                                        },
+                                                                                                ],
+                                                                                        }),
+                                                                                },
+                                                                        ],
+                                                                },
+                                                        },
+                                                },
+                                        },
+                                },
+                                {}, {}
+                        );
+                        await hisoka.relayMessage(modeMsg.key.remoteJid, modeMsg.message, { messageId: modeMsg.key.id });
+                        return;
+                }
+
+                // 🎤 Random AI mode Vokal
+                // 🎹 Random AI mode Instrumental
+                if (typeof m.text === 'string' && (m.text === '__musikai_random__vocal__' || m.text === '__musikai_random__instrumental__')) {
+                        const forceMode = m.text === '__musikai_random__vocal__' ? 'vocal' : 'instrumental';
+                        const modeLabel = forceMode === 'vocal' ? '🎤 Vokal' : '🎹 Instrumental';
                         try {
                                 const _chatmusicPath = path.resolve('./src/scrape/chatmusic.cjs');
                                 delete _require.cache[_chatmusicPath];
@@ -4645,10 +4713,10 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 const api = new ChatMusicAPI();
 
                                 const aiLoadMsg = await hisoka.sendMessage(m.from, {
-                                        text: `🤖 *AI sedang meracik lagu...*\n│ 🎲 Acak genre, mood & vibe\n│ ✍️ Tulis judul & lirik\n│ ⏳ Tunggu ~5-10 detik...`
+                                        text: `🤖 *AI sedang meracik lagu ${modeLabel}...*\n│ 🎲 Acak genre, mood & vibe\n│ ✍️ ${forceMode === 'vocal' ? 'Menulis lirik lengkap' : 'Menyusun komposisi instrumental'}\n│ ⏳ Tunggu ~10-15 detik...`
                                 }, { quoted: m }).catch(() => null);
 
-                                const preset = await api.aiRandomPreset();
+                                const preset = await api.aiRandomPreset(forceMode);
 
                                 if (aiLoadMsg?.key) {
                                         try { await hisoka.sendMessage(m.from, { delete: aiLoadMsg.key }); } catch (_) {}
@@ -4656,12 +4724,15 @@ export default async function ({ message, type: messagesType }, hisoka) {
 
                                 await _generateMusik(hisoka, m, preset);
                         } catch (err) {
-                                console.error('\x1b[31m[MusicAI Random] Error:\x1b[39m', err.message);
-                                logError(err, 'callback:musikai_random');
+                                console.error(`\x1b[31m[MusicAI Random ${modeLabel}] Error:\x1b[39m`, err.message);
+                                logError(err, 'callback:musikai_random_mode');
                                 await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } }).catch(() => {});
                                 await sendConfirmWithButtons(hisoka, m,
-                                        `❌ *Gagal generate musik*\n\n_${err.message}_`,
-                                        [{ text: '🔁 Coba Lagi', id: '__musikai_random__' }],
+                                        `❌ *Gagal generate musik*\n\n_${err.message}_\n\n_Coba lagi dalam beberapa saat_`,
+                                        [
+                                                { text: '🔁 Coba Lagi', id: m.text },
+                                                { text: '↩️ Ganti Mode', id: '__musikai_random__' },
+                                        ],
                                         { quoteBot: true }
                                 );
                         }

@@ -441,7 +441,7 @@ class ChatMusicAPI {
          * sesuai genre/mood/vibe yang diacak — lebih akurat & lirik panjang
          * @returns {Promise<{title,prompt,musicStyle,genreLabel,lyrics,isInstrumental}>}
          */
-        async aiRandomPreset() {
+        async aiRandomPreset(forceMode = null) {
                 // 1. Acak genre/mood/vibe/instrument seperti biasa
                 const r = () => Math.random();
 
@@ -457,7 +457,10 @@ class ChatMusicAPI {
                 const instr = r() < 0.4
                         ? this._pickN(_INSTRUMENTS, 2).join(' and ')
                         : this._pick(_INSTRUMENTS);
-                const isInstrumental = r() < 0.35 ? 1 : 0;
+                // forceMode: 'vocal' → 0, 'instrumental' → 1, null → acak
+                const isInstrumental = forceMode === 'instrumental' ? 1
+                        : forceMode === 'vocal' ? 0
+                        : (r() < 0.35 ? 1 : 0);
 
                 const prompt = `${genre} indonesia, ${mood}, ${vibe}, ${instr}`;
 
