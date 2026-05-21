@@ -1,0 +1,192 @@
+const axios = require('axios')
+const crypto = require('node:crypto')
+
+const cfg = {
+  fkey: 'AIzaSyCC4RaX_uFTjAz2smwfpZXyiuO5e7WMglY',
+  graphql_url: 'https://api.moises.ai/graphql/',
+  dl: 'https://api.moises.ai/v3/download'
+};
+
+const kueri = {
+  upload: ['UploadFileMutation', 'mutation UploadFileMutation($input: String!, $type: FileProvider!) { uploadFile(input: $input, type: $type) { signedUrl input tempLocation name provider type } }'],
+  createTask: ['CreateTaskV2Mutation', 'mutation CreateTaskV2Mutation($file: FileInput, $operations: [OperationInput], $automaticShare: Boolean) { createTaskV2(file: $file, operations: $operations, automaticShare: $automaticShare) }'],
+  linkTask: ['LinkFileToTaskMutation', 'mutation LinkFileToTaskMutation($taskId: String!, $file: FileInput!, $operations: [OperationInput]) { linkFileToTask(taskId: $taskId, file: $file, operations: $operations) }'],
+  trackQuery: ['TrackQuery', 'query TrackQuery($id: String!) { track(id: $id) { __typename ...TrackFragment } } fragment FileFragment on File { name provider location } fragment OperationFragment on Operation { id name status result createdAt params outdated outdatedReason updateInProgress isOwner } fragment MetadataFragment on Metadata { id key } fragment TrackFragment on Track { id file { __typename ...FileFragment } operations { __typename ...OperationFragment } metadata { __typename ...MetadataFragment } playlists { id viewOnly } isDemo isOwner isShared isAvailable owner summary { v1 { original { album artist audioChannelLayout bitRate bpm comment cover createdAt duration format genre key size title sampleRate url { m4a flac wav } videoUrl videoHeight videoWidth videoRatio } generation { items { id label path status stem url consumedCredits } } } } }'],
+  deleteUser: ['DeleteUserMutation', 'mutation DeleteUserMutation($reason: String!, $description: String) { deleteUser(reason: $reason, description: $description) }']
+}
+
+async function GraphQL(pp, token) {
+  const [opt, q] = kueri[pp.type]
+  
+  const { data } = await axios.post(cfg.graphql_url, {
+    operationName: opt,
+    variables: pp.vars || {},
+    query: q,
+    extensions: {
+      clientLibrary: {
+        name: 'apollo-kotlin',
+        version: '4.3.1'
+      }
+    }
+  }, {
+    headers: {
+      'User-Agent': 'okhttp/4.12.0',
+      'Accept': 'multipart/mixed;deferSpec=20220824, application/graphql-response+json, application/json',
+      'Accept-Encoding': 'gzip',
+      'Content-Type': 'application/json',
+      'Authorization': token,
+      'apollographql-client-name': 'android',
+      'apollographql-client-version': '2.119.0-1580',
+      'apollographql-client-locale': 'in-ID',
+      'apollographql-client-device-category': 'tablet',
+      'apollographql-client-has-low-latency-feature': 'true',
+      'apollographql-client-has-audio-pro-feature': 'true',
+      'client-device-model': 'SM-S948B'
+    }
+  })
+  
+  if (data.errors) throw data.errors[0]
+  return data.data ? data.data : data
+}
+
+async function DLService(path, token, isBuffer) {
+  const { data } = await axios(cfg.dl + path, {
+    headers: {
+      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 9; NX789J Build/PQ3B.190801.03250903)',
+      'Connection': 'Keep-Alive',
+      'Authorization': token
+    },
+    responseType: isBuffer ? 'arraybuffer' : void 0
+  })
+  return data
+}
+
+async function processBatch(data, func) {
+  const key = Object.keys(data);
+  const res = await Promise.allSettled(key.map(k => func(k, data[k])));
+  return Object.fromEntries(res.map((res, i) => [key[i], res.status === 'fulfilled' ?  res.value : null]));
+};
+
+async function getToken() {
+  const email = `shiro_${crypto.randomUUID().replace(/-/g, '').slice(0, 6)}@gmail.com`
+  
+  const { data: auth } = await axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser', {
+    email,
+    password: 'MyPass123',
+    clientType: 'CLIENT_TYPE_ANDROID'
+  }, {
+    headers: {
+      'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 9; SM-S948B Build/PQ3A.190605.03081104)',
+      'content-type': 'application/json',
+      'x-android-package': 'ai.moises',
+      'x-goog-api-key': cfg.fkey
+    }
+  })
+  
+  return auth.idToken
+}
+
+
+async function process(audioBuffer) {
+  try {
+    const token = await getToken()
+    const fileName = 'mymusik'
+    
+    // get signed url to upload
+    const getSigned = await GraphQL({
+      type: 'upload',
+      vars: {
+        input: fileName,
+        type: 'FILESYSTEM'
+      }
+    }, token)
+    
+    await axios.put(getSigned.uploadFile.signedUrl, audioBuffer, {
+      headers: {
+        'content-type': 'audio/mpeg',
+        'content-length': String(audioBuffer.length)
+      }
+    })
+    
+    // prepare task
+    const createTaskParams = await GraphQL({
+      type: 'createTask',
+      vars: {}
+    }, token)
+    
+    const taskId = createTaskParams.createTaskV2
+    if (!taskId) throw new Error('Taks Id is not found')
+    
+    // linked task to file
+    await GraphQL({
+      type: 'linkTask',
+      vars: {
+        taskId: taskId,
+        file: {
+          provider: 'FILESYSTEM',
+          input: fileName,
+          tempLocation: getSigned.uploadFile.tempLocation,
+          name: fileName,
+          type: 'AUDIO'
+        },
+        operations: [{
+          name: 'BEATSCHORDS_A',
+          params: {}
+        }, {
+          name: 'SEPARATE_B',
+          params: {
+            type: 'vocals-drums-bass-other' // locked on this process
+          }
+        }]
+      }
+    }, token)
+    
+    // polling task
+    let taskResult = {}
+    while (true) {
+      const res = await GraphQL({
+        type: 'trackQuery',
+        vars: { id: taskId }
+      }, token)
+      
+      taskResult = res.track
+      if (res.track.operations.every(p => p.status === 'COMPLETED')) break;
+      
+      await new Promise(resolve => setTimeout(resolve, 2500))
+    }
+    
+    const outs = taskResult.operations.find(p => p.name === 'SEPARATE_B').result
+    const beats = taskResult.operations.find(p => p.name === 'BEATSCHORDS_A').result
+    const meta = taskResult.operations.find(p => p.name === 'FILEMETADATA_A').result
+
+    const files = await processBatch(outs.files., async (a, b) => {
+      return DLService(b, token, true)
+    })
+    const file2 = await processBatch(beats.files, async (a, b) => {
+      if (b.includes('.json')) {
+        return DLService(b, token, false)
+      } else {
+        return DLService(b, token, true)
+      }
+    })
+    
+    // waiting to delete user temporary
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    await GraphQL({
+      type: 'deleteUser',
+      vars: { reason: 'something-else' }
+    }, token)
+    
+    return {
+      files: files,
+      beats: {
+        ...beats,
+        files: file2
+      },
+      meta: meta,
+      summary: taskResult.summary.v1.original
+    }
+  } catch (error) {
+    throw error
+  }
+}
