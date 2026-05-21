@@ -228,7 +228,7 @@ function clearJadibotExpiryWarningTimers(number) {
   expiryWarningTimers.delete(number)
 }
 
-function msgJadibotExpiryWarning(number, remainingText, expiresAtText) {
+function msgJadibotExpiryWarning(number, remainingText, expiresAtText, durationLabel = '1 hari') {
   return (
     `╔══════════════════════╗\n` +
     `║  ⚠️  *JADIBOT HAMPIR HABIS* ║\n` +
@@ -239,7 +239,7 @@ function msgJadibotExpiryWarning(number, remainingText, expiresAtText) {
     `⚠️ Masa aktif jadibot hampir habis.\n` +
     `Bot akan otomatis berhenti dan sesi dihapus saat waktunya habis.\n\n` +
     `💡 Perpanjang dengan:\n` +
-    `*.jadibot ${number} 1 hari*`
+    `*.jadibot ${number} ${durationLabel}*`
   )
 }
 
@@ -576,10 +576,12 @@ function scheduleJadibotExpiry(number, sendReply = null) {
       if (!latest) return
       const latestRemaining = Number(latest.expiresAt) - Date.now()
       if (latestRemaining <= 0 || latestRemaining > threshold.ms + 15000) return
+      const durationLabel = latest.durationText || formatDurationMs(Number(latest.durationMs) || DEFAULT_JADIBOT_DURATION_MS)
       const warningText = msgJadibotExpiryWarning(
         number,
         formatRemainingTime(latestRemaining),
-        formatJadibotExpiryTime(latest.expiresAt)
+        formatJadibotExpiryTime(latest.expiresAt),
+        durationLabel
       )
       if (sendReply) {
         try {
@@ -1112,9 +1114,8 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
         updateJadibotExpiryStatus(number, 'active')
         scheduleJadibotExpiry(number, sendReply)
       } else {
-        ensureJadibotExpiry(number, DEFAULT_JADIBOT_DURATION_MS, 'active')
-        scheduleJadibotExpiry(number, sendReply)
-        console.log(`[JADIBOT] ⚠️ ${number} tidak ada data expiry → diberi durasi default 24 jam`)
+        setPermanentJadibot(number, 'active')
+        console.log(`[JADIBOT] ⚠️ ${number} tidak ada data expiry → dijadikan permanent (auto-start/reconnect)`)
       }
 
       if (pairingTimeout.has(number)) {
@@ -1440,9 +1441,8 @@ async function startJadibotQR(number, sendReply, sendImage, mainBotNumber, durat
         updateJadibotExpiryStatus(number, 'active')
         scheduleJadibotExpiry(number, sendReply)
       } else {
-        ensureJadibotExpiry(number, DEFAULT_JADIBOT_DURATION_MS, 'active')
-        scheduleJadibotExpiry(number, sendReply)
-        console.log(`[JADIBOT QR] ⚠️ ${number} tidak ada data expiry → diberi durasi default 24 jam`)
+        setPermanentJadibot(number, 'active')
+        console.log(`[JADIBOT QR] ⚠️ ${number} tidak ada data expiry → dijadikan permanent (auto-start/reconnect)`)
       }
       console.log(`[JADIBOT QR] ✅ ${number} CONNECTED via QR`)
       try {
