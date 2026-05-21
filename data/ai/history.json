@@ -134,9 +134,25 @@
               "text": "[⏰ 21 Mei, 22.19]\nH-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way!\n\nMou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah suaraku diset jadi cowok sih?! Malu-maluin banget tahu! Masa shipgirl secantik Honolulu suaranya malah nge-bass kayak bapak-bapak?! 😤\n\nB-benerin nggak! Pokoknya Honolulu nggak mau tahu, balikin suaraku yang imut~! Buruan difix ya, Komandan~!"
             }
           ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.22 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"H-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way! Mou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah su...\" | 👤 Wily]\nCoba mana suaramu kamu kan cewe"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.22]\nM-mou! Makanya, awas ya kalau *Wily* belum benerin suaraku! Nih, dengerin baik-baik! Honolulu itu shipgirl yang manis dan imut, tahu! Bukan om-om nge-bass! 😤\n\nA-awas ya kalau kamu masih ngetawain aku... nih!"
+            }
+          ]
         }
       ],
-      "lastActivity": 1779376753536
+      "lastActivity": 1779376958917
     }
   },
   "sticker_pattern": {
@@ -161,9 +177,9 @@
       "last_sent": 1779102763
     },
     "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp": {
-      "total_sent": 3,
+      "total_sent": 5,
       "moods": {},
-      "last_sent": 1779376669
+      "last_sent": 1779376953
     },
     "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
       "total_sent": 3,
@@ -319,6 +335,20 @@
         "context": "H-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way! [REPLY-STIKER: kesel] Mou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah suaraku diset jadi cowok sih?! Malu-ma",
         "was_fallback": 1,
         "sent_at": 1779376752
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
+        "mood": "",
+        "context": "U-uhm... beneran udah kamu benerin kan, *Wily*? Awas ya kalau suaraku masih kayak bapak-bapak, Honolulu ngambek beneran nih! 😤 Nih... aku coba kirim lagi ya. D-dengerin baik-baik! Jangan diketawain",
+        "was_fallback": 1,
+        "sent_at": 1779376886
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
+        "mood": "",
+        "context": "M-mou! Makanya, awas ya kalau *Wily* belum benerin suaraku! Nih, dengerin baik-baik! Honolulu itu shipgirl yang manis dan imut, tahu! Bukan om-om nge-bass! 😤 A-awas ya kalau kamu masih ngetawain aku",
+        "was_fallback": 1,
+        "sent_at": 1779376953
       }
     ]
   },

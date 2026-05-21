@@ -1,6 +1,24 @@
 {
   "errors": [
     {
+      "fingerprint": "uncaughtException::ENOENT: no such file or directory, open '/tmp/audioILSYM-NANANEDN'",
+      "source": "uncaughtException",
+      "message": "ENOENT: no such file or directory, open '/tmp/audioILSYM-985A34A49ED7'",
+      "stack": "Error: ENOENT: no such file or directory, open '/tmp/audioILSYM-985A34A49ED7'",
+      "count": 1,
+      "firstSeen": "2026-05-21T15:21:28.687Z",
+      "lastSeen": "2026-05-21T15:21:28.687Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[CrashGuard] UncaughtException (N this minute):\u001b[Nm ENOENT: no such file or directory, open '/tmp/audioILSYM-NANANED",
+      "source": "console.error",
+      "message": "\u001b[31m[CrashGuard] UncaughtException (4 this minute):\u001b[39m ENOENT: no such file or directory, open '/tmp/audioILSYM-985A34A49ED7'",
+      "stack": "Error: \u001b[31m[CrashGuard] UncaughtException (4 this minute):\u001b[39m ENOENT: no such file or directory, open '/tmp/audioILSYM-985A34A49ED7'\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at process.<anonymous> (file:///home/runner/workspace/src/helper/crashGuard.js:103:17)\n    at process.emit (node:events:524:28)\n    at process._fatalException (node:internal/process/execution:188:25)",
+      "count": 1,
+      "firstSeen": "2026-05-21T15:21:28.679Z",
+      "lastSeen": "2026-05-21T15:21:28.679Z"
+    },
+    {
       "fingerprint": "AITool/VN::[AITool/VN] ❌ Gagal generate TTS \"司令官、いつもお仕事お疲れ様。ホノルルの声、ちゃんと届いてる？大好きだよ、ehehe~\": readable.on is not a function",
       "source": "AITool/VN",
       "message": "[AITool/VN] ❌ Gagal generate TTS \"司令官、いつもお仕事お疲れ様。ホノルルの声、ちゃんと届いてる？大好きだよ、ehehe~\": readable.on is not a function",
@@ -41,9 +59,9 @@
       "source": "console.error",
       "message": "\u001b[31m[Groups] Gagal fetch grup:\u001b[39m Connection Closed",
       "stack": "Error: \u001b[31m[Groups] Gagal fetch grup:\u001b[39m Connection Closed\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at fetchGroupsWithRetry (file:///home/runner/workspace/index.js:672:65)\n    at async EventEmitter.<anonymous> (file:///home/runner/workspace/index.js:678:25)",
-      "count": 1,
+      "count": 5,
       "firstSeen": "2026-05-21T14:23:54.727Z",
-      "lastSeen": "2026-05-21T14:23:54.727Z"
+      "lastSeen": "2026-05-21T15:21:31.268Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[Handler] Error on command \"musikai\":\u001b[Nm Connection Closed",
@@ -248,18 +266,18 @@
       "source": "unhandledRejection",
       "message": "Connection Closed",
       "stack": "Error: Connection Closed\n    at sendRawMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:63:19)\n    at sendNode (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:82:16)\n    at /home/runner/workspace/node_modules/socketon/lib/Socket/messages-send.js:592:19\n    at async Object.transaction (/home/runner/workspace/node_modules/socketon/lib/Utils/auth-utils.js:139:26)\n    at async relayMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/messages-send.js:337:9)\n    at async sendPeerDataOperationMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/messages-send.js:264:23)\n    at async sendRetryRequest (/home/runner/workspace/node_modules/socketon/lib/Socket/messages-recv.js:219:27)\n    at async /home/runner/workspace/node_modules/socketon/lib/Socket/messages-recv.js:825:33\n    at async /home/runner/workspace/node_modules/socketon/lib/Utils/make-mutex.js:18:36",
-      "count": 9,
+      "count": 17,
       "firstSeen": "2026-05-20T14:22:34.406Z",
-      "lastSeen": "2026-05-21T14:23:54.740Z"
+      "lastSeen": "2026-05-21T15:21:34.394Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[CrashGuard] UnhandledRejection (N this minute):\u001b[Nm Connection Closed",
       "source": "console.error",
       "message": "\u001b[31m[CrashGuard] UnhandledRejection (1 this minute):\u001b[39m Connection Closed",
       "stack": "Error: \u001b[31m[CrashGuard] UnhandledRejection (1 this minute):\u001b[39m Connection Closed\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at process.<anonymous> (file:///home/runner/workspace/src/helper/crashGuard.js:131:17)\n    at process.emit (node:events:524:28)\n    at emitUnhandledRejection (node:internal/process/promises:250:13)\n    at throwUnhandledRejectionsMode (node:internal/process/promises:385:19)\n    at processPromiseRejections (node:internal/process/promises:470:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:96:32)",
-      "count": 9,
+      "count": 17,
       "firstSeen": "2026-05-20T14:22:34.399Z",
-      "lastSeen": "2026-05-21T14:23:54.735Z"
+      "lastSeen": "2026-05-21T15:21:34.388Z"
     },
     {
       "fingerprint": "command:musikai::Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.",
