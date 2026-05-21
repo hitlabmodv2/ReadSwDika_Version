@@ -153,6 +153,27 @@
         }
       ],
       "lastActivity": 1779376958917
+    },
+    "6289688206739@s.whatsapp.net_120363192554714254@g.us": {
+      "messages": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.26 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Mou~ *Wily*... Tiba-tiba banget sih minta denger suara aku? Bikin malu aja deh... Tapi, karena kamu yang minta, mana bisa aku tolak. Ehehe~ ...\" | 👤 Wily]\nOk udh"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "[⏰ 21 Mei, 22.26]\nIh, kok malah senyum-senyum gitu sih, *Wily*? Mukaku udah merah banget tahu! \n\nTapi janji ya, dengerinnya pas lagi sepi aja... Malu kalau kedengeran St. Louis atau yang lain! Nih, dengerin ya~"
+            }
+          ]
+        }
+      ],
+      "lastActivity": 1779377197437
     }
   },
   "sticker_pattern": {
@@ -177,9 +198,9 @@
       "last_sent": 1779102763
     },
     "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp": {
-      "total_sent": 5,
+      "total_sent": 6,
       "moods": {},
-      "last_sent": 1779376953
+      "last_sent": 1779377141
     },
     "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
       "total_sent": 3,
@@ -262,6 +283,13 @@
         "context": "Un! Itu dia menu lengkapnya, Wily~ Ehehe~ [REPLY-STIKER: senyum] Panjang banget yaa listnya? Honolulu sih ngerti kok kalau kadang bikin bingung saking banyaknya fitur! 😆 Kalau Wily atau teman-teman",
         "was_fallback": 1,
         "sent_at": 1779103081
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
+        "mood": "",
+        "context": "Mou~ *Wily*... Tiba-tiba banget sih minta denger suara aku? Bikin malu aja deh... Tapi, karena kamu yang minta, mana bisa aku tolak. Ehehe~ Nih, dengerin baik-baik ya, *Shikikan*~ [REPLY-STIKER: malu]",
+        "was_fallback": 1,
+        "sent_at": 1779377141
       }
     ],
     "6289667923162@s.whatsapp.net_120363387297385463@g.us": [

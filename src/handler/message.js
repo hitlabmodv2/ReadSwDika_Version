@@ -7766,11 +7766,12 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 `│ Generate lagu original pakai AI.\n` +
                                                 `│ Hasil: *2 variasi audio* + cover art.\n` +
                                                 `│\n` +
-                                                `│ Tekan *Random* untuk generate langsung,\n` +
-                                                `│ atau ketik manual:\n` +
-                                                `│ _${pfx}musikai judul | lirik | genre_\n` +
+                                                `│ *Cara pakai:*\n` +
+                                                `│ • _${pfx}musikai hujan di kota_ — tema bebas\n` +
+                                                `│ • _${pfx}musikai random_ — genre random\n` +
+                                                `│ • _${pfx}musikai judul | lirik | genre_ — manual\n` +
                                                 `│\n` +
-                                                `│ ✨ Tiap random = kombinasi unik!\n` +
+                                                `│ ✨ AI pilih genre + judul + lirik otomatis!\n` +
                                                 `╰──────────────────────────────`,
                                                 [
                                                         { text: '🎲 Generate Random', id: '__musikai_random__' },
@@ -7785,7 +7786,53 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 await _showGenreSelect();
                                                 break;
                                         }
+
                                         const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
+
+                                        // Tema bebas: input tanpa separator | → AI tentukan genre+judul+lirik
+                                        if (!input.includes('|')) {
+                                                const tema = input.slice(0, 200);
+                                                await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } }).catch(() => {});
+                                                const loadingMsg = await hisoka.sendMessage(m.from,
+                                                        { text: `🎵 *AI sedang meracik lagu...*\n│ Tema  : *${tema}*\n│\n│ ⏳ AI memilih genre, judul & lirik yang pas...` },
+                                                        { quoted: m }
+                                                ).catch(() => null);
+                                                const _edit = async (txt) => {
+                                                        if (!loadingMsg?.key) return;
+                                                        try { await hisoka.sendMessage(m.from, { text: txt, edit: loadingMsg.key }); } catch (_) {}
+                                                };
+
+                                                const api = new ChatMusicAPI();
+                                                await api.login();
+                                                const preset = await api.aiThemePreset(tema, 'vocal');
+                                                await _edit(
+                                                        `🎵 *AI selesai meracik!*\n` +
+                                                        `│ Tema  : *${tema}*\n` +
+                                                        `│ Judul : *${preset.title}*\n` +
+                                                        `│ Genre : *${preset.genreLabel}*\n` +
+                                                        `│\n` +
+                                                        `│ ⏳ Mengirim ke server musik...`
+                                                );
+
+                                                const params = {
+                                                        title:          preset.title,
+                                                        lyrics:         preset.lyrics,
+                                                        musicStyle:     preset.musicStyle,
+                                                        genreLabel:     preset.genreLabel,
+                                                        prompt:         preset.prompt,
+                                                        isInstrumental: preset.isInstrumental,
+                                                };
+
+                                                // Hapus loading lalu generate
+                                                if (loadingMsg?.key) {
+                                                        try { await hisoka.sendMessage(m.from, { delete: loadingMsg.key }); } catch (_) {}
+                                                }
+                                                await _generateMusik(hisoka, m, params);
+                                                console.log(`\x1b[35m[MusicAI/Tema]\x1b[0m ✅ tema="${tema}" → judul="${preset.title}" genre="${preset.genreLabel}"`);
+                                                break;
+                                        }
+
+                                        // Manual: judul | lirik | genre
                                         const parts = input.split('|').map(s => s.trim());
                                         const params = {
                                                 title:          parts[0] || 'My Song',

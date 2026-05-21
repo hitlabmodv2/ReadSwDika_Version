@@ -386,6 +386,94 @@ class ChatMusicAPI {
         }
 
         /**
+         * Generate preset berdasarkan TEMA bebas dari user (mis: "hujan di kota", "rindu mantan")
+         * AI tentukan sendiri: genre, mood, vibe, judul puitis, lirik lengkap — sesuai tema.
+         * @param {string} tema - tema bebas dari user
+         * @param {string|null} forceMode - 'vocal'|'instrumental'|null
+         * @returns {Promise<{title,prompt,musicStyle,genreLabel,lyrics,isInstrumental,_aiGenerated,_tema}>}
+         */
+        async aiThemePreset(tema, forceMode = null) {
+                const r = () => Math.random();
+                const isInstrumental = forceMode === 'instrumental' ? 1
+                        : forceMode === 'vocal' ? 0
+                        : (r() < 0.25 ? 1 : 0);
+
+                const aiPrompt = isInstrumental
+                        ? `Kamu adalah music director dan penulis lagu profesional Indonesia.
+User ingin lagu bertema: "${tema}"
+
+Tentukan:
+1. Genre paling cocok untuk tema ini (1-2 genre, singkat, bahasa Inggris)
+2. Mood/nuansa yang tepat (1-2 kata, bahasa Inggris)
+3. Vibe/suasana (1 frasa pendek, bahasa Inggris)
+4. Instrumen utama yang cocok (1-2 instrumen, bahasa Inggris)
+5. Judul lagu instrumental yang puitis (1-4 kata, bahasa Indonesia)
+
+Format jawaban PERSIS:
+JUDUL: [judul]
+GENRE: [genre]
+GENRE_LABEL: [genre singkat max 30 karakter]
+MOOD: [mood]
+VIBE: [vibe]
+INSTRUMEN: [instrumen]`
+                        : `Kamu adalah music director dan penulis lagu profesional Indonesia.
+User ingin lagu bertema: "${tema}"
+
+Tentukan dan buat:
+1. Genre paling cocok (1-2 genre, bahasa Inggris)
+2. Mood/nuansa (1-2 kata, bahasa Inggris)
+3. Vibe/suasana (1 frasa pendek, bahasa Inggris)
+4. Instrumen utama (1-2 instrumen, bahasa Inggris)
+5. Judul lagu yang puitis dan sesuai tema (1-4 kata, bahasa Indonesia)
+6. Lirik lengkap dengan struktur: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]
+
+Ketentuan lirik:
+- Minimal 55 baris total
+- Bahasa Indonesia yang puitis, natural, sesuai tema "${tema}"
+- JANGAN masukkan kata kasar, SARA, narkoba, atau konten sensitif
+
+Format jawaban PERSIS:
+JUDUL: [judul]
+GENRE: [genre]
+GENRE_LABEL: [genre singkat max 30 karakter]
+MOOD: [mood]
+VIBE: [vibe]
+INSTRUMEN: [instrumen]
+LIRIK:
+[seluruh lirik di sini]`;
+
+                const aiResult = await _gemmyInstance.ask(aiPrompt);
+
+                const judulMatch  = aiResult.match(/JUDUL:\s*(.+)/);
+                const genreMatch  = aiResult.match(/^GENRE:\s*(.+)/m);
+                const labelMatch  = aiResult.match(/GENRE_LABEL:\s*(.+)/);
+                const moodMatch   = aiResult.match(/MOOD:\s*(.+)/);
+                const vibeMatch   = aiResult.match(/VIBE:\s*(.+)/);
+                const instrMatch  = aiResult.match(/INSTRUMEN:\s*(.+)/);
+                const lirikMatch  = aiResult.match(/LIRIK:\n([\s\S]+)/);
+
+                const genre      = genreMatch?.[1]?.trim() || this._pick(_GENRES);
+                const mood       = moodMatch?.[1]?.trim()  || this._pick(_MOODS);
+                const vibe       = vibeMatch?.[1]?.trim()  || this._pick(_VIBES);
+                const instr      = instrMatch?.[1]?.trim() || this._pick(_INSTRUMENTS);
+                const title      = sanitizeLyrics(judulMatch?.[1]?.trim() || tema);
+                const genreLabel = labelMatch?.[1]?.trim() || genre;
+                const lyrics     = isInstrumental ? '' : sanitizeLyrics(lirikMatch?.[1]?.trim() || '');
+                const prompt     = `${genre} indonesia, ${mood}, ${vibe}, ${instr}`;
+
+                return {
+                        title,
+                        prompt,
+                        musicStyle: genre,
+                        genreLabel,
+                        lyrics,
+                        isInstrumental,
+                        _aiGenerated: true,
+                        _tema: tema,
+                };
+        }
+
+        /**
          * Random preset tapi judul + lirik di-generate otomatis oleh Gemmy AI
          * sesuai genre/mood/vibe yang diacak — lebih akurat & lirik panjang
          * @returns {Promise<{title,prompt,musicStyle,genreLabel,lyrics,isInstrumental}>}
