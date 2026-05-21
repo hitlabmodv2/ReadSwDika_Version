@@ -2782,7 +2782,8 @@
     "id": "628569048966@s.whatsapp.net",
     "name": "*Wulandari",
     "lid": "265326184915057@lid",
-    "jid": "628569048966@s.whatsapp.net"
+    "jid": "628569048966@s.whatsapp.net",
+    "notify": "lan"
   },
   "6285641732459@s.whatsapp.net": {
     "isContact": true,
@@ -32782,5 +32783,15 @@
     "id": "178701056626923@lid",
     "lid": "178701056626923@lid",
     "notify": "Stephanie Floriska"
+  },
+  "70468367327234@lid": {
+    "id": "70468367327234@lid",
+    "lid": "70468367327234@lid",
+    "imgUrl": "changed"
+  },
+  "161774640865399@lid": {
+    "id": "161774640865399@lid",
+    "lid": "161774640865399@lid",
+    "imgUrl": "changed"
   }
 }
