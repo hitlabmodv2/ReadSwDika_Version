@@ -4637,9 +4637,23 @@ export default async function ({ message, type: messagesType }, hisoka) {
                         const selectedGenre = m.text.replace('__musikai_genre__', '').trim();
                         try {
                                 const { ChatMusicAPI } = _require(path.resolve('./src/scrape/chatmusic.cjs'));
-                                const preset = new ChatMusicAPI().getRandomPreset();
+                                const api = new ChatMusicAPI();
+
+                                // Kasih tahu user AI sedang buat lirik
+                                const aiLoadMsg = await hisoka.sendMessage(m.from, {
+                                        text: `✍️ *AI sedang menulis lirik...*\n│ Genre : *${selectedGenre}*\n│ ⏳ Tunggu ~5 detik...`
+                                }, { quoted: m }).catch(() => null);
+
+                                // Generate preset pakai Gemmy AI (judul + lirik otomatis)
+                                const preset = await api.aiRandomPreset();
                                 preset.musicStyle = selectedGenre;
                                 preset.prompt = `${selectedGenre} indonesia, ${preset.prompt?.split(',').slice(1).join(',') || ''}`.trim();
+
+                                // Hapus pesan loading AI
+                                if (aiLoadMsg?.key) {
+                                        try { await hisoka.sendMessage(m.from, { delete: aiLoadMsg.key }); } catch (_) {}
+                                }
+
                                 await _generateMusik(hisoka, m, preset);
                         } catch (err) {
                                 console.error('\x1b[31m[MusicAI] Error:\x1b[39m', err.message);

@@ -2,6 +2,63 @@
 
 const axios = require('axios');
 
+// ─── Gemmy AI (Gemini 2.5 Flash, free via Firebase) ──────────────────────
+class GemmyAI {
+        constructor() {
+                this.authToken = null;
+                this.tokenExpiry = null;
+        }
+
+        async getAuthToken() {
+                if (this.authToken && this.tokenExpiry && Date.now() < this.tokenExpiry - 300000) return this.authToken;
+                const { data } = await axios.post(
+                        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAxof8_SbpDcww38NEQRhNh0Pzvbphh-IQ',
+                        { clientType: 'CLIENT_TYPE_ANDROID' },
+                        { headers: {
+                                'accept-encoding': 'gzip',
+                                'accept-language': 'in-ID, en-US',
+                                'connection': 'Keep-Alive',
+                                'content-type': 'application/json',
+                                'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 10; SM-J700F Build/QQ3A.200805.001)',
+                                'x-android-cert': '037CD2976D308B4EFD63EC63C48DC6E7AB7E5AF2',
+                                'x-android-package': 'com.jetkite.gemmy',
+                                'x-client-version': 'Android/Fallback/X24000001/FirebaseCore-Android',
+                                'x-firebase-appcheck': 'eyJlcnJvciI6IlVOS05PV05fRVJST1IifQ==',
+                                'x-firebase-client': 'H4sIAAAAAAAAAKtWykhNLCpJSk0sKVayio7VUSpLLSrOzM9TslIyUqoFAFyivEQfAAAA',
+                                'x-firebase-gmpid': '1:652803432695:android:c4341db6033e62814f33f2',
+                        }}
+                );
+                if (!data.idToken) throw new Error('Gagal dapat token Gemmy AI');
+                this.authToken = data.idToken;
+                this.tokenExpiry = Date.now() + 3600 * 1000;
+                return this.authToken;
+        }
+
+        async chat(prompt) {
+                const token = await this.getAuthToken();
+                const { data } = await axios.post(
+                        'https://asia-northeast3-gemmy-ai-bdc03.cloudfunctions.net/gemini',
+                        {
+                                model: 'gemini-2.5-flash',
+                                stream: false,
+                                request: {
+                                        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                                        generationConfig: { maxOutputTokens: 4096 }
+                                }
+                        },
+                        { headers: {
+                                'accept-encoding': 'gzip',
+                                'authorization': `Bearer ${token}`,
+                                'content-type': 'application/json; charset=UTF-8',
+                                'user-agent': 'okhttp/5.3.2',
+                        }}
+                );
+                return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        }
+}
+
+const _gemmyInstance = new GemmyAI();
+
 // ─── Pool besar untuk auto-generate kombinasi bebas ───────────────────────
 
 const _GENRES = [
@@ -376,6 +433,91 @@ class ChatMusicAPI {
                         musicStyle: genre,
                         lyrics: '',
                         isInstrumental,
+                };
+        }
+
+        /**
+         * Random preset tapi judul + lirik di-generate otomatis oleh Gemmy AI
+         * sesuai genre/mood/vibe yang diacak — lebih akurat & lirik panjang
+         * @returns {Promise<{title,prompt,musicStyle,genreLabel,lyrics,isInstrumental}>}
+         */
+        async aiRandomPreset() {
+                // 1. Acak genre/mood/vibe/instrument seperti biasa
+                const r = () => Math.random();
+
+                const genre = r() < 0.25
+                        ? `${this._pick(_GENRES)} ${this._pick(_GENRES)}`
+                        : this._pick(_GENRES);
+                const mood = r() < 0.3
+                        ? this._pickN(_MOODS, 2).join(' and ')
+                        : this._pick(_MOODS);
+                const vibe = r() < 0.2
+                        ? this._pickN(_VIBES, 2).join(', ')
+                        : this._pick(_VIBES);
+                const instr = r() < 0.4
+                        ? this._pickN(_INSTRUMENTS, 2).join(' and ')
+                        : this._pick(_INSTRUMENTS);
+                const isInstrumental = r() < 0.35 ? 1 : 0;
+
+                const prompt = `${genre} indonesia, ${mood}, ${vibe}, ${instr}`;
+
+                // 2. Minta Gemmy AI generate judul + lirik yang sesuai
+                const aiPrompt = isInstrumental
+                        ? `Kamu adalah penulis lagu profesional Indonesia.
+Berdasarkan info berikut:
+- Genre: ${genre}
+- Mood: ${mood}
+- Suasana: ${vibe}
+- Instrumen: ${instr}
+- Mode: Instrumental (tanpa lirik vokal)
+
+Buatkan judul lagu instrumental yang puitis (1-4 kata, bahasa Indonesia).
+Format jawaban persis:
+JUDUL: [judul lagu]
+GENRE_LABEL: [genre singkat max 30 karakter]`
+                        : `Kamu adalah penulis lagu profesional Indonesia.
+Berdasarkan info berikut:
+- Genre: ${genre}
+- Mood: ${mood}
+- Suasana/vibe: ${vibe}
+- Instrumen: ${instr}
+
+Buatkan:
+1. JUDUL lagu (1-4 kata, bahasa Indonesia, puitis, sesuai mood)
+2. LIRIK lengkap dengan struktur: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]
+
+Ketentuan lirik:
+- Minimal 55 baris total
+- Setiap section minimal 4 baris
+- Bahasa Indonesia yang puitis dan natural
+- Sesuai genre, mood, dan vibe
+- JANGAN masukkan kata kasar, SARA, narkoba, atau konten sensitif
+
+Format jawaban HARUS persis seperti ini:
+JUDUL: [judul lagu]
+GENRE_LABEL: [genre singkat max 30 karakter]
+LIRIK:
+[seluruh lirik di sini]`;
+
+                const aiResult = await _gemmyInstance.chat(aiPrompt);
+
+                // 3. Parse hasil AI
+                const judulMatch = aiResult.match(/JUDUL:\s*(.+)/);
+                const genreMatch = aiResult.match(/GENRE_LABEL:\s*(.+)/);
+                const lirikMatch = aiResult.match(/LIRIK:\n([\s\S]+)/);
+
+                const title      = sanitizeLyrics(judulMatch?.[1]?.trim() || this._pick(_TITLE_NOUN) + ' ' + this._pick(_TITLE_ADJ));
+                const genreLabel = genreMatch?.[1]?.trim() || genre;
+                const lyrics     = isInstrumental ? '' : sanitizeLyrics(lirikMatch?.[1]?.trim() || '');
+
+                return {
+                        title,
+                        prompt,
+                        musicStyle: genre,
+                        genreLabel,
+                        lyrics,
+                        isInstrumental,
+                        _aiGenerated: true,
                 };
         }
 }

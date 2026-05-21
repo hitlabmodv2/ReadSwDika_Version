@@ -203,7 +203,8 @@
     "id": "6282258833301@s.whatsapp.net",
     "name": "!!!Nova",
     "lid": "244452643868853@lid",
-    "jid": "6282258833301@s.whatsapp.net"
+    "jid": "6282258833301@s.whatsapp.net",
+    "notify": "someone"
   },
   "6281253484299@s.whatsapp.net": {
     "isContact": true,
@@ -14086,7 +14087,8 @@
     "id": "6281353726941@s.whatsapp.net",
     "name": "Ikell🅥",
     "lid": "192706760442045@lid",
-    "jid": "6281353726941@s.whatsapp.net"
+    "jid": "6281353726941@s.whatsapp.net",
+    "notify": "Ikell ♪"
   },
   "6287724699322@s.whatsapp.net": {
     "isContact": true,
