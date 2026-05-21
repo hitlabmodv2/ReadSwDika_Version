@@ -32,7 +32,7 @@ USER="hitlabmodv2"
 REPO="ReadSwDika_Version"
 # DEFAULT_BRANCH di-auto-detect realtime dari GitHub (lihat detect_default_branch).
 # Nilai di sini cuma fallback kalau koneksi ke GitHub bermasalah.
-DEFAULT_BRANCH="ReadswDika-V18.2"
+DEFAULT_BRANCH="ReadswDika-V18.9"
 
 # Versi script ini — dipakai untuk cek update otomatis
 SCRIPT_VERSION="1.1"
