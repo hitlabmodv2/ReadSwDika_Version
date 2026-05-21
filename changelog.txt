@@ -1,3 +1,66 @@
+🤖 *WILY BOT — V18*
+_📅 21 Mei 2026_
+
+✨ *1 Fitur Baru*
+🔧 *4 Bug Fix*
+🚀 *2 Improvement*
+
+━━━━━━━━━━━━━━━━━━━━━━
+✨ *FITUR BARU*
+━━━━━━━━━━━━━━━━━━━━━━
+
+> 🎵 *Musik AI — `.musikai`*
+> Generate lagu original dengan AI dari judul & genre pilihan
+> Hasil langsung 2 variasi sekaligus, pilih format MP3 atau Voice Note
+> Ganti model AI (v4 / v5 / v5.5) langsung dari hasil tanpa ulang input
+> Mode instrumental tersedia — tanpa vokal, fokus ke melodi
+> Alias: `.musikai` `.aimusik`
+
+━━━━━━━━━━━━━━━━━━━━━━
+🔧 *BUG FIX*
+━━━━━━━━━━━━━━━━━━━━━━
+
+> 🤖 *Jadibot — Durasi Reset ke 1 Hari Setelah Restart*
+> Semua jadibot (permanent maupun berdurasi) kembali ke 1 hari
+> setiap kali panel di-restart
+> Penyebab: fallback auto-start membuat expiry baru 24 jam
+> saat data tidak ditemukan — kini fallback ke *permanent*
+
+> 🤖 *Jadibot — `.upbot permanent` Hapus Data*
+> Command `.upbot [nomor] permanent` justru menghapus data
+> jadibot dari penyimpanan, sehingga saat restart data hilang
+> dan terkena bug reset di atas
+> Kini memanggil fungsi yang benar: simpan status permanent
+
+> ⚠️ *Jadibot — Pesan Peringatan Selalu Saran "1 hari"*
+> Pesan "jadibot hampir habis" selalu menyarankan perpanjang
+> dengan durasi 1 hari, padahal durasi asli bot bisa berbeda
+> Kini saran perpanjang mengikuti durasi bot yang sebenarnya
+> Contoh: bot 10 hari → saran `.jadibot xxx 10 hari`
+
+> 🔄 *Bot — Error `rate-overlimit` Saat Fetch Grup*
+> Saat startup, fetch semua grup kadang gagal karena rate-limit WA
+> Kini ada retry otomatis dengan delay bertahap (hingga 5x coba)
+> Bot lebih stabil dan tidak perlu restart manual
+
+━━━━━━━━━━━━━━━━━━━━━━
+🚀 *IMPROVEMENT*
+━━━━━━━━━━━━━━━━━━━━━━
+
+> 🎵 *Musik AI — Vokal Paralel*
+> Sebelumnya user harus pilih gender vokal dulu, baru generate
+> Kini pria & wanita di-generate *bersamaan* — semua variasi
+> langsung muncul tanpa langkah tambahan, lebih cepat & praktis
+
+> 🤖 *Jadibot — Auto-Start Lebih Akurat*
+> Jadibot lama (sebelum fitur data expiry ada) tidak lagi di-reset
+> durasinya saat restart — otomatis dijaga sebagai permanent
+
+━━━━━━━━━━━━━━━━━━━━━━
+🤖 *Wily-Bot* | *V18* | _21 Mei 2026_
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🤖 *WILY BOT — V17*
 _📅 15 Mei 2026_
 
