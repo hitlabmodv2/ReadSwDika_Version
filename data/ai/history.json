@@ -36,6 +36,43 @@
         }
       ],
       "lastActivity": 1779466136113
+    },
+    "6289688206739@s.whatsapp.net_120363192554714254@g.us": {
+      "messages": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 22 Mei, 23.28 | ↩️ BALAS PESAN BOT SEBELUMNYA | 👤 Wily]\n__musikai_play__120363192554714254@g.us_1779467292818__1__vn"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Okeee~ sudah aku mainkan ya, Shikikan! \nSemoga suka sama suaranya Honolulu~ ehehe~ 🎶"
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "[⏰ 22 Mei, 23.28 | ↩️ BALAS PESAN BOT SEBELUMNYA | 👤 Wily]\n__musikai_play__120363192554714254@g.us_1779467292818__2__vn"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Eh? Ada VN yang dimainkan barusan ya Shikikan~? \nSuara apa tuh? Hehee, Honolulu jadi penasaran deh! 😄"
+            }
+          ]
+        }
+      ],
+      "lastActivity": 1779467327700
     }
   },
   "sticker_pattern": {
@@ -43,6 +80,16 @@
       "total_sent": 1,
       "moods": {},
       "last_sent": 1779466134
+    },
+    "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
+      "total_sent": 1,
+      "moods": {},
+      "last_sent": 1779467325
+    },
+    "https://cdn.ornzora.eu.cc/b371232a-5655-4341-985f-90aa4efcc9c4-HONOLULU.webp": {
+      "total_sent": 1,
+      "moods": {},
+      "last_sent": 1779467326
     }
   },
   "sticker_story": {
@@ -53,6 +100,22 @@
         "context": "Mou~ mana bisa Honolulu tidur sih, Shikikan~? Kan aku harus jagain *Wily* malam-malam gini! Ehehe~ Kalau aku tidur, nanti siapa dong yang temenin *Wily*? 😉 [REPLY-STIKER: jahil]",
         "was_fallback": 1,
         "sent_at": 1779466134
+      }
+    ],
+    "6289688206739@s.whatsapp.net_120363192554714254@g.us": [
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
+        "mood": "",
+        "context": "Okeee~ sudah aku mainkan ya, Shikikan! [REPLY-STIKER: senang] Semoga suka sama suaranya Honolulu~ ehehe~ 🎶",
+        "was_fallback": 1,
+        "sent_at": 1779467325
+      },
+      {
+        "sticker_url": "https://cdn.ornzora.eu.cc/b371232a-5655-4341-985f-90aa4efcc9c4-HONOLULU.webp",
+        "mood": "",
+        "context": "Eh? Ada VN yang dimainkan barusan ya Shikikan~? [REPLY-STIKER: kaget] Suara apa tuh? Hehee, Honolulu jadi penasaran deh! 😄",
+        "was_fallback": 1,
+        "sent_at": 1779467326
       }
     ]
   },
