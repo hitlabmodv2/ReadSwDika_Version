@@ -422,7 +422,7 @@ class ChatMusicAPI {
 User ingin lagu bertema: "${tema}"
 
 Tentukan:
-1. Genre paling cocok untuk tema ini (1-2 genre, singkat, bahasa Inggris)
+1. Genre yang paling cocok untuk tema ini — boleh 1, 2, 3, atau lebih sesuai karakter lagunya (bahasa Inggris, pisahkan dengan koma)
 2. Mood/nuansa yang tepat (1-2 kata, bahasa Inggris)
 3. Vibe/suasana (1 frasa pendek, bahasa Inggris)
 4. Instrumen utama yang cocok (1-2 instrumen, bahasa Inggris)
@@ -430,7 +430,7 @@ Tentukan:
 
 Format jawaban PERSIS:
 JUDUL: [judul]
-GENRE: [genre]
+GENRE: [genre1, genre2, ...]
 GENRE_LABEL: [genre singkat max 30 karakter]
 MOOD: [mood]
 VIBE: [vibe]
@@ -439,7 +439,7 @@ INSTRUMEN: [instrumen]`
 User ingin lagu bertema: "${tema}"
 
 Tentukan dan buat:
-1. Genre paling cocok (1-2 genre, bahasa Inggris)
+1. Genre yang paling cocok — boleh 1, 2, 3, atau lebih sesuai karakter dan rilisan lagunya (bahasa Inggris, pisahkan dengan koma)
 2. Mood/nuansa (1-2 kata, bahasa Inggris)
 3. Vibe/suasana (1 frasa pendek, bahasa Inggris)
 4. Instrumen utama (1-2 instrumen, bahasa Inggris)
@@ -453,7 +453,7 @@ Ketentuan lirik:
 
 Format jawaban PERSIS:
 JUDUL: [judul]
-GENRE: [genre]
+GENRE: [genre1, genre2, ...]
 GENRE_LABEL: [genre singkat max 30 karakter]
 MOOD: [mood]
 VIBE: [vibe]
@@ -533,17 +533,17 @@ LIRIK:
                 let aiPrompt;
                 if (lang === 'jp') {
                         aiPrompt = isInstrumental
-                                ? `あなたはプロの日本人作曲家です。\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\nMode: Instrumental\n\nInstrumental曲のタイトルを考えてください（1〜4語、日本語またはローマ字）。\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 25 karakter]`
-                                : `あなたはプロの日本人作曲家・作詞家です。\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\n\n以下を作ってください:\n1. 曲のタイトル（1〜4語、日本語/英語/ローマ字OK）\n2. 日本語の歌詞（最低30行）\n   構成: [Verse 1], [Chorus], [Verse 2], [Chorus], [Bridge], [Outro]\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 25 karakter]\nLIRIK:\n[seluruh lirik]`;
+                                ? `あなたはプロの日本人作曲家です。\nGenre候補: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\nMode: Instrumental\n\nこの曲に最も合うジャンルを自由に判断してください（1つでも3つ以上でもOK、カンマ区切り）。\nInstrumental曲のタイトルを考えてください（1〜4語、日本語またはローマ字）。\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 25 karakter]`
+                                : `あなたはプロの日本人作曲家・作詞家です。\nGenre候補: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\n\nこの曲に最も合うジャンルを自由に判断してください（1つでも3つ以上でもOK、カンマ区切り）。\n以下を作ってください:\n1. 曲のタイトル（1〜4語、日本語/英語/ローマ字OK）\n2. 日本語の歌詞（最低30行）\n   構成: [Verse 1], [Chorus], [Verse 2], [Chorus], [Bridge], [Outro]\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 25 karakter]\nLIRIK:\n[seluruh lirik]`;
                 } else if (lang === 'en') {
                         aiPrompt = isInstrumental
-                                ? `You are a professional songwriter.\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\nMode: Instrumental\n\nCreate an evocative instrumental title (1-4 words, English).\n\nFormat EXACTLY:\nJUDUL: [title]\nGENRE_LABEL: [genre max 25 chars]`
-                                : `You are a professional English songwriter.\nGenre: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\n\nCreate:\n1. Song TITLE (1-4 words, English, poetic)\n2. Full LYRICS in English (minimum 30 lines)\n   Structure: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]\n\nRules:\n- Natural English, poetic, fits the genre & mood\n- No explicit content\n\nFormat EXACTLY:\nJUDUL: [title]\nGENRE_LABEL: [genre max 25 chars]\nLIRIK:\n[full lyrics here]`;
+                                ? `You are a professional songwriter.\nGenre suggestion: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\nMode: Instrumental\n\nFreely decide the best genres for this song — can be 1, 2, 3 or more depending on the song's character (comma-separated).\nCreate an evocative instrumental title (1-4 words, English).\n\nFormat EXACTLY:\nJUDUL: [title]\nGENRE_LABEL: [genre max 25 chars]`
+                                : `You are a professional English songwriter.\nGenre suggestion: ${genre}\nMood: ${mood}\nVibe: ${vibe}\nInstrument: ${instr}\n\nFreely decide the best genres for this song — can be 1, 2, 3 or more depending on the song's release style and character (comma-separated).\nCreate:\n1. Song TITLE (1-4 words, English, poetic)\n2. Full LYRICS in English (minimum 30 lines)\n   Structure: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]\n\nRules:\n- Natural English, poetic, fits the genre & mood\n- No explicit content\n\nFormat EXACTLY:\nJUDUL: [title]\nGENRE_LABEL: [genre max 25 chars]\nLIRIK:\n[full lyrics here]`;
                 } else {
                         // Indonesia (default)
                         aiPrompt = isInstrumental
-                                ? `Kamu adalah penulis lagu profesional Indonesia.\nGenre: ${genre}\nMood: ${mood}\nSuasana: ${vibe}\nInstrumen: ${instr}\nMode: Instrumental\n\nBuatkan judul instrumental yang puitis (1-4 kata, bahasa Indonesia).\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 30 karakter]`
-                                : `Kamu adalah penulis lagu profesional Indonesia.\nGenre: ${genre}\nMood: ${mood}\nSuasana/vibe: ${vibe}\nInstrumen: ${instr}\n\nBuatkan:\n1. JUDUL lagu (1-4 kata, bahasa Indonesia, puitis)\n2. LIRIK lengkap:\n   Struktur: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]\n   - Minimal 55 baris total\n   - Bahasa Indonesia puitis & natural\n   - JANGAN kata kasar, SARA, narkoba\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 30 karakter]\nLIRIK:\n[seluruh lirik]`;
+                                ? `Kamu adalah penulis lagu profesional Indonesia.\nGenre acuan: ${genre}\nMood: ${mood}\nSuasana: ${vibe}\nInstrumen: ${instr}\nMode: Instrumental\n\nTentukan sendiri genre yang paling cocok untuk lagu ini — boleh 1, 2, 3, atau lebih sesuai karakter rilisannya (pisahkan dengan koma).\nBuatkan judul instrumental yang puitis (1-4 kata, bahasa Indonesia).\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 30 karakter]`
+                                : `Kamu adalah penulis lagu profesional Indonesia.\nGenre acuan: ${genre}\nMood: ${mood}\nSuasana/vibe: ${vibe}\nInstrumen: ${instr}\n\nTentukan sendiri genre yang paling cocok — boleh 1, 2, 3, atau lebih sesuai karakter dan rilisan lagunya (pisahkan dengan koma).\nBuatkan:\n1. JUDUL lagu (1-4 kata, bahasa Indonesia, puitis)\n2. LIRIK lengkap:\n   Struktur: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Pre-Chorus], [Chorus], [Bridge], [Outro]\n   - Minimal 55 baris total\n   - Bahasa Indonesia puitis & natural\n   - JANGAN kata kasar, SARA, narkoba\n\nFormat PERSIS:\nJUDUL: [judul]\nGENRE_LABEL: [genre max 30 karakter]\nLIRIK:\n[seluruh lirik]`;
                 }
 
                 const aiResult = await _gemmyInstance.ask(aiPrompt);
