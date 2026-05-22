@@ -14174,8 +14174,13 @@ infoText += `╰═════════════════════�
 
                                 const jbPfx = m.prefix || '.';
 
+                                const jbPrivateTarget = m.isGroup ? m.sender : m.from;
                                 const sendJbBtn = async (bodyText) => {
-                                        await tolak(hisoka, m, bodyText);
+                                        if (m.isGroup) {
+                                                await hisoka.sendMessage(jbPrivateTarget, { text: bodyText });
+                                        } else {
+                                                await tolak(hisoka, m, bodyText);
+                                        }
                                 };
 
                                 const { number: parsedJadibotNumber, durationInput, rawNumberPart, hasInvalidPhoneChars } = parseJadibotCommandQuery(query || '');
@@ -14393,7 +14398,7 @@ infoText += `╰═════════════════════�
                                 }
 
                                 const { flag: connFlag, name: connCountry } = getPhoneCountryInfo(number)
-                                await tolak(hisoka, m, 
+                                const jbConnectMsg =
                                         `╔══════════════════════╗\n` +
                                         `║   🤖  *J A D I B O T*  ║\n` +
                                         `╚══════════════════════╝\n\n` +
@@ -14401,16 +14406,28 @@ infoText += `╰═════════════════════�
                                         `${connFlag} *Negara:* ${connCountry}\n` +
                                         `📱 *Nomor:* +${number}\n` +
                                         `🕒 *Masa berlaku:* ${durationInfo.label}\n\n` +
-                                        `Kode pairing akan segera dikirim.`
-                                );
+                                        `Kode pairing akan segera dikirim.`;
+                                if (m.isGroup) {
+                                        await hisoka.sendMessage(jbPrivateTarget, { text: jbConnectMsg });
+                                } else {
+                                        await tolak(hisoka, m, jbConnectMsg);
+                                }
+
+                                const jbSendReply = async (msg) => {
+                                        if (m.isGroup) {
+                                                await hisoka.sendMessage(jbPrivateTarget, { text: msg });
+                                        } else {
+                                                await tolak(hisoka, m, msg);
+                                        }
+                                };
 
                                 await startJadibot(
                                         number,
-                                        async (msg) => tolak(hisoka, m, msg),
+                                        jbSendReply,
                                         mainNum,
                                         async (key, text) => {
                                                 try {
-                                                        await hisoka.sendMessage(m.from, { edit: key, text })
+                                                        await hisoka.sendMessage(jbPrivateTarget, { edit: key, text })
                                                 } catch {}
                                         },
                                         null,

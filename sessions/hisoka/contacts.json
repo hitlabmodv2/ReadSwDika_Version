@@ -14387,8 +14387,7 @@
     "name": "Hamdan",
     "lid": "239328697536578@lid",
     "jid": "6283134844523@s.whatsapp.net",
-    "notify": "Anda Siapa?",
-    "verifiedName": "Anda Siapa?"
+    "notify": "Anda Siapa?"
   },
   "6281289973507@s.whatsapp.net": {
     "isContact": true,
@@ -14733,7 +14732,8 @@
     "id": "6285648619209@s.whatsapp.net",
     "name": "™Manz",
     "lid": "9195743088747@lid",
-    "jid": "6285648619209@s.whatsapp.net"
+    "jid": "6285648619209@s.whatsapp.net",
+    "notify": "Ini Chino"
   },
   "6281348176027@s.whatsapp.net": {
     "isContact": true,
@@ -33004,5 +33004,20 @@
     "id": "277979477373077@lid",
     "lid": "277979477373077@lid",
     "imgUrl": "removed"
+  },
+  "189176397991955@lid": {
+    "id": "189176397991955@lid",
+    "lid": "189176397991955@lid",
+    "imgUrl": "changed"
+  },
+  "216840584302738@lid": {
+    "id": "216840584302738@lid",
+    "lid": "216840584302738@lid",
+    "imgUrl": "changed"
+  },
+  "48516185514190@lid": {
+    "id": "48516185514190@lid",
+    "lid": "48516185514190@lid",
+    "imgUrl": "changed"
   }
 }
