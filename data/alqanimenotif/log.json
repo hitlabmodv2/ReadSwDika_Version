@@ -1,6 +1,54 @@
 {
   "terkirim": [
     {
+      "id": "jishou-akuyaku-reijou-na-konyakusha-no-kansatsu-kiroku::8",
+      "judul": "Jishou Akuyaku Reijou na Konyakusha no Kansatsu Kiroku.",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T14:17:03.290Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1769/153376l.jpg",
+      "url": "https://alqanime.net/jishou-akuyaku-reijou-na-konyakusha-no-kansatsu-kiroku/"
+    },
+    {
+      "id": "bokutachi-no-remake::1",
+      "judul": "Bokutachi no Remake BD Batch (– 12)",
+      "epNum": 1,
+      "waktuKirim": "2026-05-22T13:54:09.778Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1871/118309l.jpg",
+      "url": "https://alqanime.net/bokutachi-no-remake/"
+    },
+    {
+      "id": "bokutachi-no-remake-recap::0",
+      "judul": "Bokutachi no Remake Recap",
+      "epNum": 0,
+      "waktuKirim": "2026-05-22T13:54:06.594Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1776/117125l.jpg",
+      "url": "https://alqanime.net/bokutachi-no-remake-recap/"
+    },
+    {
+      "id": "diamond-no-ace-ova::1",
+      "judul": "Diamond no Ace OVABD Batch (– 03)",
+      "epNum": 1,
+      "waktuKirim": "2026-05-22T13:54:01.834Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/5/54235l.jpg",
+      "url": "https://alqanime.net/diamond-no-ace-ova/"
+    },
+    {
       "id": "kirio-fanclub::8",
       "judul": "Kirio Fanclub",
       "epNum": 8,
