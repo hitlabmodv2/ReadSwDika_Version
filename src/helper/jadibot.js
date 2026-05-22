@@ -979,9 +979,15 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
             const code = await sock.requestPairingCode(number, customCode)
             if (aborted) break
 
-            // Kirim pairing code ke nomor target secara realtime via main bot
+            // Cek mode pairing dari config
+            const pairingMode = (cfg.jadibotPairingMode || 'v2').toLowerCase()
+            // v1 = kirim pairing code ke GC/owner chat
+            // v2 = kirim pairing code langsung ke nomor tujuan (private)
+
             let directPairingSent = false
-            if (mainBotSock) {
+
+            if (pairingMode === 'v2' && mainBotSock) {
+              // ── V2: Kirim kode langsung ke nomor tujuan ──
               try {
                 const fmt = formatPairingCode(code)
                 await mainBotSock.sendMessage(`${number}@s.whatsapp.net`, {
@@ -1003,7 +1009,7 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
                     `\`\`\`${fmt}\`\`\``
                 })
                 directPairingSent = true
-                console.log(`[JADIBOT] ✅ Pairing code terkirim realtime ke +${number}`)
+                console.log(`[JADIBOT][V2] ✅ Pairing code terkirim realtime ke +${number}`)
 
                 // Notif singkat ke owner bahwa kode sudah dikirim ke nomor tujuan
                 try {
@@ -1021,11 +1027,11 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
                   if (sentInfo?.key) pairingMsgKey = sentInfo.key
                 } catch {}
               } catch (e) {
-                console.log(`[JADIBOT] ⚠️ Gagal kirim pairing code ke +${number}: ${e?.message}`)
+                console.log(`[JADIBOT][V2] ⚠️ Gagal kirim pairing code ke +${number}: ${e?.message}`)
               }
             }
 
-            // Fallback: kirim ke owner jika pengiriman langsung ke nomor tujuan gagal
+            // ── V1 atau fallback jika V2 gagal: kirim kode ke GC/owner chat ──
             if (!directPairingSent) {
               if (sendPairingMsg) {
                 const sentInfo = await sendPairingMsg(code, number)
@@ -1041,6 +1047,7 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
                   await sendReply(`📋 *Salin Kode:*\n\n\`\`\`${formatted}\`\`\`\n\n👆 Ketuk tahan teks kode lalu *Salin*`)
                 }
               }
+              if (pairingMode === 'v1') console.log(`[JADIBOT][V1] ✅ Pairing code terkirim ke owner/GC`)
             }
             break
           } catch (err) {
