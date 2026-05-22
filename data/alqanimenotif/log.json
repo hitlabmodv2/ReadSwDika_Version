@@ -1,6 +1,30 @@
 {
   "terkirim": [
     {
+      "id": "all-you-need-is-kill::0",
+      "judul": "All You Need Is Kill",
+      "epNum": 0,
+      "waktuKirim": "2026-05-22T15:17:49.142Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1109/154247l.jpg",
+      "url": "https://alqanime.net/all-you-need-is-kill/"
+    },
+    {
+      "id": "otonari-no-tenshi-sama-ni-itsunomanika-dame-ningen-ni-sareteita-ken-season-2::8",
+      "judul": "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken Season 2",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T15:17:45.816Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1240/133638l.jpg",
+      "url": "https://alqanime.net/otonari-no-tenshi-sama-ni-itsunomanika-dame-ningen-ni-sareteita-ken-season-2/"
+    },
+    {
       "id": "jishou-akuyaku-reijou-na-konyakusha-no-kansatsu-kiroku::8",
       "judul": "Jishou Akuyaku Reijou na Konyakusha no Kansatsu Kiroku.",
       "epNum": 8,
