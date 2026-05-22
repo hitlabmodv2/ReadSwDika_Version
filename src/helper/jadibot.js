@@ -1150,10 +1150,6 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
       // Kirim pesan sambutan hanya saat fresh pairing (bukan reconnect otomatis)
       if (isFreshPairing) {
         try { if (reactFn) await reactFn('✅') } catch {}
-        try {
-          const connectedText = msgConnected(number)
-          await sendReply(connectedText)
-        } catch {}
 
         // Kirim notifikasi langsung ke nomor jadibot via main bot
         // Jika berhasil → skip self-notif (hindari duplikat ke target)
@@ -1215,14 +1211,8 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
         const _Y = '\x1b[33m', _R = '\x1b[0m', _B = '\x1b[1m';
         console.log(`${_Y}[JADIBOT]${_R} ⚠️  ${_B}${number}${_R} logout paksa → sesi dihapus`);
 
-        // Kirim notif DULU ke owner sebelum socket ditutup
-        const remainingList = [...jadibotMap.keys()]
-        try {
-          await sendReply(msgLoggedOut(number, remainingList))
-        } catch (err) {
-          console.error(`[JADIBOT] Gagal kirim notif logout ${number}:`, err?.message)
-          logError(err instanceof Error ? err : new Error(String(err?.message || err)), `jadibot-logout-notif:${number}`)
-        }
+        // Beri tahu owner via react ❌ (realtime)
+        try { if (reactFn) await reactFn('❌') } catch {}
 
         // Kirim notif langsung ke WA user jadibot via main bot (realtime)
         if (mainBotSock) {
@@ -1334,7 +1324,7 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
 }
 
 /* ================= START JADIBOT QR ================= */
-async function startJadibotQR(number, sendReply, sendImage, mainBotNumber, durationMs = undefined, mainBotSock = null) {
+async function startJadibotQR(number, sendReply, sendImage, mainBotNumber, durationMs = undefined, mainBotSock = null, reactFn = null) {
   number = number.replace(/[^0-9]/g, '')
   const hasRequestedDuration = durationMs !== undefined && durationMs !== null
 
@@ -1446,10 +1436,7 @@ async function startJadibotQR(number, sendReply, sendImage, mainBotNumber, durat
         console.log(`[JADIBOT QR] ⚠️ ${number} tidak ada data expiry → dijadikan permanent (auto-start/reconnect)`)
       }
       console.log(`[JADIBOT QR] ✅ ${number} CONNECTED via QR`)
-      try {
-        const connectedText = msgConnected(number)
-        await sendReply(connectedText)
-      } catch {}
+      try { if (reactFn) await reactFn('✅') } catch {}
 
       // Kirim notifikasi langsung ke nomor jadibot via main bot
       // Jika berhasil → skip self-notif (hindari duplikat ke target)
@@ -1497,14 +1484,8 @@ async function startJadibotQR(number, sendReply, sendImage, mainBotNumber, durat
         activeOrStartingJadibot.delete(number)
         console.log(`[JADIBOT QR] ⚠️ ${number} LOGOUT PAKSA → session dihapus`)
 
-        // Kirim notif DULU sebelum hapus sesi
-        const remainingList = [...jadibotMap.keys()]
-        try {
-          await sendReply(msgLoggedOut(number, remainingList))
-        } catch (err) {
-          console.error(`[JADIBOT QR] Gagal kirim notif logout ${number}:`, err?.message)
-          logError(err instanceof Error ? err : new Error(String(err?.message || err)), `jadibot-qr-logout-notif:${number}`)
-        }
+        // Beri tahu owner via react ❌ (realtime)
+        try { if (reactFn) await reactFn('❌') } catch {}
 
         // Kirim notif langsung ke WA user jadibot via main bot (realtime)
         if (mainBotSock) {

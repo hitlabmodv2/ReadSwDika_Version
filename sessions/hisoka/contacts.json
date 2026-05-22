@@ -6408,7 +6408,8 @@
     "name": "Ananda",
     "lid": "164746439479432@lid",
     "jid": "6282139672290@s.whatsapp.net",
-    "notify": "Nixel"
+    "notify": "Nixel",
+    "verifiedName": "Nixel"
   },
   "6282332478213@s.whatsapp.net": {
     "isContact": true,
@@ -17076,8 +17077,7 @@
     "name": "sunshine jpeg",
     "lid": "156182794784889@lid",
     "jid": "6285175463174@s.whatsapp.net",
-    "notify": "sunshine.jpeg",
-    "verifiedName": "sunshine.jpeg"
+    "notify": "sunshine.jpeg"
   },
   "6282190082077@s.whatsapp.net": {
     "isContact": true,
@@ -27126,7 +27126,8 @@
     "id": "6282172560701@s.whatsapp.net",
     "name": "Re: Takagi",
     "lid": "57488271536342@lid",
-    "jid": "6282172560701@s.whatsapp.net"
+    "jid": "6282172560701@s.whatsapp.net",
+    "notify": "Nemuri•"
   },
   "6281515167985@s.whatsapp.net": {
     "isContact": true,
@@ -33026,5 +33027,15 @@
     "id": "11721083191321@lid",
     "lid": "11721083191321@lid",
     "imgUrl": "changed"
+  },
+  "102151552540816@lid": {
+    "id": "102151552540816@lid",
+    "lid": "102151552540816@lid",
+    "imgUrl": "removed"
+  },
+  "269655310643411@lid": {
+    "id": "269655310643411@lid",
+    "lid": "269655310643411@lid",
+    "notify": "Poetra"
   }
 }
