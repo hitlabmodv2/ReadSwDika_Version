@@ -1050,10 +1050,8 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
               } else {
                 // V1: pakai plain text langsung (interactiveMessage/tombol tidak bekerja di GC)
                 try {
-                  const formatted = formatPairingCode(code)
                   const sentInfo = await sendReply(msgPairingCode(code, number))
                   if (sentInfo?.key) pairingMsgKey = sentInfo.key
-                  await sendReply(`📋 *Salin Kode:*\n\n\`\`\`${formatted}\`\`\`\n\n👆 Ketuk tahan teks kode lalu *Salin*`)
                 } catch (e) {
                   console.log(`[JADIBOT][V1] ⚠️ Gagal kirim pairing code ke GC: ${e?.message}`)
                 }
