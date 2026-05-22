@@ -857,7 +857,7 @@ function msgLoggedOutDirect(number) {
 }
 
 /* ================= START JADIBOT ================= */
-async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, sendPairingMsg = null, durationMs = undefined, mainBotSock = null) {
+async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, sendPairingMsg = null, durationMs = undefined, mainBotSock = null, reactFn = null) {
   number = number.replace(/[^0-9]/g, '')
   const hasRequestedDuration = durationMs !== undefined && durationMs !== null
 
@@ -1149,6 +1149,7 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
 
       // Kirim pesan sambutan hanya saat fresh pairing (bukan reconnect otomatis)
       if (isFreshPairing) {
+        try { if (reactFn) await reactFn('✅') } catch {}
         try {
           const connectedText = msgConnected(number)
           await sendReply(connectedText)

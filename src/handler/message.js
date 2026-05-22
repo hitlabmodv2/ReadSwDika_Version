@@ -14392,6 +14392,8 @@ infoText += `╰═════════════════════�
                                         }
                                 }
 
+                                try { await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } }) } catch {}
+
                                 await startJadibot(
                                         number,
                                         async (msg) => tolak(hisoka, m, msg),
@@ -14403,7 +14405,10 @@ infoText += `╰═════════════════════�
                                         },
                                         null,
                                         durationInfo.ms,
-                                        hisoka
+                                        hisoka,
+                                        async (emoji) => {
+                                                try { await hisoka.sendMessage(m.from, { react: { text: emoji, key: m.key } }) } catch {}
+                                        }
                                 );
                         }
                                 break;
