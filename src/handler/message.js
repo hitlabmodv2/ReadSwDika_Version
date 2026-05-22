@@ -2226,7 +2226,6 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 }
 
                                                 let response;
-                                                const fullPrompt = systemPrompt + '\n\n' + userMessage;
 
                                                 if (imageBuffer && imageBuffer.length > 0) {
                                                         // Konversi webp (sticker) ke jpeg agar Gemini bisa baca
@@ -2239,9 +2238,25 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                         finalMime = 'image/jpeg';
                                                                 } catch (_) {}
                                                         }
-                                                        response = await gemini.askWithImage(fullPrompt, finalBuffer, finalMime);
+                                                        const autoVContents = [
+                                                                { role: 'user', parts: [{ text: systemPrompt }] },
+                                                                { role: 'model', parts: [{ text: `Siap Shikikan~ Honolulu di sini! ✨` }] },
+                                                                { role: 'user', parts: [
+                                                                        { inlineData: { mimeType: finalMime, data: finalBuffer.toString('base64') } },
+                                                                        { text: userMessage || 'Analisis gambar/sticker ini.' },
+                                                                ]},
+                                                        ];
+                                                        const autoVModels = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-pro-latest'];
+                                                        for (const model of autoVModels) {
+                                                                try { response = await gemini.chat({ model, contents: autoVContents }); break; } catch (_) {}
+                                                        }
                                                 } else {
-                                                        response = await gemini.ask(fullPrompt);
+                                                        const autoContents = [
+                                                                { role: 'user', parts: [{ text: systemPrompt }] },
+                                                                { role: 'model', parts: [{ text: `Siap Shikikan~ Honolulu di sini! ✨` }] },
+                                                                { role: 'user', parts: [{ text: userMessage }] },
+                                                        ];
+                                                        response = await gemini.chat({ contents: autoContents });
                                                 }
 
                                                 if (response && response.trim()) {
@@ -2533,12 +2548,16 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 if (histMsgs.length > 0) {
                                                         contents = [
                                                                 { role: 'user', parts: [{ text: systemPrompt }] },
-                                                                { role: 'model', parts: [{ text: `Halo ${userName}! Aku Wily Bot, siap membantu 🤖` }] },
+                                                                { role: 'model', parts: [{ text: `Siap Shikikan~ Honolulu di sini, siap membantu! ehehe ✨` }] },
                                                                 ...histMsgs,
                                                                 { role: 'user', parts: [{ text: wrapCurrentUserMessage(userMessage, currentMsgMeta) }] },
                                                         ];
                                                 } else {
-                                                        contents = [{ role: 'user', parts: [{ text: systemPrompt + '\n\n' + userMessage }] }];
+                                                        contents = [
+                                                                { role: 'user', parts: [{ text: systemPrompt }] },
+                                                                { role: 'model', parts: [{ text: `Siap Shikikan~ Honolulu di sini! ✨` }] },
+                                                                { role: 'user', parts: [{ text: userMessage }] },
+                                                        ];
                                                 }
 
                                                 // Bangun teks tambahan konteks untuk vision model pada skenario image-reply
@@ -2576,22 +2595,32 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                                                 finalMime = 'image/jpeg';
                                                                         } catch (_) {}
                                                                 }
+                                                                const vModels = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-pro-latest'];
                                                                 if (histMsgs.length > 0) {
                                                                         const vContents = [
                                                                                 { role: 'user', parts: [{ text: systemPrompt }] },
-                                                                                { role: 'model', parts: [{ text: `Halo ${userName}! Aku Wily Bot 🤖` }] },
+                                                                                { role: 'model', parts: [{ text: `Siap Shikikan~ Honolulu di sini, siap membantu! ehehe ✨` }] },
                                                                                 ...histMsgs,
                                                                                 { role: 'user', parts: [
                                                                                         { inlineData: { mimeType: finalMime, data: finalBuffer.toString('base64') } },
                                                                                         { text: wrapCurrentUserMessage(visionContextText, currentMsgMeta) },
                                                                                 ]},
                                                                         ];
-                                                                        const models = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-pro-latest'];
-                                                                        for (const model of models) {
+                                                                        for (const model of vModels) {
                                                                                 try { response = await gemini.chat({ model, contents: vContents }); break; } catch (_) {}
                                                                         }
                                                                 } else {
-                                                                        response = await gemini.askWithImage(systemPrompt + '\n\n' + visionContextText, finalBuffer, finalMime);
+                                                                        const vContentsNoHist = [
+                                                                                { role: 'user', parts: [{ text: systemPrompt }] },
+                                                                                { role: 'model', parts: [{ text: `Siap Shikikan~ Honolulu di sini! ✨` }] },
+                                                                                { role: 'user', parts: [
+                                                                                        { inlineData: { mimeType: finalMime, data: finalBuffer.toString('base64') } },
+                                                                                        { text: visionContextText },
+                                                                                ]},
+                                                                        ];
+                                                                        for (const model of vModels) {
+                                                                                try { response = await gemini.chat({ model, contents: vContentsNoHist }); break; } catch (_) {}
+                                                                        }
                                                                 }
                                                         } else {
                                                                 response = await gemini.chat({ contents });
