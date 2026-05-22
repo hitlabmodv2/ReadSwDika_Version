@@ -13116,6 +13116,52 @@ hasil += `╰══════════════════════�
                                 break;
                         }
 
+                        case 'setpairing': {
+                                if (!isMainBot(hisoka)) return;
+                                if (!m.isOwner) return;
+                                const spQuery = (query || '').trim().toLowerCase();
+                                if (!spQuery) {
+                                        const spCfg = loadConfig();
+                                        const spCurrent = spCfg.jadibotPairingMode || 'v2';
+                                        await tolak(hisoka, m,
+                                                `╔══════════════════════╗\n` +
+                                                `║  ⚙️  *PAIRING MODE*   ║\n` +
+                                                `╚══════════════════════╝\n\n` +
+                                                `📌 *Mode aktif sekarang:* *${spCurrent.toUpperCase()}*\n\n` +
+                                                `📋 *Pilihan mode:*\n` +
+                                                `• *.setpairing v1* → Kode tampil di GC/chat owner\n` +
+                                                `• *.setpairing v2* → Kode dikirim ke private nomor tujuan\n\n` +
+                                                `💡 Contoh: _.setpairing v2_`
+                                        );
+                                        break;
+                                }
+                                if (spQuery !== 'v1' && spQuery !== 'v2') {
+                                        await tolak(hisoka, m,
+                                                `❌ *Mode tidak valid!*\n\n` +
+                                                `Gunakan:\n` +
+                                                `• *.setpairing v1* → kode ke GC/owner\n` +
+                                                `• *.setpairing v2* → kode ke nomor tujuan`
+                                        );
+                                        break;
+                                }
+                                const spCfg = loadConfig();
+                                spCfg.jadibotPairingMode = spQuery;
+                                saveConfig(spCfg);
+                                const spDesc = spQuery === 'v1'
+                                        ? 'Kode pairing tampil di GC / chat owner'
+                                        : 'Kode pairing dikirim ke private nomor tujuan';
+                                await tolak(hisoka, m,
+                                        `╔══════════════════════╗\n` +
+                                        `║  ✅  *PAIRING MODE*   ║\n` +
+                                        `╚══════════════════════╝\n\n` +
+                                        `🔄 *Mode diperbarui ke: ${spQuery.toUpperCase()}*\n\n` +
+                                        `📌 ${spDesc}\n\n` +
+                                        `_Berlaku untuk jadibot berikutnya._`
+                                );
+                                logCommand(m, hisoka, 'setpairing');
+                                break;
+                        }
+
                         case 'tt': {
                                 try {
                                         if (!query) {
