@@ -16388,7 +16388,8 @@
     "id": "6281326870686@s.whatsapp.net",
     "name": "RIESKEI",
     "lid": "191323814494236@lid",
-    "jid": "6281326870686@s.whatsapp.net"
+    "jid": "6281326870686@s.whatsapp.net",
+    "notify": "reki fans nganjuk pipel"
   },
   "6281258113468@s.whatsapp.net": {
     "isContact": true,
@@ -33055,6 +33056,11 @@
   "154520306884693@lid": {
     "id": "154520306884693@lid",
     "lid": "154520306884693@lid",
+    "imgUrl": "changed"
+  },
+  "202052676403336@lid": {
+    "id": "202052676403336@lid",
+    "lid": "202052676403336@lid",
     "imgUrl": "changed"
   }
 }

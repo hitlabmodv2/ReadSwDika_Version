@@ -1201,6 +1201,14 @@ async function startJadibot(number, sendReply, mainBotNumber, editMsg = null, se
               )
             } catch {}
           }
+        } else {
+          // V1: kirim notif terhubung ke GC/owner
+          try {
+            await sendReply(msgConnected(number))
+            console.log(`[JADIBOT][V1] ✅ Notif terhubung terkirim ke GC/owner`)
+          } catch (e) {
+            console.log(`[JADIBOT][V1] ⚠️ Gagal kirim notif terhubung ke GC: ${e?.message}`)
+          }
         }
       }
     }
@@ -1506,6 +1514,14 @@ async function startJadibotQR(number, sendReply, sendImage, mainBotNumber, durat
               `_Pesan ini dikirim otomatis saat jadibot terhubung._`
             )
           } catch {}
+        }
+      } else {
+        // V1: kirim notif terhubung ke GC/owner
+        try {
+          await sendReply(msgConnected(number))
+          console.log(`[JADIBOT QR][V1] ✅ Notif terhubung terkirim ke GC/owner`)
+        } catch (e) {
+          console.log(`[JADIBOT QR][V1] ⚠️ Gagal kirim notif terhubung ke GC: ${e?.message}`)
         }
       }
     }

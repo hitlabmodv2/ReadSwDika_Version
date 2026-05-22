@@ -14442,7 +14442,14 @@ infoText += `╰═════════════════════�
 
                                 await startJadibot(
                                         number,
-                                        async (msg) => tolak(hisoka, m, msg),
+                                        async (msg) => {
+                                                try {
+                                                        const payload = typeof msg === 'string' ? { text: msg } : msg
+                                                        return await hisoka.sendMessage(m.from, payload, { quoted: m })
+                                                } catch (e) {
+                                                        console.error('[JADIBOT][v1-notif] Gagal kirim ke GC:', e?.message)
+                                                }
+                                        },
                                         mainNum,
                                         async (key, text) => {
                                                 try {
