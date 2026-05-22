@@ -84,3 +84,11 @@ export function setUserExtra(sender, key, value) {
 export function getUserExtra(sender, key) {
     return getUserData(sender)[key];
 }
+
+export function getAllUserIds() {
+    try {
+        return fs.readdirSync(USERS_DIR)
+            .filter(f => f.endsWith('.json'))
+            .map(f => f.replace('.json', ''));
+    } catch { return []; }
+}

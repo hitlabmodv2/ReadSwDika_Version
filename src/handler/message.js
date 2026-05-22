@@ -44,7 +44,7 @@ import { injectMessage } from '../helper/inject.js';
 import listenEvent from './event.js';
 import gemini from '../helper/gemini.js';
 import { updateUserName, getUserName } from '../db/userDb.js';
-import { loadUserMemory, detectAndUpdateMemory, clearUserMemory, memoryToReadable } from '../helper/userMemory.js';
+import { loadUserMemory, detectAndUpdateMemory, clearUserMemory, clearAllUserMemory, memoryToReadable } from '../helper/userMemory.js';
 import { searchAndGetImage, searchAndGetImages, extractImagesFromText } from '../helper/imageSearch.js';
 import { extractSongsFromText, extractVideosFromText, extractReplyStickersFromText, extractTikTokFromText, extractInstagramFromText, extractYouTubeAudioFromText, hasMediaDownloadMarker, hasSocialDLMarker, hasStickerMarker, extractVoiceNotesFromText, extractStickersFromText } from '../helper/aiTools.js';
 import { getHistory, addToHistory, clearHistory, clearAllHistory, countHistory, getSessionKey, buildHistoryMeta, wrapCurrentUserMessage } from '../db/aiHistory.js';
@@ -10707,18 +10707,19 @@ text += `╰══════════════════════�
                                                 break;
                                         }
 
-                                        // .wilyai reset — hapus semua history AI
+                                        // .wilyai reset — hapus semua history AI + memori user
                                         if (sub === 'reset' || sub === 'clear' || sub === 'hapus') {
-                                                const total = countHistory();
-                                                if (total === 0) {
-                                                        console.log(`[wilyai] reset → tidak ada history, folder sudah kosong`);
-                                                        await tolak(hisoka, m, '🗂️ Tidak ada history AI yang perlu dihapus. Folder sudah kosong.');
-                                                } else {
-                                                        clearAllHistory();
-                                                        console.log(`[wilyai] ✅ reset berhasil → ${total} sesi dihapus oleh ${m.sender}`);
-                                                        await hisoka.sendMessage(m.from, { react: { text: '🗑️', key: m.key } });
-                                                        await tolak(hisoka, m, `🗑️ *History AI berhasil direset!*\n\n*${total} sesi* percakapan dihapus dari memori bot.\n\nSemua user akan mulai percakapan baru dari awal.`);
-                                                }
+                                                const totalSesi = countHistory();
+                                                await clearAllHistory();
+                                                const totalMemori = clearAllUserMemory();
+                                                console.log(`[wilyai] ✅ reset berhasil → ${totalSesi} sesi history + ${totalMemori} memori user dihapus oleh ${m.sender}`);
+                                                await hisoka.sendMessage(m.from, { react: { text: '🗑️', key: m.key } });
+                                                await tolak(hisoka, m,
+                                                        `🗑️ *Reset AI selesai!*\n\n` +
+                                                        `• 💬 *${totalSesi} sesi* percakapan dihapus\n` +
+                                                        `• 🧠 *${totalMemori} memori* user dihapus\n\n` +
+                                                        `Semua user mulai dari awal — AI tidak ingat percakapan maupun preferensi siapapun.`
+                                                );
                                                 break;
                                         }
 
