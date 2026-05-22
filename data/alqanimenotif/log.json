@@ -1,6 +1,102 @@
 {
   "terkirim": [
     {
+      "id": "kirio-fanclub::8",
+      "judul": "Kirio Fanclub",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T05:34:24.414Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1066/155831l.jpg",
+      "url": "https://alqanime.net/kirio-fanclub/"
+    },
+    {
+      "id": "reincarnation-no-kaben::8",
+      "judul": "Reincarnation no Kaben",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T05:34:22.378Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1064/155042l.jpg",
+      "url": "https://alqanime.net/reincarnation-no-kaben/"
+    },
+    {
+      "id": "awajima-hyakkei::7",
+      "judul": "Awajima Hyakkei",
+      "epNum": 7,
+      "waktuKirim": "2026-05-22T05:34:20.350Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1594/157161l.jpg",
+      "url": "https://alqanime.net/awajima-hyakkei/"
+    },
+    {
+      "id": "mamonogurai-no-boukensha-ore-dake-mamono-wo-kuratte-tsuyoku-naru::8",
+      "judul": "Mamonogurai no Boukensha: Ore dake Mamono wo Kuratte Tsuyoku Naru",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T05:34:18.321Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1056/154990l.jpg",
+      "url": "https://alqanime.net/mamonogurai-no-boukensha-ore-dake-mamono-wo-kuratte-tsuyoku-naru/"
+    },
+    {
+      "id": "mata-korosarete-shimatta-no-desu-ne-tantei-sama::8",
+      "judul": "Mata Korosarete Shimatta no desu ne, Tantei-sama",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T05:34:16.296Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1595/156152l.jpg",
+      "url": "https://alqanime.net/mata-korosarete-shimatta-no-desu-ne-tantei-sama/"
+    },
+    {
+      "id": "hitori-no-shita-the-outcast-6th-season::22",
+      "judul": "Yi Ren Zhi Xia 6",
+      "epNum": 22,
+      "waktuKirim": "2026-05-22T05:34:14.263Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1525/157230l.jpg",
+      "url": "https://alqanime.net/hitori-no-shita-the-outcast-6th-season/"
+    },
+    {
+      "id": "haibara-kun-no-tsuyokute-seishun-new-game::8",
+      "judul": "Haibara-kun no Tsuyokute Seishun New Game",
+      "epNum": 8,
+      "waktuKirim": "2026-05-22T05:34:12.236Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1401/156048l.jpg",
+      "url": "https://alqanime.net/haibara-kun-no-tsuyokute-seishun-new-game/"
+    },
+    {
+      "id": "koori-no-jouheki::8",
+      "judul": "Koori no Jouheki",
+      "epNum": 8,
+      "waktuKirim": "2026-05-21T16:10:41.256Z",
+      "grupCount": 1,
+      "grupList": [
+        "120363419402989015@g.us"
+      ],
+      "thumbnail": "https://cdn.myanimelist.net/images/anime/1565/154933l.jpg",
+      "url": "https://alqanime.net/koori-no-jouheki/"
+    },
+    {
       "id": "dr-stone-science-future-part-3::8",
       "judul": "Dr. Stone: Science Future Part 3",
       "epNum": 8,

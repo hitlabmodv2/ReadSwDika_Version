@@ -223,5 +223,45 @@
     "url": "https://cdn.myanimelist.net/images/anime/1773/155779l.jpg",
     "malId": 62568,
     "cachedAt": 1779376240802
+  },
+  "koori no jouheki": {
+    "url": "https://cdn.myanimelist.net/images/anime/1565/154933l.jpg",
+    "malId": 60852,
+    "cachedAt": 1779379840060
+  },
+  "haibara-kun no tsuyokute seishun new game": {
+    "url": "https://cdn.myanimelist.net/images/anime/1401/156048l.jpg",
+    "malId": 61943,
+    "cachedAt": 1779428028469
+  },
+  "yi ren zhi xia 6": {
+    "url": "https://cdn.myanimelist.net/images/anime/1525/157230l.jpg",
+    "malId": 62246,
+    "cachedAt": 1779428032577
+  },
+  "mata korosarete shimatta no desu ne, tantei-sama": {
+    "url": "https://cdn.myanimelist.net/images/anime/1595/156152l.jpg",
+    "malId": 62964,
+    "cachedAt": 1779428037156
+  },
+  "mamonogurai no boukensha: ore dake mamono wo kuratte tsuyoku naru": {
+    "url": "https://cdn.myanimelist.net/images/anime/1056/154990l.jpg",
+    "malId": 63304,
+    "cachedAt": 1779428039016
+  },
+  "awajima hyakkei": {
+    "url": "https://cdn.myanimelist.net/images/anime/1594/157161l.jpg",
+    "malId": 58820,
+    "cachedAt": 1779428043194
+  },
+  "reincarnation no kaben": {
+    "url": "https://cdn.myanimelist.net/images/anime/1064/155042l.jpg",
+    "malId": 59443,
+    "cachedAt": 1779428047266
+  },
+  "kirio fanclub": {
+    "url": "https://cdn.myanimelist.net/images/anime/1066/155831l.jpg",
+    "malId": 59835,
+    "cachedAt": 1779428051298
   }
 }

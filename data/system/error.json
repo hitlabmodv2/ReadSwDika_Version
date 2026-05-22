@@ -1,6 +1,24 @@
 {
   "errors": [
     {
+      "fingerprint": "callback:musikai_random_mode::Generate gagal: Frequent requests, please try again later",
+      "source": "callback:musikai_random_mode",
+      "message": "Generate gagal: Frequent requests, please try again later",
+      "stack": "Error: Generate gagal: Frequent requests, please try again later\n    at ChatMusicAPI.generate (/home/runner/workspace/src/scrape/chatmusic.cjs:300:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async _generateMusik (file:///home/runner/workspace/src/handler/message.js?t=1779379661262:4405:49)\n    at async default (file:///home/runner/workspace/src/handler/message.js?t=1779379661262:4951:33)",
+      "count": 1,
+      "firstSeen": "2026-05-21T16:17:26.632Z",
+      "lastSeen": "2026-05-21T16:17:26.632Z"
+    },
+    {
+      "fingerprint": "console.error::\u001b[Nm[MusicAI 🇮🇩 Indonesia 🎤 Vokal] Error:\u001b[Nm Generate gagal: Frequent requests, please try again later",
+      "source": "console.error",
+      "message": "\u001b[31m[MusicAI 🇮🇩 Indonesia 🎤 Vokal] Error:\u001b[39m Generate gagal: Frequent requests, please try again later",
+      "stack": "Error: \u001b[31m[MusicAI 🇮🇩 Indonesia 🎤 Vokal] Error:\u001b[39m Generate gagal: Frequent requests, please try again later\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at default (file:///home/runner/workspace/src/handler/message.js?t=1779379661262:4954:41)",
+      "count": 1,
+      "firstSeen": "2026-05-21T16:17:26.623Z",
+      "lastSeen": "2026-05-21T16:17:26.623Z"
+    },
+    {
       "fingerprint": "uncaughtException::ENOENT: no such file or directory, open '/tmp/audioILSYM-NANANEDN'",
       "source": "uncaughtException",
       "message": "ENOENT: no such file or directory, open '/tmp/audioILSYM-985A34A49ED7'",
@@ -59,9 +77,9 @@
       "source": "console.error",
       "message": "\u001b[31m[Groups] Gagal fetch grup:\u001b[39m Connection Closed",
       "stack": "Error: \u001b[31m[Groups] Gagal fetch grup:\u001b[39m Connection Closed\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at fetchGroupsWithRetry (file:///home/runner/workspace/index.js:672:65)\n    at async EventEmitter.<anonymous> (file:///home/runner/workspace/index.js:678:25)",
-      "count": 5,
+      "count": 10,
       "firstSeen": "2026-05-21T14:23:54.727Z",
-      "lastSeen": "2026-05-21T15:21:31.268Z"
+      "lastSeen": "2026-05-22T07:58:07.908Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[Handler] Error on command \"musikai\":\u001b[Nm Connection Closed",
@@ -257,27 +275,27 @@
       "source": "AlqanimeNotif",
       "message": "[AlqanimeNotif] Gagal kirim ke 120363419402989015@g.us: Connection Closed",
       "stack": "Error: [AlqanimeNotif] Gagal kirim ke 120363419402989015@g.us: Connection Closed\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at file:///home/runner/workspace/index.js:926:89\n    at async Promise.allSettled (index 0)\n    at async runAlqanime (file:///home/runner/workspace/index.js:914:65)",
-      "count": 19,
+      "count": 26,
       "firstSeen": "2026-05-21T05:26:03.647Z",
-      "lastSeen": "2026-05-21T05:49:16.081Z"
+      "lastSeen": "2026-05-22T05:34:24.407Z"
     },
     {
       "fingerprint": "unhandledRejection::Connection Closed",
       "source": "unhandledRejection",
       "message": "Connection Closed",
       "stack": "Error: Connection Closed\n    at sendRawMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:63:19)\n    at sendNode (/home/runner/workspace/node_modules/socketon/lib/Socket/socket.js:82:16)\n    at /home/runner/workspace/node_modules/socketon/lib/Socket/messages-send.js:592:19\n    at async Object.transaction (/home/runner/workspace/node_modules/socketon/lib/Utils/auth-utils.js:139:26)\n    at async relayMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/messages-send.js:337:9)\n    at async sendPeerDataOperationMessage (/home/runner/workspace/node_modules/socketon/lib/Socket/messages-send.js:264:23)\n    at async sendRetryRequest (/home/runner/workspace/node_modules/socketon/lib/Socket/messages-recv.js:219:27)\n    at async /home/runner/workspace/node_modules/socketon/lib/Socket/messages-recv.js:825:33\n    at async /home/runner/workspace/node_modules/socketon/lib/Utils/make-mutex.js:18:36",
-      "count": 17,
+      "count": 22,
       "firstSeen": "2026-05-20T14:22:34.406Z",
-      "lastSeen": "2026-05-21T15:21:34.394Z"
+      "lastSeen": "2026-05-22T07:58:07.925Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[CrashGuard] UnhandledRejection (N this minute):\u001b[Nm Connection Closed",
       "source": "console.error",
       "message": "\u001b[31m[CrashGuard] UnhandledRejection (1 this minute):\u001b[39m Connection Closed",
       "stack": "Error: \u001b[31m[CrashGuard] UnhandledRejection (1 this minute):\u001b[39m Connection Closed\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at process.<anonymous> (file:///home/runner/workspace/src/helper/crashGuard.js:131:17)\n    at process.emit (node:events:524:28)\n    at emitUnhandledRejection (node:internal/process/promises:250:13)\n    at throwUnhandledRejectionsMode (node:internal/process/promises:385:19)\n    at processPromiseRejections (node:internal/process/promises:470:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:96:32)",
-      "count": 17,
+      "count": 22,
       "firstSeen": "2026-05-20T14:22:34.399Z",
-      "lastSeen": "2026-05-21T15:21:34.388Z"
+      "lastSeen": "2026-05-22T07:58:07.918Z"
     },
     {
       "fingerprint": "command:musikai::Generate gagal: Sensitive words detected; usage is prohibited. Please revise the content.",
