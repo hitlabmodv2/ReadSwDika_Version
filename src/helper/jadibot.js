@@ -480,18 +480,24 @@ async function expireJadibot(number, sendReply = null) {
   const sock = jadibotMap.get(number)
   const expiredMsg = msgJadibotExpired(number)
 
-  // Langkah 1: kirim notifikasi ke user jadibot SEBELUM socket ditutup
-  if (sock) {
-    try {
-      await sock.sendMessage(`${number}@s.whatsapp.net`, { text: expiredMsg })
-    } catch {}
-  }
+  // Cek mode pairing untuk tentukan kemana notif expired dikirim
+  const expiryCfg = loadConfig()
+  const expiryMode = (expiryCfg.jadibotPairingMode || 'v2').toLowerCase()
 
-  // Langkah 2: kirim notifikasi ke admin (untuk jadibot yang dimulai manual)
-  if (sendReply) {
-    try {
-      await sendReply(expiredMsg)
-    } catch {}
+  if (expiryMode === 'v2') {
+    // V2: kirim notif expired ke nomor tujuan SEBELUM socket ditutup
+    if (sock) {
+      try {
+        await sock.sendMessage(`${number}@s.whatsapp.net`, { text: expiredMsg })
+      } catch {}
+    }
+  } else {
+    // V1: kirim notif expired ke GC/owner
+    if (sendReply) {
+      try {
+        await sendReply(expiredMsg)
+      } catch {}
+    }
   }
 
   // Langkah 3: tutup socket
@@ -583,12 +589,17 @@ function scheduleJadibotExpiry(number, sendReply = null) {
         formatJadibotExpiryTime(latest.expiresAt),
         durationLabel
       )
-      if (sendReply) {
-        try {
-          await sendReply(warningText)
-        } catch {}
+      const warningCfg = loadConfig()
+      const warningMode = (warningCfg.jadibotPairingMode || 'v2').toLowerCase()
+      if (warningMode === 'v2') {
+        // V2: kirim warning ke nomor tujuan (via sock jadibot itu sendiri)
+        await sendDirectJadibotNotice(jadibotMap.get(number), number, warningText)
+      } else {
+        // V1: kirim warning ke GC/owner
+        if (sendReply) {
+          try { await sendReply(warningText) } catch {}
+        }
       }
-      await sendDirectJadibotNotice(jadibotMap.get(number), number, warningText)
     }, delayMs)
     warningTimers.push(warningTimer)
   }
