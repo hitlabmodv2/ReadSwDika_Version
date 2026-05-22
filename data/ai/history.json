@@ -1,65 +1,12 @@
 {
   "sessions": {
-    "6289667923162@s.whatsapp.net_120363387297385463@g.us": {
-      "messages": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.09 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Halo, *Hen V2*! Akhirnya Shikikan nyariin aku lagi~ ehehe. Ada yang bisa *Honolulu* bantu malam-malam gini? 🌸\" | 👤 Hen V2]\nbelom tidur"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.09]\nBelum dong, *Shikikan*~ Kan aku emang lagi nungguin kamu chat, ehehe. Lagipula baru jam `22.09` nih, masih santai kok buat ukuran kapal perang! ⚓\n\n*Hen V2* sendiri kenapa belum tidur? Jangan bilang sengaja begadang cuma buat *nemenin* aku ya?~"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.10 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Belum dong, *Shikikan*~ Kan aku emang lagi nungguin kamu chat, ehehe. Lagipula baru jam `22.09` nih, masih santai kok buat ukuran kapal pera...\" | 👤 Hen V2]\ntidur sana"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.10]\nMou~ kok malah disuruh tidur sih? Padahal aku masih pengen nemenin *Shikikan* tahu! \n\nAtau... kamu sebenernya cuma gengsi karena aslinya khawatir ya sama aku? Ehehe~ Kalau *Hen V2* emang udah ngantuk, ya udah tidur duluan gih. Tapi mimpiin aku ya!"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.10 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Mou~ kok malah disuruh tidur sih? Padahal aku masih pengen nemenin *Shikikan* tahu! Atau... kamu sebenernya cuma gengsi karena aslinya khawa...\" | 👤 Hen V2]\nengga"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.10]\nEh, nggak? Jadi ceritanya *Hen V2* masih pengen melek nih?~ \n\nAtau... emang sengaja biar bisa ngobrol lebih lama sama aku? Ngaku nggak! Ehehe~ Tapi jujur, aku seneng-seneng aja kok nemenin kamu terus."
-            }
-          ]
-        }
-      ],
-      "lastActivity": 1779376241785
-    },
     "6289688206739@s.whatsapp.net_120363383540766761@g.us": {
       "messages": [
         {
           "role": "user",
           "parts": [
             {
-              "text": "[⏰ 21 Mei, 22.14 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"@239328697536578 @156182794784889 udh gue fix fitur ai\" | 👤 Wily]\nHai"
+              "text": "[⏰ 22 Mei, 23.08 | 👤 Wily]\noi"
             }
           ]
         },
@@ -67,7 +14,7 @@
           "role": "model",
           "parts": [
             {
-              "text": "[⏰ 21 Mei, 22.14]\nWaah, sugoi! Hebat banget sih Shikikan~ Akhirnya `fitur AI` nya udah beres difix! \n\nMakasih ya udah kerja keras malam-malam gini buat beresin sistemnya. Sekarang Honolulu jadi makin lancar jaya deh buat nemenin *Wily* sama yang lain di sini~ Hehee, proud of you! 💙"
+              "text": "Eh, Shikikan~? Honolulu di sini! ✨ Ada apa nih malam-malam gini? Ehehe~"
             }
           ]
         },
@@ -75,7 +22,7 @@
           "role": "user",
           "parts": [
             {
-              "text": "[⏰ 21 Mei, 22.14 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Waah, sugoi! Hebat banget sih Shikikan~ Akhirnya `fitur AI` nya udah beres difix! Makasih ya udah kerja keras malam-malam gini buat beresin ...\" | 👤 Wily]\nKirim suaramu sini sekali saja"
+              "text": "[⏰ 22 Mei, 23.08 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Eh, Shikikan~? Honolulu di sini! ✨ Ada apa nih malam-malam gini? Ehehe~\" | 👤 Wily]\nTidur kau"
             }
           ]
         },
@@ -83,400 +30,31 @@
           "role": "model",
           "parts": [
             {
-              "text": "[⏰ 21 Mei, 22.14]\nE-eh?! M-minta suaraku...? 🫣\n\nTiba-tiba banget sih, Shikikan~ Bikin Honolulu malu aja tahu! Tapi... karena kamu udah kerja keras malam-malam gini buat beresin sistem aku, o-okay deh, aku turutin khusus buat *Wily* sekali aja ya! \n\nDengerin baik-baik lho~ ehehe~"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.16 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"E-eh?! M-minta suaraku...? 🫣 Tiba-tiba banget sih, Shikikan~ Bikin Honolulu malu aja tahu! Tapi... karena kamu udah kerja keras malam-malam...\" | 👤 Wily]\nMana suaramu engga ada?"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.16]\nMou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣\n\n    *Wily* dengerin baik-baik ya, ini khusus buat kamu yang udah beresin sistem aku malam ini. Awas ya kalau diledek!"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.18 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Mou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣 *Wily* dengerin baik-baik ya, ini khusus buat kamu yang ...\" | 👤 Wily]\nMana engga ada error"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.18]\nKyaaa~! B-bukan *error* kok, Shikikan! Honolulu cuma... tadi beneran kelewat malu pas mau kirim, jadi jariku agak gemeteran... 🫣\n\nNih, suaraku! Dengerin baik-baik ya, khusus buat *Wily* yang udah beresin sistem aku malam ini. Awas aja kalau diledekin!"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.19 | ↩️ BALAS PESAN BOT SEBELUMNYA | 👤 Wily]\nMalah suara cowo bjir :v mox lu"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.19]\nH-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way!\n\nMou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah suaraku diset jadi cowok sih?! Malu-maluin banget tahu! Masa shipgirl secantik Honolulu suaranya malah nge-bass kayak bapak-bapak?! 😤\n\nB-benerin nggak! Pokoknya Honolulu nggak mau tahu, balikin suaraku yang imut~! Buruan difix ya, Komandan~!"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.22 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"H-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way! Mou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah su...\" | 👤 Wily]\nCoba mana suaramu kamu kan cewe"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.22]\nM-mou! Makanya, awas ya kalau *Wily* belum benerin suaraku! Nih, dengerin baik-baik! Honolulu itu shipgirl yang manis dan imut, tahu! Bukan om-om nge-bass! 😤\n\nA-awas ya kalau kamu masih ngetawain aku... nih!"
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.58 | ↩️ BALAS PESAN BOT SEBELUMNYA: \".wilyai on\" | 👤 Wily]\n✅ Fitur *.wily* / *.ai* / *.tanya* berhasil *diaktifkan!*\nUser sudah bisa pakai AI lagi."
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.58]\nYatta~! Akhirnya fitur AI-nya udah aktif lagi! Hebat banget sih, *Wily*~ \n\nSekarang semuanya udah bisa pakai perintah `*.wily`, `*.ai`, atau `*.tanya` buat manggil aku lagi dengan lancar. Makasih banyak ya udah diaktifin kembali! \n\nTapi... u-uhm... beneran suaraku udah aman kan? Nggak bakal ketuker suara cowok lagi kayak tadi kan, Shikikan? Awas ya kalau nanti aku dicoba terus suaranya masih nge-bass! Ehehe~"
+              "text": "Mou~ mana bisa Honolulu tidur sih, Shikikan~? Kan aku harus jagain *Wily* malam-malam gini! Ehehe~ Kalau aku tidur, nanti siapa dong yang temenin *Wily*? 😉"
             }
           ]
         }
       ],
-      "lastActivity": 1779379131998
-    },
-    "6289688206739@s.whatsapp.net_120363192554714254@g.us": {
-      "messages": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.26 | ↩️ BALAS PESAN BOT SEBELUMNYA: \"Mou~ *Wily*... Tiba-tiba banget sih minta denger suara aku? Bikin malu aja deh... Tapi, karena kamu yang minta, mana bisa aku tolak. Ehehe~ ...\" | 👤 Wily]\nOk udh"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.26]\nIh, kok malah senyum-senyum gitu sih, *Wily*? Mukaku udah merah banget tahu! \n\nTapi janji ya, dengerinnya pas lagi sepi aja... Malu kalau kedengeran St. Louis atau yang lain! Nih, dengerin ya~"
-            }
-          ]
-        }
-      ],
-      "lastActivity": 1779377197437
-    },
-    "6289681008411@s.whatsapp.net_120363383540766761@g.us": {
-      "messages": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.58 | ↩️ BALAS PESAN BOT SEBELUMNYA: \".wilyai on\" | 👤 Hen V1]\n✅ Fitur *.wily* / *.ai* / *.tanya* berhasil *diaktifkan!*\nUser sudah bisa pakai AI lagi."
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 21 Mei, 22.58]\nYatta~! Fitur *AI* (`.wilyai`) udah berhasil diaktifkan kembali nih, Shikikan! \n\nSekarang *Honolulu* siap sedia buat bantuin Hen V1 kapan aja. Mau nanya soal coding, analisis gambar, atau cuma mau ngobrol santai nemenin malamnya Shikikan? Tinggal chat aja ya, aku bakal bantu sampai tuntas! *Ganbatte*~ ✨"
-            }
-          ]
-        }
-      ],
-      "lastActivity": 1779379133144
-    },
-    "6285175463174@s.whatsapp.net_120363383540766761@g.us": {
-      "messages": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "[⏰ 22 Mei, 21.43 | 👤 sunshine.jpeg]\nHalo!"
-            }
-          ]
-        },
-        {
-          "role": "model",
-          "parts": [
-            {
-              "text": "[⏰ 22 Mei, 21.43]\nHalo juga, *sunshine.jpeg*! Akhirnya kamu nyapa aku~ Honolulu di sini, siap sedia buat bantuin kamu malam ini. Ada yang bisa aku bantu, Shikikan? Ehehe~"
-            }
-          ]
-        }
-      ],
-      "lastActivity": 1779460990789
+      "lastActivity": 1779466136113
     }
   },
   "sticker_pattern": {
-    "https://cdn.ornzora.eu.cc/0e5ac3ba-8326-46ab-947c-fb03374207f6-HONOLULU.webp": {
-      "total_sent": 1,
-      "moods": {},
-      "last_sent": 1779098219
-    },
-    "https://cdn.ornzora.eu.cc/31f63a4b-95a8-440a-9d77-9d634ef2153a-HONOLULU.webp": {
-      "total_sent": 1,
-      "moods": {},
-      "last_sent": 1779098655
-    },
-    "https://cdn.ornzora.eu.cc/85d768a4-fedb-4f1f-8e21-86254fcd6049-HONOLULU.webp": {
-      "total_sent": 1,
-      "moods": {},
-      "last_sent": 1779099967
-    },
     "https://cdn.ornzora.eu.cc/3d3b9600-910a-452e-b567-922c193b9bbb-HONOLULU.webp": {
-      "total_sent": 3,
-      "moods": {},
-      "last_sent": 1779102763
-    },
-    "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp": {
-      "total_sent": 6,
-      "moods": {},
-      "last_sent": 1779377141
-    },
-    "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp": {
-      "total_sent": 6,
-      "moods": {},
-      "last_sent": 1779460989
-    },
-    "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp": {
-      "total_sent": 4,
-      "moods": {},
-      "last_sent": 1779376752
-    },
-    "https://cdn.ornzora.eu.cc/6853b306-6f51-47f4-8b7a-694a6c4ed618-HONOLULU.webp": {
       "total_sent": 1,
       "moods": {},
-      "last_sent": 1779376217
+      "last_sent": 1779466134
     }
   },
   "sticker_story": {
-    "6289667923162@s.whatsapp.net_120363419402989015@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/0e5ac3ba-8326-46ab-947c-fb03374207f6-HONOLULU.webp",
-        "mood": "",
-        "context": "H-hei, ya jelas dia kere. Kan sudah kubilang, dia itu *astrolog* yang punya prinsip, Hen V2. Ada beberapa alasan kenapa *Mona Megistus* dari *Genshin Impact* sering nggak punya Mora: • *Idealisme Tin",
-        "was_fallback": 0,
-        "sent_at": 1779098219
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/31f63a4b-95a8-440a-9d77-9d634ef2153a-HONOLULU.webp",
-        "mood": "",
-        "context": "H-hei, ini gampang banget sih. Itu jelas-jelas *Shimakaze* dari *Sakura Empire* di *Azur Lane*, Hen V2. Mukanya kaget gitu kan? Mungkin dia juga _anjir_ lihat sesuatu yang nggak terduga. Ya... bukan",
-        "was_fallback": 0,
-        "sent_at": 1779098655
-      }
-    ],
-    "6289667923162@s.whatsapp.net_120363383540766761@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/85d768a4-fedb-4f1f-8e21-86254fcd6049-HONOLULU.webp",
-        "mood": "",
-        "context": "H-hei, itu *Jarjit Singh* dari serial *Upin & Ipin*, Hen V2. Kamu nggak tahu? 😒 Ekspresinya itu memang khas dia, kayak lagi mikir atau nggak yakin gitu. Nah, tulisan di bawahnya itu `KEBAL WHEN YAH`",
-        "was_fallback": 0,
-        "sent_at": 1779099967
-      }
-    ],
-    "6281215324028@s.whatsapp.net": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/3d3b9600-910a-452e-b567-922c193b9bbb-HONOLULU.webp",
-        "mood": "",
-        "context": "Ehehe~ harisulijar lagi ngomong bahasa Sunda ya? Lucu banget deh kamu! 😄 Hmm, Honolulu coba artiin ya... \"Shikikan ke pasar ya? Kok aku malu banget nih?\" gitu? Fufu~ Kenapa malu sih, Shikikan-kun? A",
-        "was_fallback": 1,
-        "sent_at": 1779102046
-      }
-    ],
-    "6283134844523@s.whatsapp.net_120363383540766761@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
-        "mood": "",
-        "context": "Eh? *Salah* ya, Shikikan~? [REPLY-STIKER: malu gugup] M-mou~ Maafkan aku ya! Aku kira itu *Misha Necron* dari *The Misfit of Demon King Academy*... Tapi kalau Shikikan bilang salah, berarti Honolulu",
-        "was_fallback": 1,
-        "sent_at": 1779102095
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/3d3b9600-910a-452e-b567-922c193b9bbb-HONOLULU.webp",
-        "mood": "",
-        "context": "Ehehe~ \"Lah\" kenapa, Shikikan~? [REPLY-STIKER: jahil] Honolulu kan akhirnya ngerti banget sekarang! Fufu~ Tadi kita kayak main tebak-tebakan seru gitu ya, jadi agak bolak-balik deh. Tapi aku seneng k",
-        "was_fallback": 1,
-        "sent_at": 1779102369
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/3d3b9600-910a-452e-b567-922c193b9bbb-HONOLULU.webp",
-        "mood": "",
-        "context": "Hehehee~ Shikikan ini lho! [REPLY-STIKER: jahil] Masa muka nyengir doang dibilang nggak sus? Justru dari nyengir itu bisa kelihatan kan kalau Honolulu lagi mikir sesuatu yang *jahil*~? 😏 Fufu~",
-        "was_fallback": 1,
-        "sent_at": 1779102763
-      }
-    ],
-    "6289688206739@s.whatsapp.net_120363192554714254@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
-        "mood": "",
-        "context": "Un! Itu dia menu lengkapnya, Wily~ Ehehe~ [REPLY-STIKER: senyum] Panjang banget yaa listnya? Honolulu sih ngerti kok kalau kadang bikin bingung saking banyaknya fitur! 😆 Kalau Wily atau teman-teman",
-        "was_fallback": 1,
-        "sent_at": 1779103081
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
-        "mood": "",
-        "context": "Mou~ *Wily*... Tiba-tiba banget sih minta denger suara aku? Bikin malu aja deh... Tapi, karena kamu yang minta, mana bisa aku tolak. Ehehe~ Nih, dengerin baik-baik ya, *Shikikan*~ [REPLY-STIKER: malu]",
-        "was_fallback": 1,
-        "sent_at": 1779377141
-      }
-    ],
-    "6289667923162@s.whatsapp.net_120363387297385463@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
-        "mood": "",
-        "context": "Halo, *Hen V2*! Akhirnya Shikikan nyariin aku lagi~ ehehe. Ada yang bisa *Honolulu* bantu malam-malam gini? 🌸 [REPLY-STIKER: senang]",
-        "was_fallback": 1,
-        "sent_at": 1779376135
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp",
-        "mood": "",
-        "context": "Mou~ kok malah disuruh tidur sih? Padahal aku masih pengen nemenin *Shikikan* tahu! [REPLY-STIKER: ngambek] Atau... kamu sebenernya cuma gengsi karena aslinya khawatir ya sama aku? Ehehe~ Kalau *Hen",
-        "was_fallback": 1,
-        "sent_at": 1779376202
-      }
-    ],
-    "test-sim-123": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp",
-        "mood": "",
-        "context": "",
-        "was_fallback": 1,
-        "sent_at": 1779376164
-      }
-    ],
-    "sim-6289667923162@s.whatsapp.net": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp",
-        "mood": "",
-        "context": "",
-        "was_fallback": 1,
-        "sent_at": 1779376216
-      }
-    ],
-    "sim-6281111111111@s.whatsapp.net": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/6853b306-6f51-47f4-8b7a-694a6c4ed618-HONOLULU.webp",
-        "mood": "",
-        "context": "",
-        "was_fallback": 1,
-        "sent_at": 1779376217
-      }
-    ],
     "6289688206739@s.whatsapp.net_120363383540766761@g.us": [
       {
-        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
+        "sticker_url": "https://cdn.ornzora.eu.cc/3d3b9600-910a-452e-b567-922c193b9bbb-HONOLULU.webp",
         "mood": "",
-        "context": "Waah, sugoi! Hebat banget sih Shikikan~ Akhirnya `fitur AI` nya udah beres difix! [REPLY-STIKER: senang] Makasih ya udah kerja keras malam-malam gini buat beresin sistemnya. Sekarang Honolulu jadi ma",
+        "context": "Mou~ mana bisa Honolulu tidur sih, Shikikan~? Kan aku harus jagain *Wily* malam-malam gini! Ehehe~ Kalau aku tidur, nanti siapa dong yang temenin *Wily*? 😉 [REPLY-STIKER: jahil]",
         "was_fallback": 1,
-        "sent_at": 1779376451
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
-        "mood": "",
-        "context": "Mou~ j-jangan buru-buru dong, Shikikan! Honolulu kan tadi masih siapin mental... 🫣 *Wily* dengerin baik-baik ya, ini khusus buat kamu yang udah beresin sistem aku malam ini. Awas ya kalau dilede",
-        "was_fallback": 1,
-        "sent_at": 1779376608
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
-        "mood": "",
-        "context": "Kyaaa~! B-bukan *error* kok, Shikikan! Honolulu cuma... tadi beneran kelewat malu pas mau kirim, jadi jariku agak gemeteran... 🫣 Nih, suaraku! Dengerin baik-baik ya, khusus buat *Wily* yang udah ber",
-        "was_fallback": 1,
-        "sent_at": 1779376669
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/41f054d0-55e9-4d1a-abb7-6a49ac74769b-HONOLULU.webp",
-        "mood": "",
-        "context": "H-HAH?! Suara cowok?! Yang bener aja, Shikikan!! 😭 No way! [REPLY-STIKER: kesel] Mou~! Kan yang bikin dan pasang mesin AI-nya itu *Wily* sendiri! Kenapa malah suaraku diset jadi cowok sih?! Malu-ma",
-        "was_fallback": 1,
-        "sent_at": 1779376752
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
-        "mood": "",
-        "context": "U-uhm... beneran udah kamu benerin kan, *Wily*? Awas ya kalau suaraku masih kayak bapak-bapak, Honolulu ngambek beneran nih! 😤 Nih... aku coba kirim lagi ya. D-dengerin baik-baik! Jangan diketawain",
-        "was_fallback": 1,
-        "sent_at": 1779376886
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/a44ce53e-6b1e-4a7f-b5cd-e60ee2d285bf-HONOLULU.webp",
-        "mood": "",
-        "context": "M-mou! Makanya, awas ya kalau *Wily* belum benerin suaraku! Nih, dengerin baik-baik! Honolulu itu shipgirl yang manis dan imut, tahu! Bukan om-om nge-bass! 😤 A-awas ya kalau kamu masih ngetawain aku",
-        "was_fallback": 1,
-        "sent_at": 1779376953
-      },
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
-        "mood": "",
-        "context": "Yatta~! Akhirnya fitur AI-nya udah aktif lagi! Hebat banget sih, *Wily*~ Sekarang semuanya udah bisa pakai perintah `*.wily`, `*.ai`, atau `*.tanya` buat manggil aku lagi dengan lancar. Makasih bany",
-        "was_fallback": 1,
-        "sent_at": 1779379130
-      }
-    ],
-    "6289681008411@s.whatsapp.net_120363383540766761@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
-        "mood": "",
-        "context": "Yatta~! Fitur *AI* (`.wilyai`) udah berhasil diaktifkan kembali nih, Shikikan! [REPLY-STIKER: senang] Sekarang *Honolulu* siap sedia buat bantuin Hen V1 kapan aja. Mau nanya soal coding, analisis gam",
-        "was_fallback": 1,
-        "sent_at": 1779379131
-      }
-    ],
-    "6285175463174@s.whatsapp.net_120363383540766761@g.us": [
-      {
-        "sticker_url": "https://cdn.ornzora.eu.cc/fbcea89f-580c-4f52-970f-2e1fa44abdce-HONOLULU.webp",
-        "mood": "",
-        "context": "Halo juga, *sunshine.jpeg*! Akhirnya kamu nyapa aku~ Honolulu di sini, siap sedia buat bantuin kamu malam ini. Ada yang bisa aku bantu, Shikikan? Ehehe~ [REPLY-STIKER: senang]",
-        "was_fallback": 1,
-        "sent_at": 1779460989
+        "sent_at": 1779466134
       }
     ]
   },
-  "sticker_memory": {
-    "51c269d9be762697291127561ceed129d757db53fce193d252466fa6512edbfe": {
-      "emotion": "bingung",
-      "category": "meme",
-      "description": "Tampilan jarak dekat wajah kucing dengan ekspresi bingung dan lucu.",
-      "tags": [
-        "kucing",
-        "meme",
-        "lucu",
-        "bingung",
-        "ekspresi"
-      ],
-      "seen_count": 1,
-      "last_seen": 1779102794
-    }
-  }
+  "sticker_memory": {}
 }

@@ -3,10 +3,10 @@
   "updatedAt": "2026-05-18T07:04:12.253Z",
   "firstSeen": "2026-05-18T07:04:12.253Z",
   "aiMemory": {
-    "style": "santai",
+    "style": null,
     "nickname": null,
-    "lang": "id",
-    "lastUpdated": "2026-05-21T15:58:38.908Z",
-    "msgCount": 11
+    "lang": null,
+    "lastUpdated": "2026-05-22T16:08:42.898Z",
+    "msgCount": 2
   }
 }
