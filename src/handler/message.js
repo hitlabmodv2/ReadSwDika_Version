@@ -13129,9 +13129,9 @@ hasil += `╰══════════════════════�
                                                 `╚══════════════════════╝\n\n` +
                                                 `📌 *Mode aktif sekarang:* *${spCurrent.toUpperCase()}*\n\n` +
                                                 `📋 *Pilihan mode:*\n` +
-                                                `• *.setpairing v1* → Kode tampil di GC/chat owner\n` +
-                                                `• *.setpairing v2* → Kode dikirim ke private nomor tujuan\n\n` +
-                                                `💡 Contoh: _.setpairing v2_`
+                                                `• *.setpairing v1* → Kode & notif tampil di *GC* (tidak ke nomor tujuan)\n` +
+                                                `• *.setpairing v2* → Kode & notif dikirim ke *private nomor tujuan*\n\n` +
+                                                `💡 Contoh: _.setpairing v1_`
                                         );
                                         break;
                                 }
@@ -13148,8 +13148,8 @@ hasil += `╰══════════════════════�
                                 spCfg.jadibotPairingMode = spQuery;
                                 saveConfig(spCfg);
                                 const spDesc = spQuery === 'v1'
-                                        ? 'Kode pairing tampil di GC / chat owner'
-                                        : 'Kode pairing dikirim ke private nomor tujuan';
+                                        ? 'Kode & notif tampil di GC — tidak dikirim ke nomor tujuan'
+                                        : 'Kode & notif dikirim langsung ke private nomor tujuan';
                                 await tolak(hisoka, m,
                                         `╔══════════════════════╗\n` +
                                         `║  ✅  *PAIRING MODE*   ║\n` +
