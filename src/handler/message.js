@@ -13789,30 +13789,29 @@ hasil += `╰══════════════════════�
                                         const copyInfo  = _cleanCopy(partInfo);
                                         const copyLirik = _cleanCopy(partLirik);
 
-                                        // Bangun contextInfo manual agar reply ke pesan loading bot sendiri
-                                        const _imCtx = loadingMsg?.key?.id ? {
-                                                stanzaId:      loadingMsg.key.id,
-                                                participant:   loadingMsg.key?.participant || loadingMsg.key?.remoteJid || m.from,
-                                                quotedMessage: loadingMsg.message || loadingMsg.raw || {},
-                                        } : {};
+                                        // Buat quoted reference ke pesan loading bot (dengan fallback konten)
+                                        const _qRef = loadingMsg?.key?.id ? {
+                                                key:     { ...loadingMsg.key, fromMe: true },
+                                                message: loadingMsg.message || loadingMsg.raw
+                                                        || { conversation: '✅ Analisis selesai!' },
+                                        } : m;
 
-                                        // Kirim hasil + dua tombol copy (teks bersih)
+                                        // Kirim hasil reply ke pesan loading + dua tombol copy (teks bersih)
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
                                                         .setBody(result)
                                                         .setFooter('🎵 Powered by Gemini AI')
-                                                        .setContextInfo(_imCtx)
                                                         .addCopy('🎼 Salin Genre/Info', copyInfo,  'copy_infomusik_genre');
                                                 if (copyLirik) {
                                                         btn.addCopy('📜 Salin Lirik', copyLirik, 'copy_infomusik_lirik');
                                                 }
-                                                await btn.run(m.from, hisoka, '');
+                                                await btn.run(m.from, hisoka, _qRef);
                                                 buttonSent = true;
                                         } catch (_) {}
 
                                         if (!buttonSent) {
-                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: loadingMsg });
+                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: _qRef });
                                         }
 
                                         logCommand(m, hisoka, 'infomusik');
