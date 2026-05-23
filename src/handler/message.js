@@ -1732,24 +1732,31 @@ async function sendCekautoGrupMsg(hisoka, m) {
                 return lines.join('\n');
         };
 
+        const allGrupFitur = CEKAUTO_GROUP_FITUR_LIST;
+        const aktifGrup   = allGrupFitur.filter(f => f.checkFn(cfg, jid));
+        const nonaktifGrup = allGrupFitur.filter(f => !f.checkFn(cfg, jid));
+        aktifGrup.sort((a, b) => a.nama.localeCompare(b.nama));
+        nonaktifGrup.sort((a, b) => a.nama.localeCompare(b.nama));
+
         let txt =
-                `╔══════════════════════════════╗\n` +
-                `║   🏘️  *FITUR GRUP*  ║\n` +
-                `╚══════════════════════════════╝\n` +
-                `\n` +
-                `┌──────────────────────────────┐\n` +
-                `│  🛡️ *KEAMANAN & MEMBER*\n` +
-                `└──────────────────────────────┘\n` +
-                renderCategory(secFitur) + '\n' +
-                `\n` +
-                `┌──────────────────────────────┐\n` +
-                `│  📺 *NOTIFIKASI OTOMATIS*\n` +
-                `└──────────────────────────────┘\n` +
-                renderCategory(notifFitur) + '\n' +
-                `\n` +
-                `╔══════════════════════════════╗\n` +
-                `║  ✅ Aktif: ${String(totalAktif).padStart(2)}  ❌ Mati: ${String(totalMati).padStart(2)}  │ Total: ${CEKAUTO_GROUP_FITUR_LIST.length}\n` +
-                `╚══════════════════════════════╝`;
+                `╔══════════════════════════╗\n` +
+                `║  🏘️  *FITUR GRUP*  ║\n` +
+                `╚══════════════════════════╝\n\n` +
+                `┌─────────────────────────────┐\n` +
+                `│  ✅ *AKTIF*  ·  ${totalAktif} fitur aktif\n` +
+                `└─────────────────────────────┘\n` +
+                (aktifGrup.length
+                        ? aktifGrup.map(f => `  🟢  *${f.nama}*`).join('\n') + '\n'
+                        : `  _Tidak ada fitur yang aktif_\n`) +
+                `\n┌─────────────────────────────┐\n` +
+                `│  ❌ *NONAKTIF*  ·  ${totalMati} fitur mati\n` +
+                `└─────────────────────────────┘\n` +
+                (nonaktifGrup.length
+                        ? nonaktifGrup.map(f => `  🔴  *${f.nama}*`).join('\n') + '\n'
+                        : `  _Semua fitur aktif_ ✨\n`) +
+                `\n╔══════════════════════════╗\n` +
+                `║  📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar\n` +
+                `╚══════════════════════════╝`;
 
         const getEmoji = (f) => SECURITY_KEYS.includes(f.key) ? '🛡️' : '📺';
         const allToggleable = CEKAUTO_GROUP_FITUR_LIST.filter(f => f.toggleable);
