@@ -521,7 +521,7 @@ function buatCaptionLanjutan(data) {
 
     let dlBlok = '';
     if (episodes.length) {
-        const epTerbaru    = episodes[episodes.length - 1];
+        const epTerbaru    = episodes[0];
         const resolusiList = Object.entries(epTerbaru.links || {}).slice(0, 4);
         if (resolusiList.length) {
             dlBlok += `\n${SEP}\n`;
@@ -562,11 +562,11 @@ function buatCaptionGabung(data) {
     const jamMenit   = sekarang.toLocaleTimeString('id-ID', opsiJam).replace('.', ':');
     const headerWaktu = `${namaHari}, ${tglLengkap} · ${jamMenit} WIB`;
 
-    // Untuk batch: ambil nomor episode terakhir dari daftar download jika ada
+    // Ambil nomor episode terbaru dari daftar download (episodes[0] = terbaru)
     const epDariList = episodes.length
         ? (() => {
-            const last  = episodes[episodes.length - 1];
-            const numM  = String(last.episode || '').match(/(\d+)/);
+            const terbaru = episodes[0];
+            const numM    = String(terbaru.episode || '').match(/(\d+)/);
             return numM ? parseInt(numM[1]) : 0;
         })()
         : 0;
@@ -616,9 +616,10 @@ function buatCaptionGabung(data) {
     ].filter(Boolean).join('');
 
     // ── Download — semua resolusi, semua host ──
+    // episodes[0] = episode terbaru (urutan terbaru dulu dari parseDownloadLinks)
     let dlBlok = '';
     if (episodes.length) {
-        const epTerbaru    = episodes[episodes.length - 1];
+        const epTerbaru    = episodes[0];
         const resolusiList = Object.entries(epTerbaru.links || {});
         if (resolusiList.length) {
             dlBlok =
