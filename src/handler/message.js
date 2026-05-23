@@ -1316,6 +1316,7 @@ const CEKAUTO_FITUR_LIST = [
         { key: 'animasu',        nama: 'Animasu Notif',    cmd: '.animasu on/off',         type: 'group',  toggleable: false             },
         { key: 'malnews',        nama: 'MAL News',         cmd: '.malnews on/off',         type: 'group',  toggleable: false             },
         { key: 'tvonenews',      nama: 'TV One News',      cmd: '.tvone on/off',           type: 'group',  toggleable: false             },
+        { key: 'autoSholat',     nama: 'Auto Sholat',      cmd: '.autosholat add/remove',  type: 'group',  toggleable: false, checkFn: (cfg) => Array.isArray(cfg.autoSholat?.groups) && cfg.autoSholat.groups.length > 0 },
 ];
 
 const CEKAUTO_GROUP_FITUR_LIST = [
@@ -1369,6 +1370,11 @@ const CEKAUTO_GROUP_FITUR_LIST = [
                         return `Cegah member mentag grup via SW. Global: ${globalOn ? '🟢 Aktif' : '🔴 Nonaktif → ketik .antitagsw global on'}`;
                 },
                 checkFn: (_cfg, jid) => isAntiTagSWEnabled(jid)
+        },
+        {
+                key: 'autoSholat', nama: 'Auto Sholat', cmd: '.autosholat add/remove', toggleable: true,
+                desc: 'Kirim notif waktu sholat + gambar masjid + suara adzan ke grup otomatis.',
+                checkFn: (cfg, jid) => Array.isArray(cfg.autoSholat?.groups) && cfg.autoSholat.groups.includes(jid)
         },
 ];
 
