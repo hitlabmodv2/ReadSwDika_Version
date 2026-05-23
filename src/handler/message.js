@@ -13714,6 +13714,67 @@ hasil += `╰══════════════════════�
                                 break;
                         }
 
+                        case 'whatgenre':
+                        case 'genrecheck':
+                        case 'audioanalysis': {
+                                try {
+                                        const audioTypes = ['audioMessage', 'documentMessage'];
+                                        const isCurrentAudio = m.isMedia && audioTypes.includes(getMediaTypeFromMessage(m));
+                                        const isQuotedAudio  = m.isQuoted && audioTypes.includes(getMediaTypeFromMessage(m.quoted));
+
+                                        if (!isCurrentAudio && !isQuotedAudio) {
+                                                await tolak(hisoka, m,
+                                                        `╭═══〔 🎵 *WHAT GENRE* 〕═══╮\n` +
+                                                        `│\n` +
+                                                        `│ Analisis genre, mood & instrumen\n` +
+                                                        `│ dari audio/voice note otomatis!\n` +
+                                                        `│\n` +
+                                                        `│ *Cara pakai:*\n` +
+                                                        `│ • Kirim audio + ketik *${pfx}whatgenre*\n` +
+                                                        `│ • Reply audio lalu ketik *${pfx}whatgenre*\n` +
+                                                        `│\n` +
+                                                        `│ Mendukung: voice note, MP3,\n` +
+                                                        `│ file audio, dll.\n` +
+                                                        `│\n` +
+                                                        `╰══════════════════════════════╯`
+                                                );
+                                                break;
+                                        }
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } });
+                                        const loadingMsg = await tolak(hisoka, m, '🎵 Menganalisis audio...');
+
+                                        const targetMsg  = isQuotedAudio ? m.quoted : m;
+                                        const targetMime = targetMsg?.content?.mimetype || targetMsg?.msg?.mimetype || 'audio/ogg';
+
+                                        const audioBuffer = await downloadMediaMessage(
+                                                { ...targetMsg, message: targetMsg.raw },
+                                                'buffer',
+                                                {},
+                                                { logger: hisoka.logger, reuploadRequest: hisoka.updateMediaMessage }
+                                        );
+
+                                        if (!audioBuffer || audioBuffer.length === 0) {
+                                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                                await m.reply({ edit: loadingMsg.key, text: '❌ Gagal download audio.' });
+                                                break;
+                                        }
+
+                                        const { analyzeAudio } = _require(path.resolve('./src/scrape/whatgenre.cjs'));
+                                        const result = await analyzeAudio(audioBuffer, targetMime);
+
+                                        await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                        await m.reply({ edit: loadingMsg.key, text: result });
+
+                                        logCommand(m, hisoka, 'whatgenre');
+                                } catch (error) {
+                                        console.error('\x1b[31m[WhatGenre] Error:\x1b[39m', error.message);
+                                        await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                        await tolak(hisoka, m, `❌ Gagal analisis audio: ${error.message}`);
+                                }
+                                break;
+                        }
+
                         case 'toimg': {
                                 try {
                                         const sharp = (await import('sharp')).default;

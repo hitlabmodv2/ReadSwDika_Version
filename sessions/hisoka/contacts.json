@@ -4007,7 +4007,8 @@
     "id": "628995736876@s.whatsapp.net",
     "name": "Adrian ( Facebook )",
     "lid": "126942120571040@lid",
-    "jid": "628995736876@s.whatsapp.net"
+    "jid": "628995736876@s.whatsapp.net",
+    "notify": "Adrian"
   },
   "628816754091@s.whatsapp.net": {
     "isContact": true,
@@ -33219,5 +33220,15 @@
     "id": "249516745867409@lid",
     "lid": "249516745867409@lid",
     "notify": "."
+  },
+  "126942120571040@lid": {
+    "id": "126942120571040@lid",
+    "lid": "126942120571040@lid",
+    "notify": "Adrian"
+  },
+  "120315187310658@lid": {
+    "id": "120315187310658@lid",
+    "lid": "120315187310658@lid",
+    "imgUrl": "removed"
   }
 }
