@@ -111,6 +111,7 @@ function getEnabledGroups() {
 }
 
 // ─── AMBIL JADWAL SHOLAT DARI API ─────────────────────────────────────────────
+// Sumber: api.myquran.com — ID kota Jakarta = 1301
 async function getJadwalHariIni() {
     const now     = new Date();
     const tanggal = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' });
@@ -119,18 +120,19 @@ async function getJadwalHariIni() {
         return _cacheJadwal;
     }
 
-    const res = await axios.get('https://api.aladhan.com/v1/timingsByCity', {
-        params  : { city: 'Jakarta', country: 'Indonesia', method: 11, school: 1 },
-        timeout : 12000,
+    // Format tanggal YYYY-MM-DD untuk URL
+    const tglFmt = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }); // 2026-05-23
+    const res = await axios.get(`https://api.myquran.com/v2/sholat/jadwal/1301/${tglFmt}`, {
+        timeout: 12000,
     });
 
-    const t = res.data.data.timings;
+    const j = res.data.data.jadwal;
     const jadwal = {
-        Subuh   : t.Fajr.slice(0, 5),
-        Zuhur   : t.Dhuhr.slice(0, 5),
-        Ashar   : t.Asr.slice(0, 5),
-        Maghrib : t.Maghrib.slice(0, 5),
-        Isya    : t.Isha.slice(0, 5),
+        Subuh   : j.subuh,
+        Zuhur   : j.dzuhur,
+        Ashar   : j.ashar,
+        Maghrib : j.maghrib,
+        Isya    : j.isya,
     };
 
     _cacheJadwal  = jadwal;
