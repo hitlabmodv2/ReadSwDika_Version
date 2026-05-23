@@ -2077,7 +2077,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 (_cachedQuotedAS?.key?.fromMe === true)
                                         );
 
-                                        if ((isBotMentioned || isReplyToBot) && !m.key?.fromMe) {
+                                        if (isBotMentioned || isReplyToBot) {
                                                 if (isAICooldown(m.sender)) return;
 
                                                 let userMessage = m.text?.trim() || '';
@@ -2343,7 +2343,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         const isLoadedCommand = m.command && !m.isBot && hisoka.loadedCommands?.some(c => c.toLowerCase() === m.command);
                                         if (isLoadedCommand) {
                                                 // Command bot harus tetap lanjut ke switch-case, jangan ditahan auto-reply AI/cooldown.
-                                        } else if (isWilyOn && isAutoReplyOn && hisoka.isMainBot !== false && (triggerGroup || triggerPM) && !m.key?.fromMe && m.from !== 'status@broadcast') {
+                                        } else if (isWilyOn && isAutoReplyOn && hisoka.isMainBot !== false && (triggerGroup || triggerPM) && m.from !== 'status@broadcast') {
                                                 if (isAICooldown(m.sender)) {
                                                         return;
                                                 }
