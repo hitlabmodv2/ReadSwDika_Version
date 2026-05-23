@@ -114,11 +114,12 @@ Jawab HANYA dengan dua blok format di atas. Jangan tambahkan kalimat lain di lua
 async function analyzeAudio(audioBuffer, mimeType = 'audio/ogg') {
     const base64Audio = audioBuffer.toString('base64');
 
-    const safeMime = mimeType.includes('ogg')  ? 'audio/ogg'
-        : mimeType.includes('mp4') || mimeType.includes('m4a') ? 'audio/mp4'
-        : mimeType.includes('mpeg') || mimeType.includes('mp3') ? 'audio/mpeg'
+    const safeMime = mimeType.includes('ogg')   ? 'audio/ogg'
+        : mimeType.includes('mp3') || mimeType.includes('mpeg') ? 'audio/mpeg'
         : mimeType.includes('wav')  ? 'audio/wav'
         : mimeType.includes('flac') ? 'audio/flac'
+        : mimeType.includes('webm') ? 'video/webm'
+        : mimeType.includes('mp4') || mimeType.includes('m4a') || mimeType.includes('video') ? 'video/mp4'
         : 'audio/ogg';
 
     const response = await gemmy.chat({

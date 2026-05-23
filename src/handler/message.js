@@ -13719,7 +13719,7 @@ hasil += `╰══════════════════════�
                         case 'musicinfo':
                         case 'cekmusik': {
                                 try {
-                                        const audioTypes = ['audioMessage', 'documentMessage'];
+                                        const audioTypes = ['audioMessage', 'documentMessage', 'videoMessage'];
                                         const isCurrentAudio = m.isMedia && audioTypes.includes(getMediaTypeFromMessage(m));
                                         const isQuotedAudio  = m.isQuoted && audioTypes.includes(getMediaTypeFromMessage(m.quoted));
 
@@ -13731,22 +13731,25 @@ hasil += `╰══════════════════════�
                                                         `│ genre, mood, instrumen & lirik!\n` +
                                                         `│\n` +
                                                         `│ *Cara pakai:*\n` +
-                                                        `│ • Kirim audio + ketik *${pfx}infomusik*\n` +
-                                                        `│ • Reply audio/VN → *${pfx}infomusik*\n` +
+                                                        `│ • Kirim audio/video + *${pfx}infomusik*\n` +
+                                                        `│ • Reply audio/video/VN → *${pfx}infomusik*\n` +
                                                         `│\n` +
                                                         `│ Mendukung: voice note, MP3,\n` +
-                                                        `│ file audio, video, dll.\n` +
+                                                        `│ video MP4, file audio, dll.\n` +
                                                         `│\n` +
                                                         `╰══════════════════════════════╯`
                                                 );
                                                 break;
                                         }
 
-                                        await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } });
-                                        const loadingMsg = await tolak(hisoka, m, '🎵 Menganalisis audio, harap tunggu...');
+                                        const _isVideo = (msg) => getMediaTypeFromMessage(msg) === 'videoMessage';
+                                        const targetIsVideo = isQuotedAudio ? _isVideo(m.quoted) : _isVideo(m);
+
+                                        await hisoka.sendMessage(m.from, { react: { text: targetIsVideo ? '🎬' : '🎵', key: m.key } });
+                                        const loadingMsg = await tolak(hisoka, m, targetIsVideo ? '🎬 Mengekstrak & menganalisis audio dari video...' : '🎵 Menganalisis audio, harap tunggu...');
 
                                         const targetMsg  = isQuotedAudio ? m.quoted : m;
-                                        const targetMime = targetMsg?.content?.mimetype || targetMsg?.msg?.mimetype || 'audio/ogg';
+                                        const targetMime = targetMsg?.content?.mimetype || targetMsg?.msg?.mimetype || (targetIsVideo ? 'video/mp4' : 'audio/ogg');
 
                                         const audioBuffer = await downloadMediaMessage(
                                                 { ...targetMsg, message: targetMsg.raw },
