@@ -1,3 +1,42 @@
+🤖 *WILY BOT — V18.1*
+_📅 Rilis: Sabtu, 23 Mei 2026_
+
+✨ *11 Fitur Baru*
+🔧 *10 Bug Fix*
+🚀 *8 Improvement*
+
+━━━━━━━━━━━━━━━━━━━━━━
+🆕 *UPDATE V18.1 — PATCH*
+━━━━━━━━━━━━━━━━━━━━━━
+
+✨ *FITUR BARU*
+
+> 🎌 *Alqanime Notif — Deteksi Tipe Rilisan Otomatis*
+> Caption header kini tampil dinamis sesuai tipe rilisan
+> Batch → `📺 Batch 01-12`
+> Episode ongoing → `📺 Episode 07`
+> Movie / OVA → `📺 Movie / OVA`
+> Tidak perlu setting manual — otomatis deteksi dari judul & data web
+
+🔧 *BUG FIX*
+
+> 🎌 *Alqanime Notif — Batch Tampil "Episode 1" Padahal Completed*
+> Anime batch (misal 1–12) mengirim notif dengan header `Episode 1`
+> padahal status sudah Completed dan download tersedia sampai ep terakhir
+> Penyebab: `epNum` diambil dari parse judul card yang baca "Episode 1"
+> bukan dari episode terbaru di daftar download
+> Kini header & download selalu sinkron ke episode terbaru yang real
+
+🚀 *IMPROVEMENT*
+
+> 🎵 *Musik AI — Genre Dinamis oleh Gemini*
+> Sebelumnya genre dikunci maksimal 1-2 di prompt AI
+> Kini Gemini bebas tentukan berapa genre yang cocok — bisa 3 atau lebih
+> sesuai karakter dan gaya rilisan lagunya (realtime, tidak hardcoded)
+> Berlaku untuk semua mode: tema bebas, random ID/EN/JP
+
+━━━━━━━━━━━━━━━━━━━━━━
+
 🤖 *WILY BOT — V18*
 _📅 Rilis: Sabtu, 23 Mei 2026_
 
