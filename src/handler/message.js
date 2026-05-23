@@ -13775,7 +13775,7 @@ hasil += `╰══════════════════════�
                                         await m.reply({ edit: loadingMsg.key, text: '✅ Analisis selesai!' });
 
                                         // Split hasil: blok INFO MUSIK vs blok LIRIK
-                                        const splitMarker = /\u256d\u2550\u2550\u2550\u3014 \ud83d\udcdc LIRIK/;
+                                        const splitMarker = /📜 \*LIRIK/;
                                         const splitIdx    = result.search(splitMarker);
                                         const partInfo    = splitIdx > 0 ? result.slice(0, splitIdx).trim() : result;
                                         const partLirik   = splitIdx > 0 ? result.slice(splitIdx).trim()  : '';
@@ -13793,7 +13793,7 @@ hasil += `╰══════════════════════�
                                         const copyLirik = _cleanCopy(partLirik);
 
                                         // Ekstrak nilai genre saja (misal: "Pop Jazz, Swing") untuk tombol Salin Genre
-                                        const _genreMatch = partInfo.match(/🎼\s*Genre\s*:\s*(.+)/);
+                                        const _genreMatch = partInfo.match(/🎼[^:]+:\s*(.+)/);
                                         const copyGenre = _genreMatch ? _genreMatch[1].trim() : _cleanCopy(partInfo);
 
                                         // Kirim hasil reply ke pesan user yang pakai command + dua tombol copy

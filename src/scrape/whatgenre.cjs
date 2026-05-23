@@ -81,29 +81,25 @@ const gemmy = new GemmyGemini();
 
 const PROMPT_INFO_MUSIK = `Kamu adalah analis musik profesional. Dengarkan audio ini secara seksama, lalu berikan informasi lengkap dalam format berikut (gunakan bahasa Indonesia):
 
-╭═══〔 🎵 INFO MUSIK 〕═══╮
-│
-│ 🎵 Judul      : [judul lagu jika dikenali, atau "Tidak dikenali"]
-│ 👤 Artis      : [nama artis/penyanyi jika dikenali, atau "-"]
-│ 🎼 Genre      : [genre utama / sub-genre]
-│ 🎭 Mood       : [mood / suasana lagu]
-│ 🎹 Instrumen  : [daftar instrumen yang terdengar]
-│ 🎤 Vokal      : [ada/tidak, jenis vokal, bahasa vokal]
-│ ⏱️ Tempo      : [lambat/sedang/cepat — estimasi BPM]
-│ 🔊 Energi     : [rendah/sedang/tinggi]
-│ 📝 Deskripsi  : [1-2 kalimat ringkas tentang audio ini]
-│
-╰══════════════════════════════╯
+🎵 *INFO MUSIK*
 
-╭═══〔 📜 LIRIK / TRANSKRIPSI 〕═══╮
-│
+🎵 *Judul*     : [judul lagu jika dikenali, atau "Tidak dikenali"]
+👤 *Artis*     : [nama artis/penyanyi jika dikenali, atau "-"]
+🎼 *Genre*     : [genre utama / sub-genre]
+🎭 *Mood*      : [mood / suasana lagu]
+🎹 *Instrumen* : [daftar instrumen yang terdengar]
+🎤 *Vokal*     : [ada/tidak, jenis vokal, bahasa vokal]
+⏱️ *Tempo*    : [lambat/sedang/cepat — estimasi BPM]
+🔊 *Energi*    : [rendah/sedang/tinggi]
+📝 *Deskripsi* : [1-2 kalimat ringkas tentang audio ini]
+
+📜 *LIRIK / TRANSKRIPSI*
+
 [Tulis lirik atau transkripsi vokal yang terdengar di sini.
 Jika audio adalah voice note/percakapan, tulis transkripsinya.
 Jika musik instrumental tanpa vokal, tulis "🎼 Instrumental — tidak ada vokal."]
-│
-╰══════════════════════════════════════╯
 
-Jawab HANYA dengan dua blok format di atas. Jangan tambahkan kalimat lain di luar format.`;
+Jawab HANYA dengan format di atas. Jangan tambahkan kalimat lain di luar format.`;
 
 /**
  * Analisis audio lengkap: info musik (genre/mood/instrumen) + lirik/transkripsi.
