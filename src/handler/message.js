@@ -9014,7 +9014,8 @@ ${masaAktifLine}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 _⚙️ Setting tersimpan per-jadibot realtime_
-_📦 Powered by Wily Bot V18.1_ 🤖${_jbFooter ? `\n_${_jbFooter}_` : ''}`;
+_📦 Powered by Wily Bot V18.1_ 🤖${_jbFooter ? `\n_${_jbFooter}_` : ''}
+━━━━━━━━━━━━━━━━━━━━━━`;
                                                 await hisoka.sendMessage(m.from, { text: menuTeks }, { quoted: m });
                                                 logCommand(m, hisoka, 'menu');
                                                 break;
@@ -9203,8 +9204,8 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 ▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
 📌 _Ketik_ *.settingmenu* _| .downloadmenu_
 📌 _Ketik_ *.groupmenu* _| .jadibotmenu_
-📌 _Ketik_ *.statusmenu* _| .ownermenu_
-▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰${menuFooter ? `\n_${menuFooter}_` : ''}
+📌 _Ketik_ *.statusmenu* _| .ownermenu_${menuFooter ? `\n_${menuFooter}_` : ''}
+▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
 
 `;
                                         const ppUser = await getUserProfilePictureUrl(hisoka, m.sender);
