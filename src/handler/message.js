@@ -1310,7 +1310,7 @@ const CEKAUTO_FITUR_LIST = [
         { key: 'telegram',       nama: 'Telegram Bridge',  cmd: '.telegram on/off',        type: 'global', toggleKey: 'telegram',       toggleable: true  },
         { key: 'welcomeGoodbye', nama: 'Welcome/Goodbye',  cmd: '.welcome on/off',         type: 'global', toggleable: false             },
         { key: 'wilyAI',         nama: 'Wily AI',          cmd: '.wilyai on/off',          type: 'global', toggleKey: 'wilyAI',         toggleable: true  },
-        { key: 'antiPorn',       nama: 'Anti Porn',        cmd: '.antiporn global on/off', type: 'global', toggleKey: 'antiPorn',       toggleable: true  },
+        { key: 'antiPorn',       nama: 'Anti Porn',        cmd: '.antiporn global on/off', type: 'global', toggleKey: 'antiPorn',       toggleable: true,  checkFn: (cfg) => cfg.antiPorn?.enabled === true || (Array.isArray(cfg.antiPorn?.groups) && cfg.antiPorn.groups.length > 0) },
         { key: 'cekswTracking',  nama: 'Cek SW Tracking',  cmd: '.ceksw on/off',           type: 'custom', toggleKey: 'cekswTracking',  toggleable: true,  checkFn: (cfg) => cfg.cekswTracking !== false },
         { key: 'alqanimenotif',  nama: 'Alqanime Notif',   cmd: '.alqanimenotif on/off',   type: 'group',  toggleable: false             },
         { key: 'animasu',        nama: 'Animasu Notif',    cmd: '.animasu on/off',         type: 'group',  toggleable: false             },
