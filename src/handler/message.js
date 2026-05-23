@@ -8939,6 +8939,9 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                 try {
                                         // ── JADIBOT: tampilkan menu khusus tanpa thumbnail ──
                                         if (hisoka?.isMainBot === false) {
+                                                const _jbCfg       = loadConfig();
+                                                const _jbBotReply  = _jbCfg.botReply || {};
+                                                const _jbFooter    = _jbBotReply.footer || '';
                                                 const jadibotNum = getJadibotNumber(hisoka);
                                                 const jadibotConnectTs = jadibotConnectedAt.get(jadibotNum) || getJadibotExpiry(jadibotNum)?.connectedAt || Date.now();
                                                 const jadibotUptimeMs = Date.now() - jadibotConnectTs;
@@ -9011,7 +9014,7 @@ ${masaAktifLine}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 _⚙️ Setting tersimpan per-jadibot realtime_
-_📦 Powered by Wily Bot V18.1_ 🤖`;
+_📦 Powered by Wily Bot V18.1_ 🤖${_jbFooter ? `\n${_jbFooter}` : ''}`;
                                                 await hisoka.sendMessage(m.from, { text: menuTeks }, { quoted: m });
                                                 logCommand(m, hisoka, 'menu');
                                                 break;
@@ -9022,6 +9025,7 @@ _📦 Powered by Wily Bot V18.1_ 🤖`;
                                         const botReply = cfg.botReply || {};
                                         const botName  = botReply.botName     || 'Wily Bot';
                                         const ownerNum = botReply.ownerNumber || '';
+                                        const menuFooter = botReply.footer    || '';
                                         const uptime   = process.uptime();
                                         const uh = Math.floor(uptime / 3600);
                                         const um = Math.floor((uptime % 3600) / 60);
@@ -9200,7 +9204,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 📌 _Ketik_ *.settingmenu* _| .downloadmenu_
 📌 _Ketik_ *.groupmenu* _| .jadibotmenu_
 📌 _Ketik_ *.statusmenu* _| .ownermenu_
-▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
+▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰${menuFooter ? `\n${menuFooter}` : ''}
 
 `;
                                         const ppUser = await getUserProfilePictureUrl(hisoka, m.sender);
@@ -13805,7 +13809,7 @@ hasil += `╰══════════════════════�
                                         try {
                                                 const btn = new Button()
                                                         .setBody(result)
-                                                        .setFooter('🎵 Powered by Gemini AI')
+                                                        .setFooter((() => { try { return loadConfig()?.botReply?.footer || '🎵 Powered by Gemini AI'; } catch (_) { return '🎵 Powered by Gemini AI'; } })())
                                                         .setContextInfo(_replyCtx)
                                                         .addCopy('🎼 Salin Genre', copyGenre, 'copy_infomusik_genre');
                                                 if (copyLirik) {

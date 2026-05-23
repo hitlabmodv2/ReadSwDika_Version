@@ -70,7 +70,8 @@
   "botReply": {
     "newsletterJid": "120363312297133690@newsletter",
     "newsletterName": "Info Seputar Anime Dll 👤",
-    "sourceUrl": "https://wa.me/6289688206739"
+    "sourceUrl": "https://wa.me/6289688206739",
+    "footer": "Bot Ver"
   },
   "wilyAI": {
     "enabled": false,
