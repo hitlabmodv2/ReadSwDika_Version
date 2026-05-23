@@ -15772,6 +15772,138 @@ hasil += `╰══════════════════════�
                                 break;
                         }
 
+                        case 'autosholat': {
+                                if (!m.isOwner) return tolak(hisoka, m, '❌ Hanya owner yang bisa gunakan perintah ini.');
+
+                                const _as  = _require(path.resolve('./src/scrape/autosholat.cjs'));
+                                const sub  = (query || '').trim().toLowerCase();
+                                const pfx  = m.prefix || '.';
+                                const jidGrup = m.from;
+
+                                // ── HELP / tanpa sub-perintah ─────────────────────────────────────
+                                if (!sub || sub === 'help') {
+                                        const aktif = _as.isGroupEnabled(jidGrup);
+                                        const grupLabel = m.isGroup
+                                                ? (aktif ? '✅ *Aktif* di grup ini' : '❌ *Belum terdaftar* di grup ini')
+                                                : '_Perintah add/remove hanya bisa di grup_';
+                                        await tolak(hisoka, m,
+                                                `╭─「 🕌 *AUTO SHOLAT* 」\n` +
+                                                `│\n` +
+                                                `│ Status: ${grupLabel}\n` +
+                                                `│\n` +
+                                                `│ *Perintah:*\n` +
+                                                `│ • *${pfx}autosholat add* — daftarkan grup ini\n` +
+                                                `│ • *${pfx}autosholat remove* — hapus grup ini\n` +
+                                                `│ • *${pfx}autosholat test* — tes kirim sekarang\n` +
+                                                `│ • *${pfx}autosholat status* — lihat semua grup\n` +
+                                                `│ • *${pfx}autosholat jadwal* — lihat jadwal hari ini\n` +
+                                                `│\n` +
+                                                `│ 💡 Bot kirim gambar masjid + suara adzan\n` +
+                                                `│    ke grup tepat saat waktu sholat tiba.\n` +
+                                                `╰──────────────────────`
+                                        );
+                                        break;
+                                }
+
+                                // ── ADD ───────────────────────────────────────────────────────────
+                                if (sub === 'add') {
+                                        if (!m.isGroup) return tolak(hisoka, m, '❌ Perintah ini hanya bisa digunakan di dalam grup!');
+                                        const berhasil = _as.addGroup(jidGrup);
+                                        await tolak(hisoka, m,
+                                                berhasil
+                                                        ? `╭─「 🕌 *AUTO SHOLAT* 」\n│\n│ ✅ Grup berhasil didaftarkan!\n│\n│ Bot akan otomatis kirim notifikasi\n│ + gambar masjid + suara adzan ke\n│ grup ini setiap waktu sholat tiba.\n│\n│ Ketik *${pfx}autosholat remove* untuk berhenti.\n╰──────────────────────`
+                                                        : `╭─「 🕌 *AUTO SHOLAT* 」\n│\n│ ℹ️ Grup ini sudah terdaftar sebelumnya.\n│ Tidak ada perubahan.\n╰──────────────────────`
+                                        );
+                                        if (berhasil) await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                        logCommand(m, hisoka, 'autosholat-add');
+                                        break;
+                                }
+
+                                // ── REMOVE / DEL ──────────────────────────────────────────────────
+                                if (sub === 'remove' || sub === 'del') {
+                                        if (!m.isGroup) return tolak(hisoka, m, '❌ Perintah ini hanya bisa digunakan di dalam grup!');
+                                        const berhasil = _as.removeGroup(jidGrup);
+                                        await tolak(hisoka, m,
+                                                berhasil
+                                                        ? `╭─「 🕌 *AUTO SHOLAT* 」\n│\n│ ❌ Grup berhasil dihapus dari daftar.\n│ Bot tidak akan kirim notif sholat\n│ ke grup ini lagi.\n╰──────────────────────`
+                                                        : `╭─「 🕌 *AUTO SHOLAT* 」\n│\n│ ℹ️ Grup ini belum terdaftar.\n│ Tidak ada perubahan.\n╰──────────────────────`
+                                        );
+                                        if (berhasil) await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                        logCommand(m, hisoka, 'autosholat-remove');
+                                        break;
+                                }
+
+                                // ── STATUS ────────────────────────────────────────────────────────
+                                if (sub === 'status') {
+                                        const semuaGrup = _as.getEnabledGroups();
+                                        if (!semuaGrup.length) {
+                                                await tolak(hisoka, m, '📋 Belum ada grup yang terdaftar Auto Sholat.');
+                                                break;
+                                        }
+                                        let txt = `╭─「 📋 *STATUS AUTO SHOLAT* 」\n│\n`;
+                                        semuaGrup.forEach((jid, i) => {
+                                                const label = jid.replace('@g.us', '');
+                                                const isLast = i === semuaGrup.length - 1;
+                                                txt += `${isLast ? '╰' : '│'} ✅ ${label}\n`;
+                                        });
+                                        txt += `\n_Total: ${semuaGrup.length} grup aktif_`;
+                                        await tolak(hisoka, m, txt);
+                                        break;
+                                }
+
+                                // ── JADWAL ────────────────────────────────────────────────────────
+                                if (sub === 'jadwal') {
+                                        await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+                                        try {
+                                                const jadwal = await _as.getJadwalHariIni();
+                                                const tgl = new Date().toLocaleDateString('id-ID', {
+                                                        timeZone: 'Asia/Jakarta',
+                                                        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                                                });
+                                                let txt = `╭─「 🕌 *JADWAL SHOLAT JAKARTA* 」\n│\n│ 🗓️ _${tgl}_\n│\n`;
+                                                for (const [nama, waktu] of Object.entries(jadwal)) {
+                                                        txt += `│ 🕐 *${nama}* : ${waktu} WIB\n`;
+                                                }
+                                                txt += `╰──────────────────────`;
+                                                await tolak(hisoka, m, txt);
+                                                await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                        } catch (err) {
+                                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                                await tolak(hisoka, m, `❌ Gagal ambil jadwal: ${err?.message || err}`);
+                                        }
+                                        break;
+                                }
+
+                                // ── TEST ──────────────────────────────────────────────────────────
+                                if (sub === 'test' || sub.startsWith('test ')) {
+                                        await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+                                        try {
+                                                // Boleh tulis: .autosholat test subuh / test maghrib dll
+                                                const namaWaktu = sub.replace('test', '').trim() || null;
+                                                const hasil = await _as.simulasi(namaWaktu);
+                                                await hisoka.sendMessage(m.from, {
+                                                        image  : { url: hasil.urlGambar },
+                                                        caption: hasil.caption,
+                                                }, { quoted: m });
+                                                // Kirim suara adzan
+                                                await hisoka.sendMessage(m.from, {
+                                                        audio   : { url: hasil.urlAudio },
+                                                        ptt     : true,
+                                                        mimetype: 'audio/mpeg',
+                                                }, { quoted: m });
+                                                await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
+                                                logCommand(m, hisoka, 'autosholat-test');
+                                        } catch (err) {
+                                                await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
+                                                await tolak(hisoka, m, `❌ Gagal test: ${err?.message || err}`);
+                                        }
+                                        break;
+                                }
+
+                                await tolak(hisoka, m, `❌ Sub-perintah tidak dikenal. Ketik *${pfx}autosholat* untuk bantuan.`);
+                                break;
+                        }
+
                         case 'infowibu': {
                                 if (!m.isOwner) return tolak(hisoka, m, '❌ Hanya owner yang bisa gunakan perintah ini.');
                                 if (!m.isGroup) return tolak(hisoka, m, '❌ Perintah ini hanya untuk grup.');

@@ -1103,6 +1103,80 @@ async function main() {
                         }
                         /* =================== END AUTO MALNEWS SCHEDULER =================== */
 
+                        /* ===================== AUTO SHOLAT SCHEDULER ===================== */
+                        if (global.autoSholatInterval) {
+                                clearInterval(global.autoSholatInterval);
+                                global.autoSholatInterval = null;
+                        }
+                        {
+                                const AS_PATH = path.join(process.cwd(), 'src', 'scrape', 'autosholat.cjs');
+                                // Lacak sholat yang sudah dikirim hari ini (reset otomatis tiap hari baru)
+                                let _sholatTerkirimHariIni = new Set();
+                                let _hariTerakhirSholat    = '';
+
+                                const runAutoSholat = async () => {
+                                        try {
+                                                const _as = _require(AS_PATH);
+                                                const daftarGrup = _as.getEnabledGroups();
+                                                if (!daftarGrup.length) return;
+
+                                                // Reset tracker setiap hari baru (WIB)
+                                                const hariIni = new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' });
+                                                if (_hariTerakhirSholat !== hariIni) {
+                                                        _sholatTerkirimHariIni = new Set();
+                                                        _hariTerakhirSholat    = hariIni;
+                                                }
+
+                                                const cocok = await _as.cekWaktuSholat();
+                                                if (!cocok) return;
+                                                if (_sholatTerkirimHariIni.has(cocok.nama)) return; // sudah dikirim
+                                                _sholatTerkirimHariIni.add(cocok.nama);
+
+                                                const jadwal  = await _as.getJadwalHariIni();
+                                                const caption = _as.buatCaption(cocok.nama, cocok.waktu, jadwal);
+                                                const urlGbr  = _as.getGambar(cocok.nama);
+                                                const urlAud  = _as.getAudio(cocok.nama);
+
+                                                console.log(`[AutoSholat] ⏰ ${cocok.nama} ${cocok.waktu} WIB → kirim ke ${daftarGrup.length} grup`);
+
+                                                const AS_BATCH = 5;
+                                                for (let i = 0; i < daftarGrup.length; i += AS_BATCH) {
+                                                        const chunk = daftarGrup.slice(i, i + AS_BATCH);
+                                                        await Promise.allSettled(chunk.map(async jid => {
+                                                                try {
+                                                                        // Kirim gambar + caption
+                                                                        await hisoka.sendMessage(jid, {
+                                                                                image  : { url: urlGbr },
+                                                                                caption: caption,
+                                                                        });
+                                                                        // Kirim suara adzan (voice note)
+                                                                        await hisoka.sendMessage(jid, {
+                                                                                audio   : { url: urlAud },
+                                                                                ptt     : true,
+                                                                                mimetype: 'audio/mpeg',
+                                                                        });
+                                                                } catch (e) {
+                                                                        console.error(`[AutoSholat] Gagal kirim ke ${jid}:`, e?.message);
+                                                                }
+                                                        }));
+                                                        if (i + AS_BATCH < daftarGrup.length) {
+                                                                await new Promise(r => setTimeout(r, 1500));
+                                                        }
+                                                }
+                                                console.log(`[AutoSholat] ✅ ${cocok.nama} terkirim ke ${daftarGrup.length} grup`);
+                                        } catch (err) {
+                                                console.error('[AutoSholat] Error scheduler:', err?.message);
+                                        }
+                                };
+
+                                // Cek setiap 60 detik, mulai setelah 10 detik
+                                setTimeout(() => {
+                                        runAutoSholat();
+                                        global.autoSholatInterval = setInterval(runAutoSholat, 60 * 1000);
+                                }, 10000);
+                        }
+                        /* =================== END AUTO SHOLAT SCHEDULER =================== */
+
                         /* ===================== AUTO START SEMUA JADIBOT (STABIL) ===================== */
 const jadibotDir = path.join(process.cwd(), 'jadibot');
 
