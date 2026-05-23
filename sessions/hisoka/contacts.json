@@ -204,7 +204,7 @@
     "name": "!!!Nova",
     "lid": "244452643868853@lid",
     "jid": "6282258833301@s.whatsapp.net",
-    "notify": "someone"
+    "notify": "arip"
   },
   "6281253484299@s.whatsapp.net": {
     "isContact": true,
@@ -9356,7 +9356,8 @@
     "id": "62895405718686@s.whatsapp.net",
     "name": "AM•ルウィン",
     "lid": "214928937980082@lid",
-    "jid": "62895405718686@s.whatsapp.net"
+    "jid": "62895405718686@s.whatsapp.net",
+    "notify": "Basic NPC"
   },
   "6283871419057@s.whatsapp.net": {
     "isContact": true,
@@ -32571,7 +32572,7 @@
   "244452643868853@lid": {
     "id": "244452643868853@lid",
     "lid": "244452643868853@lid",
-    "notify": "someone"
+    "notify": "arip"
   },
   "180075228098603@lid": {
     "id": "180075228098603@lid",
@@ -33087,5 +33088,20 @@
     "id": "271296239808570@lid",
     "lid": "271296239808570@lid",
     "imgUrl": "changed"
+  },
+  "68380191097053@lid": {
+    "id": "68380191097053@lid",
+    "lid": "68380191097053@lid",
+    "imgUrl": "changed"
+  },
+  "184275806756868@lid": {
+    "id": "184275806756868@lid",
+    "lid": "184275806756868@lid",
+    "imgUrl": "changed"
+  },
+  "145298978513059@lid": {
+    "id": "145298978513059@lid",
+    "lid": "145298978513059@lid",
+    "imgUrl": "removed"
   }
 }
