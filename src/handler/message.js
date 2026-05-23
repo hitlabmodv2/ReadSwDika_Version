@@ -2077,7 +2077,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                                 (_cachedQuotedAS?.key?.fromMe === true)
                                         );
 
-                                        if (isBotMentioned || isReplyToBot) {
+                                        if ((isBotMentioned || isReplyToBot) && !m.key?.fromMe) {
                                                 if (isAICooldown(m.sender)) return;
 
                                                 let userMessage = m.text?.trim() || '';
@@ -2343,7 +2343,7 @@ export default async function ({ message, type: messagesType }, hisoka) {
                                         const isLoadedCommand = m.command && !m.isBot && hisoka.loadedCommands?.some(c => c.toLowerCase() === m.command);
                                         if (isLoadedCommand) {
                                                 // Command bot harus tetap lanjut ke switch-case, jangan ditahan auto-reply AI/cooldown.
-                                        } else if (isWilyOn && isAutoReplyOn && hisoka.isMainBot !== false && (triggerGroup || triggerPM) && m.from !== 'status@broadcast') {
+                                        } else if (isWilyOn && isAutoReplyOn && hisoka.isMainBot !== false && (triggerGroup || triggerPM) && !m.key?.fromMe && m.from !== 'status@broadcast') {
                                                 if (isAICooldown(m.sender)) {
                                                         return;
                                                 }
@@ -13790,6 +13790,8 @@ hasil += `╰══════════════════════�
                                         const copyLirik = _cleanCopy(partLirik);
 
                                         // Kirim hasil reply ke pesan user yang pakai command + dua tombol copy
+                                        // Jika pesan dari nomor bot sendiri (fromMe), skip quoted agar tidak error
+                                        const _quotedRef = m.key?.fromMe ? null : m;
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
@@ -13799,12 +13801,13 @@ hasil += `╰══════════════════════�
                                                 if (copyLirik) {
                                                         btn.addCopy('📜 Salin Lirik', copyLirik, 'copy_infomusik_lirik');
                                                 }
-                                                await btn.run(m.from, hisoka, m);
+                                                await btn.run(m.from, hisoka, _quotedRef);
                                                 buttonSent = true;
                                         } catch (_) {}
 
                                         if (!buttonSent) {
-                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: m });
+                                                const _sendOpts = _quotedRef ? { quoted: _quotedRef } : {};
+                                                await hisoka.sendMessage(m.from, { text: result }, _sendOpts);
                                         }
 
                                         logCommand(m, hisoka, 'infomusik');
