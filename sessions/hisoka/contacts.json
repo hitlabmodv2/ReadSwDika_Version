@@ -2353,7 +2353,8 @@
     "id": "6283171949557@s.whatsapp.net",
     "name": "Melki",
     "lid": "221543170892007@lid",
-    "jid": "6283171949557@s.whatsapp.net"
+    "jid": "6283171949557@s.whatsapp.net",
+    "notify": "Melki"
   },
   "6285750703203@s.whatsapp.net": {
     "isContact": true,
@@ -33188,5 +33189,34 @@
     "id": "223467467239631@lid",
     "lid": "223467467239631@lid",
     "imgUrl": "removed"
+  },
+  "137482205151384@lid": {
+    "id": "137482205151384@lid",
+    "lid": "137482205151384@lid",
+    "imgUrl": "removed"
+  },
+  "228118631551088@lid": {
+    "id": "228118631551088@lid",
+    "lid": "228118631551088@lid",
+    "imgUrl": "removed"
+  },
+  "234956957737187@lid": {
+    "id": "234956957737187@lid",
+    "lid": "234956957737187@lid",
+    "imgUrl": "removed"
+  },
+  "57488271536342@lid": {
+    "id": "57488271536342@lid",
+    "lid": "57488271536342@lid",
+    "notify": "Nemuri•"
+  },
+  "628997837500@s.whatsapp.net": {
+    "id": "628997837500@s.whatsapp.net",
+    "notify": "Ken"
+  },
+  "249516745867409@lid": {
+    "id": "249516745867409@lid",
+    "lid": "249516745867409@lid",
+    "notify": "."
   }
 }
