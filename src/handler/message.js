@@ -13715,6 +13715,7 @@ hasil += `╰══════════════════════�
                         }
 
                         case 'infomusik':
+                        case 'infolirik':
                         case 'musicinfo':
                         case 'cekmusik': {
                                 try {
@@ -13767,12 +13768,12 @@ hasil += `╰══════════════════════�
                                         await m.reply({ edit: loadingMsg.key, text: '✅ Analisis selesai!' });
 
                                         // Split hasil: blok INFO MUSIK vs blok LIRIK
-                                        const splitMarker = /╭═══〔 📜 LIRIK \/ TRANSKRIPSI 〕/;
+                                        const splitMarker = /\u256d\u2550\u2550\u2550\u3014 \ud83d\udcdc LIRIK/;
                                         const splitIdx    = result.search(splitMarker);
                                         const partInfo    = splitIdx > 0 ? result.slice(0, splitIdx).trim() : result;
                                         const partLirik   = splitIdx > 0 ? result.slice(splitIdx).trim()  : '';
 
-                                        // Kirim hasil + dua tombol copy terpisah
+                                        // Kirim hasil reply ke pesan loading bot sendiri + dua tombol copy
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
@@ -13782,12 +13783,12 @@ hasil += `╰══════════════════════�
                                                 if (partLirik) {
                                                         btn.addCopy('📜 Salin Lirik', partLirik, 'copy_infomusik_lirik');
                                                 }
-                                                await btn.run(m.from, hisoka, m);
+                                                await btn.run(m.from, hisoka, loadingMsg);
                                                 buttonSent = true;
                                         } catch (_) {}
 
                                         if (!buttonSent) {
-                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: m });
+                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: loadingMsg });
                                         }
 
                                         logCommand(m, hisoka, 'infomusik');

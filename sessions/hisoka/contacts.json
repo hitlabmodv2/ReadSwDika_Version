@@ -16820,8 +16820,7 @@
     "name": "Remi_ikan 111",
     "lid": "26547712958494@lid",
     "jid": "6281295543915@s.whatsapp.net",
-    "notify": "Arthur.remi_kan",
-    "verifiedName": "Arthur.remi_kan"
+    "notify": "Arthur.remi_kan"
   },
   "6285855071706@s.whatsapp.net": {
     "isContact": true,
@@ -22693,7 +22692,8 @@
     "name": "Agan Rizkia",
     "lid": "81582920577063@lid",
     "jid": "6289688206739@s.whatsapp.net",
-    "notify": "Wily"
+    "notify": "Wily",
+    "verifiedName": "Wily"
   },
   "628889079192@s.whatsapp.net": {
     "isContact": true,
@@ -31711,7 +31711,8 @@
   },
   "212712552036@s.whatsapp.net": {
     "id": "212712552036@s.whatsapp.net",
-    "notify": "~ Fiora Sylvie"
+    "notify": "~ Fiora Sylvie",
+    "verifiedName": "~ Fiora Sylvie"
   },
   "237477700849919@lid": {
     "id": "237477700849919@lid",
@@ -33232,5 +33233,30 @@
     "id": "120315187310658@lid",
     "lid": "120315187310658@lid",
     "imgUrl": "removed"
+  },
+  "119125481369700@lid": {
+    "id": "119125481369700@lid",
+    "lid": "119125481369700@lid",
+    "imgUrl": "removed"
+  },
+  "94047100256488@lid": {
+    "id": "94047100256488@lid",
+    "lid": "94047100256488@lid",
+    "imgUrl": "removed"
+  },
+  "98590974341358@lid": {
+    "id": "98590974341358@lid",
+    "lid": "98590974341358@lid",
+    "imgUrl": "removed"
+  },
+  "144843846217747@lid": {
+    "id": "144843846217747@lid",
+    "lid": "144843846217747@lid",
+    "imgUrl": "changed"
+  },
+  "172279979892875@lid": {
+    "id": "172279979892875@lid",
+    "lid": "172279979892875@lid",
+    "imgUrl": "changed"
   }
 }
