@@ -13786,8 +13786,11 @@ hasil += `╰══════════════════════�
                                                 .replace(/\n{3,}/g, '\n\n')
                                                 .trim();
 
-                                        const copyInfo  = _cleanCopy(partInfo);
                                         const copyLirik = _cleanCopy(partLirik);
+
+                                        // Ekstrak nilai genre saja (misal: "Pop Jazz, Swing") untuk tombol Salin Genre
+                                        const _genreMatch = partInfo.match(/🎼\s*Genre\s*:\s*(.+)/);
+                                        const copyGenre = _genreMatch ? _genreMatch[1].trim() : _cleanCopy(partInfo);
 
                                         // Kirim hasil reply ke pesan user yang pakai command + dua tombol copy
                                         // Build replyCtx manual (sama seperti sendCekautoMsg)
@@ -13804,7 +13807,7 @@ hasil += `╰══════════════════════�
                                                         .setBody(result)
                                                         .setFooter('🎵 Powered by Gemini AI')
                                                         .setContextInfo(_replyCtx)
-                                                        .addCopy('🎼 Salin Genre/Info', copyInfo,  'copy_infomusik_genre');
+                                                        .addCopy('🎼 Salin Genre', copyGenre, 'copy_infomusik_genre');
                                                 if (copyLirik) {
                                                         btn.addCopy('📜 Salin Lirik', copyLirik, 'copy_infomusik_lirik');
                                                 }
@@ -13813,17 +13816,7 @@ hasil += `╰══════════════════════�
                                         } catch (_) {}
 
                                         if (!buttonSent) {
-                                                const _fallbackMsg = generateWAMessageFromContent(
-                                                        m.from,
-                                                        {
-                                                                extendedTextMessage: {
-                                                                        text: result,
-                                                                        contextInfo: _replyCtx,
-                                                                }
-                                                        },
-                                                        {}, {}
-                                                );
-                                                await hisoka.relayMessage(_fallbackMsg.key.remoteJid, _fallbackMsg.message, { messageId: _fallbackMsg.key.id });
+                                                await m.reply(result);
                                         }
 
                                         logCommand(m, hisoka, 'infomusik');
