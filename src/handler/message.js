@@ -13714,9 +13714,9 @@ hasil += `╰══════════════════════�
                                 break;
                         }
 
-                        case 'whatgenre':
-                        case 'genrecheck':
-                        case 'audioanalysis': {
+                        case 'infomusik':
+                        case 'musicinfo':
+                        case 'cekmusik': {
                                 try {
                                         const audioTypes = ['audioMessage', 'documentMessage'];
                                         const isCurrentAudio = m.isMedia && audioTypes.includes(getMediaTypeFromMessage(m));
@@ -13724,17 +13724,17 @@ hasil += `╰══════════════════════�
 
                                         if (!isCurrentAudio && !isQuotedAudio) {
                                                 await tolak(hisoka, m,
-                                                        `╭═══〔 🎵 *WHAT GENRE* 〕═══╮\n` +
+                                                        `╭═══〔 🎵 *INFO MUSIK* 〕═══╮\n` +
                                                         `│\n` +
-                                                        `│ Analisis genre, mood & instrumen\n` +
-                                                        `│ dari audio/voice note otomatis!\n` +
+                                                        `│ Analisis lengkap audio otomatis:\n` +
+                                                        `│ genre, mood, instrumen & lirik!\n` +
                                                         `│\n` +
                                                         `│ *Cara pakai:*\n` +
-                                                        `│ • Kirim audio + ketik *${pfx}whatgenre*\n` +
-                                                        `│ • Reply audio lalu ketik *${pfx}whatgenre*\n` +
+                                                        `│ • Kirim audio + ketik *${pfx}infomusik*\n` +
+                                                        `│ • Reply audio/VN → *${pfx}infomusik*\n` +
                                                         `│\n` +
                                                         `│ Mendukung: voice note, MP3,\n` +
-                                                        `│ file audio, dll.\n` +
+                                                        `│ file audio, video, dll.\n` +
                                                         `│\n` +
                                                         `╰══════════════════════════════╯`
                                                 );
@@ -13742,7 +13742,7 @@ hasil += `╰══════════════════════�
                                         }
 
                                         await hisoka.sendMessage(m.from, { react: { text: '🎵', key: m.key } });
-                                        const loadingMsg = await tolak(hisoka, m, '🎵 Menganalisis audio...');
+                                        const loadingMsg = await tolak(hisoka, m, '🎵 Menganalisis audio, harap tunggu...');
 
                                         const targetMsg  = isQuotedAudio ? m.quoted : m;
                                         const targetMime = targetMsg?.content?.mimetype || targetMsg?.msg?.mimetype || 'audio/ogg';
@@ -13764,11 +13764,26 @@ hasil += `╰══════════════════════�
                                         const result = await analyzeAudio(audioBuffer, targetMime);
 
                                         await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
-                                        await m.reply({ edit: loadingMsg.key, text: result });
+                                        await m.reply({ edit: loadingMsg.key, text: '✅ Analisis selesai!' });
 
-                                        logCommand(m, hisoka, 'whatgenre');
+                                        // Kirim hasil + tombol Salin Teks
+                                        let buttonSent = false;
+                                        try {
+                                                await new Button()
+                                                        .setBody(result)
+                                                        .setFooter('🎵 Powered by Gemini AI')
+                                                        .addCopy('📋 Salin Teks', result, 'copy_infomusik')
+                                                        .run(m.from, hisoka, m);
+                                                buttonSent = true;
+                                        } catch (_) {}
+
+                                        if (!buttonSent) {
+                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: m });
+                                        }
+
+                                        logCommand(m, hisoka, 'infomusik');
                                 } catch (error) {
-                                        console.error('\x1b[31m[WhatGenre] Error:\x1b[39m', error.message);
+                                        console.error('\x1b[31m[InfoMusik] Error:\x1b[39m', error.message);
                                         await hisoka.sendMessage(m.from, { react: { text: '❌', key: m.key } });
                                         await tolak(hisoka, m, `❌ Gagal analisis audio: ${error.message}`);
                                 }

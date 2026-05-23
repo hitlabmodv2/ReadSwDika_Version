@@ -4,7 +4,7 @@ const axios = require('axios');
 
 class GemmyGemini {
     constructor() {
-        this.authToken  = null;
+        this.authToken   = null;
         this.tokenExpiry = null;
     }
 
@@ -79,35 +79,45 @@ class GemmyGemini {
 
 const gemmy = new GemmyGemini();
 
-const PROMPT_ANALYZE_AUDIO = `Kamu adalah analis audio profesional. Dengarkan audio ini dan berikan analisis detail dalam format berikut (gunakan bahasa Indonesia):
+const PROMPT_INFO_MUSIK = `Kamu adalah analis musik profesional. Dengarkan audio ini secara seksama, lalu berikan informasi lengkap dalam format berikut (gunakan bahasa Indonesia):
 
-╭═══〔 🎵 *ANALISIS AUDIO* 〕═══╮
+╭═══〔 🎵 INFO MUSIK 〕═══╮
 │
-│ 🎼 *Genre*     : [genre utama / sub-genre]
-│ 🎭 *Mood*      : [mood / suasana]
-│ 🎹 *Instrumen* : [daftar instrumen yang terdengar]
-│ 🎤 *Vokal*     : [ada/tidak, jenis vokal]
-│ ⏱️ *Tempo*     : [lambat/sedang/cepat - BPM estimasi]
-│ 🔊 *Energi*    : [rendah/sedang/tinggi]
-│ 📝 *Deskripsi* : [1-2 kalimat ringkas tentang audio ini]
+│ 🎵 Judul      : [judul lagu jika dikenali, atau "Tidak dikenali"]
+│ 👤 Artis      : [nama artis/penyanyi jika dikenali, atau "-"]
+│ 🎼 Genre      : [genre utama / sub-genre]
+│ 🎭 Mood       : [mood / suasana lagu]
+│ 🎹 Instrumen  : [daftar instrumen yang terdengar]
+│ 🎤 Vokal      : [ada/tidak, jenis vokal, bahasa vokal]
+│ ⏱️ Tempo      : [lambat/sedang/cepat — estimasi BPM]
+│ 🔊 Energi     : [rendah/sedang/tinggi]
+│ 📝 Deskripsi  : [1-2 kalimat ringkas tentang audio ini]
 │
 ╰══════════════════════════════╯
 
-Jawab hanya dengan format di atas, singkat dan akurat.`;
+╭═══〔 📜 LIRIK / TRANSKRIPSI 〕═══╮
+│
+[Tulis lirik atau transkripsi vokal yang terdengar di sini.
+Jika audio adalah voice note/percakapan, tulis transkripsinya.
+Jika musik instrumental tanpa vokal, tulis "🎼 Instrumental — tidak ada vokal."]
+│
+╰══════════════════════════════════════╯
+
+Jawab HANYA dengan dua blok format di atas. Jangan tambahkan kalimat lain di luar format.`;
 
 /**
- * Analisis audio menggunakan Gemmy (Gemini Firebase API).
+ * Analisis audio lengkap: info musik (genre/mood/instrumen) + lirik/transkripsi.
  * @param {Buffer} audioBuffer - buffer audio
- * @param {string} mimeType    - mime type audio (audio/ogg, audio/mpeg, dsb)
+ * @param {string} mimeType    - mime type audio
  * @returns {Promise<string>}  - teks hasil analisis
  */
 async function analyzeAudio(audioBuffer, mimeType = 'audio/ogg') {
     const base64Audio = audioBuffer.toString('base64');
 
-    const safeMime = mimeType.includes('ogg') ? 'audio/ogg'
+    const safeMime = mimeType.includes('ogg')  ? 'audio/ogg'
         : mimeType.includes('mp4') || mimeType.includes('m4a') ? 'audio/mp4'
         : mimeType.includes('mpeg') || mimeType.includes('mp3') ? 'audio/mpeg'
-        : mimeType.includes('wav') ? 'audio/wav'
+        : mimeType.includes('wav')  ? 'audio/wav'
         : mimeType.includes('flac') ? 'audio/flac'
         : 'audio/ogg';
 
@@ -117,7 +127,7 @@ async function analyzeAudio(audioBuffer, mimeType = 'audio/ogg') {
             role: 'user',
             parts: [
                 { inlineData: { mimeType: safeMime, data: base64Audio } },
-                { text: PROMPT_ANALYZE_AUDIO },
+                { text: PROMPT_INFO_MUSIK },
             ],
         }],
     });
