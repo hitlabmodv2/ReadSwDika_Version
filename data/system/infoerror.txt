@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 23/05/2026, 02.33.54  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 23/05/2026, 02.35.10  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 46
-  Total Kejadian Error       : 479
+  Total Kejadian Error       : 522
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [46 jenis, 479 kejadian total]
+  DAFTAR ERROR LENGKAP  [46 jenis, 522 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -208,9 +208,9 @@
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 17x (duplikat digabung)
+│  Frekuensi   : 30x (duplikat digabung)
 │  Pertama     : 21/05/2026, 14.23.54
-│  Terakhir    : 22/05/2026, 14.15.32
+│  Terakhir    : 23/05/2026, 02.35.10
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[Groups] Gagal fetch grup:[39m Connection Closed
@@ -602,9 +602,9 @@
 │
 │  DETAIL
 │  Sumber      : AlqanimeNotif
-│  Frekuensi   : 26x (duplikat digabung)
+│  Frekuensi   : 30x (duplikat digabung)
 │  Pertama     : 21/05/2026, 05.26.03
-│  Terakhir    : 22/05/2026, 05.34.24
+│  Terakhir    : 23/05/2026, 02.34.33
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [AlqanimeNotif] Gagal kirim ke 120363419402989015@g.us: Connection Closed
@@ -620,9 +620,9 @@
 │
 │  DETAIL
 │  Sumber      : unhandledRejection
-│  Frekuensi   : 31x (duplikat digabung)
+│  Frekuensi   : 44x (duplikat digabung)
 │  Pertama     : 20/05/2026, 14.22.34
-│  Terakhir    : 23/05/2026, 02.33.54
+│  Terakhir    : 23/05/2026, 02.35.10
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: Connection Closed
@@ -638,9 +638,9 @@
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 31x (duplikat digabung)
+│  Frekuensi   : 44x (duplikat digabung)
 │  Pertama     : 20/05/2026, 14.22.34
-│  Terakhir    : 23/05/2026, 02.33.54
+│  Terakhir    : 23/05/2026, 02.35.10
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Connection Closed
@@ -856,6 +856,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 46 jenis, 479 kejadian
-  Terakhir diperbarui: 23/05/2026, 02.33.54
+  End of Report  —  Total: 46 jenis, 522 kejadian
+  Terakhir diperbarui: 23/05/2026, 02.35.10
 ════════════════════════════════════════════════════════════════════════

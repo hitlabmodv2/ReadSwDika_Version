@@ -303,5 +303,25 @@
     "url": "https://cdn.myanimelist.net/images/anime/1695/156389l.jpg",
     "malId": 59970,
     "cachedAt": 1779466769604
+  },
+  "marika-chan no koukando wa bukkowareteiru": {
+    "url": "https://cdn.myanimelist.net/images/anime/1818/155506l.jpg",
+    "malId": 62983,
+    "cachedAt": 1779503655749
+  },
+  "hokuto no ken: fist of the north star": {
+    "url": "https://cdn.myanimelist.net/images/anime/1581/156641l.jpg",
+    "malId": 56646,
+    "cachedAt": 1779503658077
+  },
+  "kami no shizuku": {
+    "url": "https://cdn.myanimelist.net/images/anime/1045/155698l.jpg",
+    "malId": 62981,
+    "cachedAt": 1779503662791
+  },
+  "kamiina botan, yoeru sugata wa yuri no hana": {
+    "url": "https://cdn.myanimelist.net/images/anime/1026/155965l.jpg",
+    "malId": 61186,
+    "cachedAt": 1779503667010
   }
 }
