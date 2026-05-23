@@ -16,6 +16,7 @@
 const axios = require('axios');
 const fs    = require('fs');
 const path  = require('path');
+const sharp = require('sharp');
 
 const FILE_CONFIG = path.join(process.cwd(), 'config.json');
 
@@ -200,8 +201,93 @@ function getAudio(nama) {
     return AUDIO_ADZAN[nama] || AUDIO_ADZAN['Zuhur'];
 }
 
+// ─── HELPER ───────────────────────────────────────────────────────────────────
+function escXml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function bacaOwner() {
+    try {
+        const cfg = JSON.parse(fs.readFileSync(FILE_CONFIG, 'utf-8'));
+        const owners = cfg.owners || [];
+        return owners[0] || '';
+    } catch (_) { return ''; }
+}
+
+// ─── BUAT GAMBAR OVERLAY ──────────────────────────────────────────────────────
+// Composite: foto masjid + overlay SVG berisi nama sholat, jam runtime, wa.me owner
+async function buatGambarOverlay(nama, waktu) {
+    const filePath = GAMBAR_SHOLAT[nama] || GAMBAR_SHOLAT['Zuhur'];
+    const meta     = await sharp(filePath).metadata();
+    const W        = meta.width  || 640;
+    const H        = meta.height || 400;
+
+    const ownerRaw = bacaOwner();
+    const ownerTxt = ownerRaw ? `wa.me/${ownerRaw}` : '';
+
+    const tgl = new Date().toLocaleDateString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    });
+
+    // Ukuran font relatif ke lebar gambar
+    const fs1 = Math.round(W * 0.065);  // judul waktu (mis. Sholat Subuh)
+    const fs2 = Math.round(W * 0.050);  // jam WIB
+    const fs3 = Math.round(W * 0.030);  // tanggal & owner (pojok bawah)
+    const pad = Math.round(W * 0.025);
+    const bannerH = Math.round(H * 0.28); // tinggi banner atas
+
+    const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="topGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0.78"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="botGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0.0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.72"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Overlay gelap atas -->
+  <rect width="${W}" height="${bannerH}" fill="url(#topGrad)"/>
+  <!-- Overlay gelap bawah -->
+  <rect y="${H - bannerH}" width="${W}" height="${bannerH}" fill="url(#botGrad)"/>
+
+  <!-- Nama waktu sholat (atas tengah) -->
+  <text x="${W / 2}" y="${Math.round(bannerH * 0.38)}"
+    font-family="Arial,Helvetica,sans-serif" font-size="${fs1}" font-weight="bold"
+    fill="white" text-anchor="middle" dominant-baseline="middle"
+    filter="url(#shadow)">Sholat ${escXml(nama)}</text>
+
+  <!-- Jam runtime -->
+  <text x="${W / 2}" y="${Math.round(bannerH * 0.70)}"
+    font-family="Arial,Helvetica,sans-serif" font-size="${fs2}"
+    fill="#FFE082" text-anchor="middle" dominant-baseline="middle"
+    font-weight="bold">${escXml(waktu)} WIB</text>
+
+  <!-- Tanggal pojok kiri bawah -->
+  <text x="${pad}" y="${H - pad}"
+    font-family="Arial,Helvetica,sans-serif" font-size="${fs3}"
+    fill="white" dominant-baseline="auto" opacity="0.90">${escXml(tgl)}</text>
+
+  <!-- Owner pojok kanan bawah -->
+  ${ownerTxt ? `<text x="${W - pad}" y="${H - pad}"
+    font-family="Arial,Helvetica,sans-serif" font-size="${fs3}"
+    fill="#80DEEA" text-anchor="end" dominant-baseline="auto" opacity="0.90">${escXml(ownerTxt)}</text>` : ''}
+</svg>`;
+
+    return await sharp(filePath)
+        .composite([{ input: Buffer.from(svg), blend: 'over' }])
+        .jpeg({ quality: 82 })
+        .toBuffer();
+}
+
 // ─── SIMULASI / TES KIRIM ────────────────────────────────────────────────────
-// Simulasi test: kembalikan data notif waktu sholat terdekat
 async function simulasi(namaWaktu) {
     const jadwal = await getJadwalHariIni();
     const nama   = namaWaktu
@@ -212,7 +298,7 @@ async function simulasi(namaWaktu) {
         nama,
         waktu,
         caption  : buatCaption(nama, waktu, jadwal),
-        urlGambar: getGambar(nama),
+        urlGambar: await buatGambarOverlay(nama, waktu),
         urlAudio : getAudio(nama),
         jadwal,
     };
@@ -228,5 +314,6 @@ module.exports = {
     buatCaption,
     getGambar,
     getAudio,
+    buatGambarOverlay,
     simulasi,
 };

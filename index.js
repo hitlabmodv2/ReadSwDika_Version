@@ -1134,7 +1134,7 @@ async function main() {
 
                                                 const jadwal  = await _as.getJadwalHariIni();
                                                 const caption = _as.buatCaption(cocok.nama, cocok.waktu, jadwal);
-                                                const urlGbr  = _as.getGambar(cocok.nama);
+                                                const urlGbr  = await _as.buatGambarOverlay(cocok.nama, cocok.waktu);
                                                 const urlAud  = _as.getAudio(cocok.nama);
 
                                                 console.log(`[AutoSholat] ⏰ ${cocok.nama} ${cocok.waktu} WIB → kirim ke ${daftarGrup.length} grup`);

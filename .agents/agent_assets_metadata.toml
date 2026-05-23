@@ -138,3 +138,21 @@ id = "MD1c62QEJIwiDRKDZfsBs"
 uri = "file://attached_assets/sholat_preview/Isya_2_photo-1523978591478-c753949ff840.jpg"
 type = "image"
 title = "🌙 ISYA - kandidat 3"
+
+[[outputs]]
+id = "i6_3S7Hl3b_s3mD_FT2sS"
+uri = "file://attached_assets/preview_overlay_subuh.jpg"
+type = "image"
+title = "Preview Subuh — overlay + wa.me owner"
+
+[[outputs]]
+id = "jneClIrHTaLKte9uWEs2p"
+uri = "file://attached_assets/preview_overlay_maghrib.jpg"
+type = "image"
+title = "Preview Maghrib — overlay + wa.me owner"
+
+[[outputs]]
+id = "_9RkOLvo8pjfJrqvSisxP"
+uri = "file://attached_assets/preview_overlay_isya.jpg"
+type = "image"
+title = "Preview Isya — overlay + wa.me owner"
