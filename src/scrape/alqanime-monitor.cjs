@@ -444,6 +444,66 @@ function buatBarisInfo(items) {
     }).join('\n');
 }
 
+// ── Deteksi tipe rilisan: batch / episode / movie ─────────────────────────────
+//
+// titleRaw  = detail.title (judul asli dari halaman, sebelum dibersihkan)
+// episodes  = array download dari parseDownloadLinks (index 0 = terbaru)
+// epNum     = nomor episode dari parse judul card (fallback)
+//
+function deteksiTipeEp(titleRaw, episodes, epNum) {
+    const title = titleRaw || '';
+
+    // ── Batch? ───────────────────────────────────────────────────────────────
+    if (/batch/i.test(title)) {
+        // Coba parse range lengkap: "Batch (Episode 01 – 12)" atau "Batch (01 – 12)"
+        const fullRange = title.match(/Batch\s*\(\s*(?:Episode\s+)?(\d+)\s*[–\-]\s*(\d+)\s*\)/i);
+        if (fullRange) {
+            const start = fullRange[1].padStart(2, '0');
+            const end   = fullRange[2].padStart(2, '0');
+            return { tipe: 'batch', epHeader: `Batch ${start}-${end}` };
+        }
+
+        // Parse "(– 12)" — hanya ada end
+        const endOnly = title.match(/Batch\s*\(\s*[–\-]\s*(\d+)\s*\)/i);
+        if (endOnly) {
+            const end = endOnly[1].padStart(2, '0');
+            return { tipe: 'batch', epHeader: `Batch 01-${end}` };
+        }
+
+        // Fallback ke episodes array (newest=index 0, oldest=last)
+        if (episodes && episodes.length > 0) {
+            const newestM = String(episodes[0].episode || '').match(/(\d+)/);
+            const oldestM = String(episodes[episodes.length - 1].episode || '').match(/(\d+)/);
+            const start   = oldestM  ? oldestM[1].padStart(2, '0')  : '01';
+            const end     = newestM  ? newestM[1] : null;
+            return { tipe: 'batch', epHeader: end ? `Batch ${start}-${end}` : 'Batch' };
+        }
+
+        return { tipe: 'batch', epHeader: 'Batch' };
+    }
+
+    // ── Episode single ───────────────────────────────────────────────────────
+    // Prioritas: label asli dari download list (bisa ada "[END]"), lalu epNum
+    const epDariList = (episodes && episodes.length)
+        ? (() => {
+            const m = String(episodes[0].episode || '').match(/(\d+)/);
+            return m ? parseInt(m[1]) : 0;
+        })()
+        : 0;
+
+    const epFinal = epDariList || epNum || 0;
+    if (epFinal) {
+        // Pakai label asli supaya "[END]" ikut tampil
+        const epLabel = (episodes && episodes.length && episodes[0].episode)
+            ? episodes[0].episode
+            : String(epFinal).padStart(2, '0');
+        return { tipe: 'episode', epHeader: `Episode ${epLabel}` };
+    }
+
+    // ── Movie / OVA / tanpa episode ──────────────────────────────────────────
+    return { tipe: 'movie', epHeader: null };
+}
+
 // ── Caption GAMBAR — pendek, muat di batas 1024 karakter WhatsApp ────────────
 function buatCaption(data) {
     const {
@@ -494,13 +554,11 @@ function buatCaption(data) {
 // ── Caption LANJUTAN — sinopsis penuh + info lengkap + download ───────────────
 function buatCaptionLanjutan(data) {
     const {
-        judul, epNum,
+        judul, epNum, title,
         info = {}, sinopsis, episodes = [], url,
     } = data;
 
-    const ep        = epNum || '?';
-    const totalSeri = info.Episode ? parseInt(info.Episode) || 0 : 0;
-    const epHeader  = totalSeri ? `${ep}/${totalSeri}` : String(ep);
+    const { epHeader } = deteksiTipeEp(title || judul, episodes, epNum);
 
     const sinopsisBlock = potongSinopsis(sinopsis)
         .split('\n').map(b => `> ${b}`).join('\n');
@@ -536,7 +594,7 @@ function buatCaptionLanjutan(data) {
     }
 
     return (
-        `📖 *Sinopsis — ${judul} Ep ${epHeader}*\n` +
+        `📖 *Sinopsis — ${judul}${epHeader ? ` · ${epHeader}` : ''}*\n` +
         `${SEP}\n` +
         `${sinopsisBlock}\n` +
         (seksi1 ? `\n${SEP}\n📋 *Info Lanjutan*\n${SEP2}\n${seksi1}\n` : '') +
@@ -549,7 +607,7 @@ function buatCaptionLanjutan(data) {
 // Total dijaga ≤ 950 char agar aman di limit caption WhatsApp (1024 char).
 function buatCaptionGabung(data) {
     const {
-        judul, epNum,
+        judul, epNum, title,
         info = {}, genres = [], sinopsis, episodes = [], url,
     } = data;
 
@@ -562,17 +620,8 @@ function buatCaptionGabung(data) {
     const jamMenit   = sekarang.toLocaleTimeString('id-ID', opsiJam).replace('.', ':');
     const headerWaktu = `${namaHari}, ${tglLengkap} · ${jamMenit} WIB`;
 
-    // Ambil nomor episode terbaru dari daftar download (episodes[0] = terbaru)
-    const epDariList = episodes.length
-        ? (() => {
-            const terbaru = episodes[0];
-            const numM    = String(terbaru.episode || '').match(/(\d+)/);
-            return numM ? parseInt(numM[1]) : 0;
-        })()
-        : 0;
-    const ep        = epDariList || epNum || '?';
+    const { tipe, epHeader } = deteksiTipeEp(title || judul, episodes, epNum);
     const totalSeri = info.Episode ? parseInt(info.Episode) || 0 : 0;
-    const epHeader  = String(ep);
     const genreStr  = genres.length ? genres.join(', ') : null;
 
     // Judul alt — plain text (bukan italic), langsung di bawah judul utama
@@ -641,7 +690,7 @@ function buatCaptionGabung(data) {
         `${SEP}\n` +
         `🎌 *${judul}*\n` +
         judulAlt +
-        `\n📺 *Episode ${epHeader}*\n\n` +
+        `\n📺 *${epHeader || (tipe === 'movie' ? 'Movie / OVA' : 'Episode ?')}*\n\n` +
         `📖 *Sinopsis*\n` +
         `${sinopsisBlok}\n\n` +
         `${SEP}\n` +
