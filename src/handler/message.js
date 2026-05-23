@@ -1717,7 +1717,14 @@ async function sendCekautoGrupMsg(hisoka, m) {
                         : `  _Semua fitur aktif_ ✨\n`) +
                 `\n╔══════════════════════════╗\n` +
                 `║  📦 *Total* : ${CEKAUTO_GROUP_FITUR_LIST.length} fitur terdaftar\n` +
-                `╚══════════════════════════╝`;
+                `╚══════════════════════════╝\n\n` +
+                `┌─────────────────────────────┐\n` +
+                `│  📋 *DAFTAR PERINTAH*\n` +
+                `└─────────────────────────────┘\n` +
+                [...CEKAUTO_GROUP_FITUR_LIST]
+                        .sort((a, b) => a.nama.localeCompare(b.nama))
+                        .map(f => `  • *${f.nama}* → \`${f.cmd}\``)
+                        .join('\n');
 
         await m.reply(txt);
 }
@@ -1762,7 +1769,14 @@ async function sendCekautoMsg(hisoka, m) {
                 : `  _Semua fitur aktif_ ✨\n`;
         txt += `\n╔══════════════════════════╗\n`;
         txt += `║  📦 *Total* : ${CEKAUTO_FITUR_LIST.length} fitur terdaftar\n`;
-        txt += `╚══════════════════════════╝`;
+        txt += `╚══════════════════════════╝\n\n`;
+        txt += `┌─────────────────────────────┐\n`;
+        txt += `│  📋 *DAFTAR PERINTAH*\n`;
+        txt += `└─────────────────────────────┘\n`;
+        txt += [...CEKAUTO_FITUR_LIST]
+                .sort((a, b) => a.nama.localeCompare(b.nama))
+                .map(f => `  • *${f.nama}* → \`${f.cmd}\``)
+                .join('\n');
 
         await m.reply(txt);
 }

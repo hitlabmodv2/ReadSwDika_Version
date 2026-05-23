@@ -10070,7 +10070,9 @@
     "id": "6289688206739@s.whatsapp.net",
     "name": "Agan Rizkia",
     "lid": "81582920577063@lid",
-    "jid": "6289688206739@s.whatsapp.net"
+    "jid": "6289688206739@s.whatsapp.net",
+    "notify": "Wily",
+    "verifiedName": "Wily"
   },
   "6281222051074@s.whatsapp.net": {
     "isContact": true,
@@ -14053,7 +14055,8 @@
     "id": "6283159163918@s.whatsapp.net",
     "name": "M jefri",
     "lid": "249769729478801@lid",
-    "jid": "6283159163918@s.whatsapp.net"
+    "jid": "6283159163918@s.whatsapp.net",
+    "notify": "Jeff"
   },
   "6285879317523@s.whatsapp.net": {
     "isContact": true,
@@ -31202,7 +31205,8 @@
   "81582920577063@lid": {
     "id": "81582920577063@lid",
     "lid": "81582920577063@lid",
-    "notify": "Wily"
+    "notify": "Wily",
+    "verifiedName": "Wily"
   },
   "274255723921630@lid": {
     "id": "274255723921630@lid",
