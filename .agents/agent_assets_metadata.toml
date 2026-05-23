@@ -156,3 +156,33 @@ id = "_9RkOLvo8pjfJrqvSisxP"
 uri = "file://attached_assets/preview_overlay_isya.jpg"
 type = "image"
 title = "Preview Isya — overlay + wa.me owner"
+
+[[outputs]]
+id = "cb-SGCiexF00sQ0W-WtxW"
+uri = "file://img/sholat/subuh.jpg"
+type = "image"
+title = "Subuh"
+
+[[outputs]]
+id = "AjVoc1MKDqeijXHDbRn_o"
+uri = "file://img/sholat/zuhur.jpg"
+type = "image"
+title = "Zuhur"
+
+[[outputs]]
+id = "ijL2u6QpsLKnsWjD2K6jT"
+uri = "file://img/sholat/ashar.jpg"
+type = "image"
+title = "Ashar"
+
+[[outputs]]
+id = "9Rjg34H3hfOPkfxo9QvYs"
+uri = "file://img/sholat/maghrib.jpg"
+type = "image"
+title = "Maghrib"
+
+[[outputs]]
+id = "DudqX81ro2KHLHiBiUrrN"
+uri = "file://img/sholat/isya.jpg"
+type = "image"
+title = "Isya"
