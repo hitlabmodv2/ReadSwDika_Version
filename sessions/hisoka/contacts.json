@@ -1243,7 +1243,8 @@
     "id": "6283815424573@s.whatsapp.net",
     "name": "√ Istri Kei",
     "lid": "127393243132132@lid",
-    "jid": "6283815424573@s.whatsapp.net"
+    "jid": "6283815424573@s.whatsapp.net",
+    "notify": "(T)ipii kinetik"
   },
   "6282141943063@s.whatsapp.net": {
     "isContact": true,
@@ -18916,7 +18917,8 @@
     "id": "62895323007900@s.whatsapp.net",
     "name": "! Yuhiko Hoshino || オタク",
     "lid": "184151135252580@lid",
-    "jid": "62895323007900@s.whatsapp.net"
+    "jid": "62895323007900@s.whatsapp.net",
+    "notify": "Rejaanimm the 1975🥀🤺🗿"
   },
   "6283870485576@s.whatsapp.net": {
     "isContact": true,
@@ -26355,7 +26357,9 @@
     "id": "6285150762138@s.whatsapp.net",
     "name": "Arga",
     "lid": "12442939724000@lid",
-    "jid": "6285150762138@s.whatsapp.net"
+    "jid": "6285150762138@s.whatsapp.net",
+    "notify": "anti kompres",
+    "verifiedName": "anti kompres"
   },
   "6285374597780@s.whatsapp.net": {
     "isContact": true,
@@ -31278,5 +31282,26 @@
     "id": "170046563311742@lid",
     "lid": "170046563311742@lid",
     "notify": "bubblespop"
+  },
+  "2130672922820@lid": {
+    "id": "2130672922820@lid",
+    "lid": "2130672922820@lid",
+    "imgUrl": "changed"
+  },
+  "144049344356380@lid": {
+    "id": "144049344356380@lid",
+    "lid": "144049344356380@lid",
+    "imgUrl": "removed"
+  },
+  "12442939724000@lid": {
+    "id": "12442939724000@lid",
+    "lid": "12442939724000@lid",
+    "notify": "anti kompres",
+    "verifiedName": "anti kompres"
+  },
+  "33479504965660@lid": {
+    "id": "33479504965660@lid",
+    "lid": "33479504965660@lid",
+    "imgUrl": "removed"
   }
 }
