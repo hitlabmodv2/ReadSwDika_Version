@@ -22,11 +22,11 @@ const FILE_CONFIG = path.join(process.cwd(), 'config.json');
 // ─── GAMBAR MASJID PER WAKTU SHOLAT ──────────────────────────────────────────
 // Foto landscape masjid sesuai suasana waktu sholat
 const GAMBAR_SHOLAT = {
-    Subuh   : 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=900&q=85',
-    Zuhur   : 'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=900&q=85',
-    Ashar   : 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=900&q=85',
-    Maghrib : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=85',
-    Isya    : 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=900&q=85',
+    Subuh   : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=900&q=85', // langit biru sebelum fajar
+    Zuhur   : 'https://images.unsplash.com/photo-1555116505-38ab61800975?w=900&q=85',   // masjid siang terang
+    Ashar   : 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=900&q=85',   // golden hour sore
+    Maghrib : 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=900&q=85', // sunset langit jingga
+    Isya    : 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=900&q=85', // masjid malam bercahaya
 };
 
 // ─── AUDIO ADZAN ──────────────────────────────────────────────────────────────
