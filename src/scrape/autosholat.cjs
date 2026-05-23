@@ -20,13 +20,14 @@ const path  = require('path');
 const FILE_CONFIG = path.join(process.cwd(), 'config.json');
 
 // ─── GAMBAR MASJID PER WAKTU SHOLAT ──────────────────────────────────────────
-// Foto landscape masjid sesuai suasana waktu sholat
+// File lokal di img/sholat/ — ringan, pasti tampil, tidak bergantung URL eksternal
+const IMG_DIR = path.join(process.cwd(), 'img', 'sholat');
 const GAMBAR_SHOLAT = {
-    Subuh   : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=900&q=85', // langit biru sebelum fajar
-    Zuhur   : 'https://images.unsplash.com/photo-1555116505-38ab61800975?w=900&q=85',   // masjid siang terang
-    Ashar   : 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=900&q=85',   // golden hour sore
-    Maghrib : 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=900&q=85', // sunset langit jingga
-    Isya    : 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=900&q=85', // masjid malam bercahaya
+    Subuh   : path.join(IMG_DIR, 'subuh.jpg'),   // langit fajar masjid
+    Zuhur   : path.join(IMG_DIR, 'zuhur.jpg'),   // masjid siang terang
+    Ashar   : path.join(IMG_DIR, 'ashar.jpg'),   // golden hour sore
+    Maghrib : path.join(IMG_DIR, 'maghrib.jpg'), // sunset langit jingga
+    Isya    : path.join(IMG_DIR, 'isya.jpg'),    // masjid malam bercahaya
 };
 
 // ─── AUDIO ADZAN ──────────────────────────────────────────────────────────────
@@ -189,8 +190,10 @@ function buatCaption(nama, waktu, jadwal) {
 }
 
 // ─── FUNGSI BANTU THUMBNAIL & AUDIO ──────────────────────────────────────────
+// Return Buffer dari file lokal — pasti tampil, tidak bergantung internet
 function getGambar(nama) {
-    return GAMBAR_SHOLAT[nama] || GAMBAR_SHOLAT['Zuhur'];
+    const filePath = GAMBAR_SHOLAT[nama] || GAMBAR_SHOLAT['Zuhur'];
+    return fs.readFileSync(filePath);
 }
 
 function getAudio(nama) {

@@ -15887,9 +15887,9 @@ hasil += `╰══════════════════════�
                                                 // Boleh tulis: .autosholat test subuh / test maghrib dll
                                                 const namaWaktu = sub.replace('test', '').trim() || null;
                                                 const hasil = await _as.simulasi(namaWaktu);
-                                                // Kirim gambar + caption, audio VN reply ke gambar (satuin)
+                                                // Kirim gambar (buffer lokal) + caption, audio VN reply ke gambar
                                                 const imgMsg = await hisoka.sendMessage(m.from, {
-                                                        image  : { url: hasil.urlGambar },
+                                                        image  : hasil.urlGambar,
                                                         caption: hasil.caption,
                                                 }, { quoted: m });
                                                 await hisoka.sendMessage(m.from, {
