@@ -15881,16 +15881,16 @@ hasil += `╰══════════════════════�
                                                 // Boleh tulis: .autosholat test subuh / test maghrib dll
                                                 const namaWaktu = sub.replace('test', '').trim() || null;
                                                 const hasil = await _as.simulasi(namaWaktu);
-                                                await hisoka.sendMessage(m.from, {
+                                                // Kirim gambar + caption, audio VN reply ke gambar (satuin)
+                                                const imgMsg = await hisoka.sendMessage(m.from, {
                                                         image  : { url: hasil.urlGambar },
                                                         caption: hasil.caption,
                                                 }, { quoted: m });
-                                                // Kirim suara adzan
                                                 await hisoka.sendMessage(m.from, {
                                                         audio   : { url: hasil.urlAudio },
                                                         ptt     : true,
                                                         mimetype: 'audio/mpeg',
-                                                }, { quoted: m });
+                                                }, { quoted: imgMsg });
                                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
                                                 logCommand(m, hisoka, 'autosholat-test');
                                         } catch (err) {

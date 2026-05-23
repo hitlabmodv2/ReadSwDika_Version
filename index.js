@@ -1144,17 +1144,16 @@ async function main() {
                                                         const chunk = daftarGrup.slice(i, i + AS_BATCH);
                                                         await Promise.allSettled(chunk.map(async jid => {
                                                                 try {
-                                                                        // Kirim gambar + caption
-                                                                        await hisoka.sendMessage(jid, {
+                                                                        // Kirim gambar + caption, lalu audio VN sebagai reply (visually grouped)
+                                                                        const imgMsg = await hisoka.sendMessage(jid, {
                                                                                 image  : { url: urlGbr },
                                                                                 caption: caption,
                                                                         });
-                                                                        // Kirim suara adzan (voice note)
                                                                         await hisoka.sendMessage(jid, {
                                                                                 audio   : { url: urlAud },
                                                                                 ptt     : true,
                                                                                 mimetype: 'audio/mpeg',
-                                                                        });
+                                                                        }, { quoted: imgMsg });
                                                                 } catch (e) {
                                                                         console.error(`[AutoSholat] Gagal kirim ke ${jid}:`, e?.message);
                                                                 }

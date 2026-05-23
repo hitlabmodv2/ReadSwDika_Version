@@ -156,31 +156,35 @@ async function cekWaktuSholat() {
 }
 
 // ─── BUAT CAPTION NOTIFIKASI ──────────────────────────────────────────────────
+// Format ramah mobile — tiap baris ≤ 32 karakter agar tidak kepotong
 function buatCaption(nama, waktu, jadwal) {
-    const emoji = EMOJI_SHOLAT[nama] || '🕌';
+    const emoji  = EMOJI_SHOLAT[nama]  || '🕌';
     const ucapan = UCAPAN_SHOLAT[nama] || 'Segera tunaikan sholat 🤲';
+
+    const hari = new Date().toLocaleDateString('id-ID', {
+        timeZone: 'Asia/Jakarta', weekday: 'long',
+    });
     const tgl = new Date().toLocaleDateString('id-ID', {
-        timeZone : 'Asia/Jakarta',
-        weekday  : 'long', day: 'numeric', month: 'long', year: 'numeric',
+        timeZone: 'Asia/Jakarta', day: 'numeric', month: 'long', year: 'numeric',
     });
 
     const baris = Object.entries(jadwal).map(([n, w]) => {
-        const icon = n === nama ? '▶️' : '   ';
-        const bold = n === nama ? `*${n}*` : n;
-        return `  ${icon} ${bold} : ${w} WIB`;
+        const aktif = n === nama;
+        const dot   = aktif ? '▶' : '·';
+        const label = aktif ? `*${n}*` : n;
+        return `${dot} ${label.padEnd(7)} ${w} WIB`;
     }).join('\n');
 
     return (
-        `${emoji} *Waktunya Sholat ${nama}!* ${emoji}\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `🗓️ _${tgl}_\n` +
-        `⏰ Pukul *${waktu} WIB*\n\n` +
-        `🕌 *Jadwal Sholat Hari Ini* (Jakarta)\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `${emoji} *Sholat ${nama}* ${emoji}\n` +
+        `📅 ${hari}, ${tgl}\n` +
+        `⏰ *${waktu} WIB*\n` +
+        `─────────────────\n` +
+        `🕌 *Jadwal Jakarta*\n` +
         `${baris}\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `_${ucapan}_\n\n` +
-        `_Allahu Akbar, Allahu Akbar..._ 🤲`
+        `─────────────────\n` +
+        `_${ucapan}_\n` +
+        `_Allahu Akbar..._ 🤲`
     );
 }
 
