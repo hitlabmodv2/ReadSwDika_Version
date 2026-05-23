@@ -9014,9 +9014,18 @@ ${masaAktifLine}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 _⚙️ Setting tersimpan per-jadibot realtime_
-_📦 Powered by Wily Bot V18.1_ 🤖${_jbFooter ? `\n_${_jbFooter}_` : ''}
-━━━━━━━━━━━━━━━━━━━━━━`;
-                                                await hisoka.sendMessage(m.from, { text: menuTeks }, { quoted: m });
+_📦 Powered by Wily Bot V18.1_ 🤖`;
+                                                let jbMenuSent = false;
+                                                try {
+                                                        const btnJb = new Button()
+                                                                .setBody(menuTeks)
+                                                                .setFooter(_jbFooter);
+                                                        await btnJb.run(m.from, hisoka, { quoted: m });
+                                                        jbMenuSent = true;
+                                                } catch (_) {}
+                                                if (!jbMenuSent) {
+                                                        await hisoka.sendMessage(m.from, { text: menuTeks }, { quoted: m });
+                                                }
                                                 logCommand(m, hisoka, 'menu');
                                                 break;
                                         }
@@ -9204,12 +9213,12 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 ▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
 📌 _Ketik_ *.settingmenu* _| .downloadmenu_
 📌 _Ketik_ *.groupmenu* _| .jadibotmenu_
-📌 _Ketik_ *.statusmenu* _| .ownermenu_${menuFooter ? `\n_${menuFooter}_` : ''}
+📌 _Ketik_ *.statusmenu* _| .ownermenu_
 ▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
 
 `;
                                         const ppUser = await getUserProfilePictureUrl(hisoka, m.sender);
-                                        const contextInfo = ppUser
+                                        const menuCtxInfo = ppUser
                                                 ? {
                                                         externalAdReply: {
                                                                 showAdAttribution: false,
@@ -9221,12 +9230,23 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
                                                                 renderLargerThumbnail: true
                                                         }
                                                 }
-                                                : undefined;
-                                        await hisoka.sendMessage(
-                                                m.from,
-                                                contextInfo ? { text: teks, contextInfo } : { text: teks },
-                                                { quoted: m }
-                                        );
+                                                : {};
+                                        let menuSent = false;
+                                        try {
+                                                const btnMenu = new Button()
+                                                        .setBody(teks)
+                                                        .setFooter(menuFooter)
+                                                        .setContextInfo(menuCtxInfo);
+                                                await btnMenu.run(m.from, hisoka, { quoted: m });
+                                                menuSent = true;
+                                        } catch (_) {}
+                                        if (!menuSent) {
+                                                await hisoka.sendMessage(
+                                                        m.from,
+                                                        Object.keys(menuCtxInfo).length ? { text: teks, contextInfo: menuCtxInfo } : { text: teks },
+                                                        { quoted: m }
+                                                );
+                                        }
                                 } catch (error) {
                                         if (!isNoSpaceError(error)) throw error;
                                         cleanupWritePressure();
