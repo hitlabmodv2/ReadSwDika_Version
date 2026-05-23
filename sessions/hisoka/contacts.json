@@ -19124,7 +19124,9 @@
     "id": "6285315413490@s.whatsapp.net",
     "name": "• Enpisi",
     "lid": "54082630881395@lid",
-    "jid": "6285315413490@s.whatsapp.net"
+    "jid": "6285315413490@s.whatsapp.net",
+    "notify": "pete",
+    "verifiedName": "pete"
   },
   "6282141943063@s.whatsapp.net": {
     "isContact": true,
@@ -19484,8 +19486,8 @@
     "name": "▫️Fadli",
     "lid": "162160936263906@lid",
     "jid": "6285799241374@s.whatsapp.net",
-    "notify": "F -style",
-    "verifiedName": "F -style"
+    "notify": "F",
+    "verifiedName": "F"
   },
   "6285609278485@s.whatsapp.net": {
     "isContact": true,
@@ -31554,7 +31556,7 @@
   "162160936263906@lid": {
     "id": "162160936263906@lid",
     "lid": "162160936263906@lid",
-    "notify": "F -style"
+    "notify": "F"
   },
   "247734116335860@lid": {
     "id": "247734116335860@lid",
