@@ -13773,6 +13773,19 @@ hasil += `╰══════════════════════�
                                         const partInfo    = splitIdx > 0 ? result.slice(0, splitIdx).trim() : result;
                                         const partLirik   = splitIdx > 0 ? result.slice(splitIdx).trim()  : '';
 
+                                        // Bersihkan simbol box-drawing dari teks yang akan di-copy
+                                        const _cleanCopy = (raw) => raw
+                                                .split('\n')
+                                                .filter(l => !/^[\s\u256d\u256e\u2570\u256f\u2550\u2502\u3014\u3015\u2500\u2508\u254c\s]*$/.test(l))
+                                                .filter(l => !/[\u3014\u3015]/.test(l))
+                                                .map(l => l.replace(/^\s*\u2502\s?/, '').trimEnd())
+                                                .join('\n')
+                                                .replace(/\n{3,}/g, '\n\n')
+                                                .trim();
+
+                                        const copyInfo  = _cleanCopy(partInfo);
+                                        const copyLirik = _cleanCopy(partLirik);
+
                                         // Bangun contextInfo manual agar reply ke pesan loading bot sendiri
                                         const _imCtx = loadingMsg?.key?.id ? {
                                                 stanzaId:      loadingMsg.key.id,
@@ -13780,16 +13793,16 @@ hasil += `╰══════════════════════�
                                                 quotedMessage: loadingMsg.message || loadingMsg.raw || {},
                                         } : {};
 
-                                        // Kirim hasil + dua tombol copy
+                                        // Kirim hasil + dua tombol copy (teks bersih)
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
                                                         .setBody(result)
                                                         .setFooter('🎵 Powered by Gemini AI')
                                                         .setContextInfo(_imCtx)
-                                                        .addCopy('🎼 Salin Genre/Info', partInfo,  'copy_infomusik_genre');
-                                                if (partLirik) {
-                                                        btn.addCopy('📜 Salin Lirik', partLirik, 'copy_infomusik_lirik');
+                                                        .addCopy('🎼 Salin Genre/Info', copyInfo,  'copy_infomusik_genre');
+                                                if (copyLirik) {
+                                                        btn.addCopy('📜 Salin Lirik', copyLirik, 'copy_infomusik_lirik');
                                                 }
                                                 await btn.run(m.from, hisoka, '');
                                                 buttonSent = true;
