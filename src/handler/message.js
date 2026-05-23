@@ -9011,7 +9011,7 @@ ${masaAktifLine}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 _⚙️ Setting tersimpan per-jadibot realtime_
-_📦 Powered by Wily Bot V17_ 🤖`;
+_📦 Powered by Wily Bot V18.1_ 🤖`;
                                                 await hisoka.sendMessage(m.from, { text: menuTeks }, { quoted: m });
                                                 logCommand(m, hisoka, 'menu');
                                                 break;
@@ -9035,7 +9035,7 @@ _📦 Powered by Wily Bot V17_ 🤖`;
                                         const teks =
 `╔══════════════════════════════╗
 ║  🤖  *${botName.toUpperCase()}*  🤖  ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 👤 *${m.pushName || 'User'}*
@@ -9044,7 +9044,7 @@ _📦 Powered by Wily Bot V17_ 🤖`;
 ⏱️ *Uptime   :* ${uptimeStr}
 📦 *Fitur    :* ${totalCmd} fitur aktif
 🌐 *Status   :* Online 🟢
-🔖 *Versi    :* Wily Bot V17
+🔖 *Versi    :* Wily Bot V18.1
 ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 
 ▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
@@ -9072,6 +9072,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 │   ├ *.anticallvid msg [teks]*
 │   ├ *.anticallvid add/del [nomor]*
 │   ╰ *.anticallvid list*
+├➤ *.antiporn on/off*
 ╰➤ *.antitagsw on/off*
    ├ *.antitagsw global on/off*
    ├ *.antitagsw status*
@@ -9081,6 +9082,8 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 ├➤ *.del / .d* — Hapus pesan (reply)
 ├➤ *.s / .sticker*
 ├➤ *.toimg*
+├➤ *.tovn* — Audio/MP3 → Voice Note
+├➤ *.tomp3* — Voice Note → MP3
 ├➤ *.stickerly [query/link]*
 ├➤ *.stickerpack [query]*
 ├➤ *.rvo / .viewonce*
@@ -9120,6 +9123,8 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 ├➤ *.genius / .carilagu [judul]*
 ├➤ *.geniusdetail [id]*
 ├➤ *.whatsmusik / .wmusik / .shazam*
+├➤ *.musikai / .aimusik [tema/random]*
+├➤ *.musikai2 / .aimusik2 [tema/random]*
 ╰➤ *.speedtest / .speed / .cekspeed*
 
 ╭─「 🤖 *AI CHAT* 」
@@ -9265,7 +9270,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
                                 const allTeks =
 `╔══════════════════════════════╗
 ║  📋  *SEMUA PERINTAH*  📋  ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 「 🤖 *AUTO FITUR* 」
@@ -9277,10 +9282,11 @@ antidel | antidel private/group/all on/off
 antidel sendto self/chat/both
 anticall (.ac) | anticall msg/add/del/list
 anticallvid (.acv) | anticallvid msg/add/del/list
+antiporn
 antitagsw | antitagsw global on/off | antitagsw status/reset
 
 「 💬 *PESAN & STICKER* 」
-s/sticker | toimg | stickerly | stickerpack
+s/sticker | toimg | tovn | tomp3 | stickerly | stickerpack
 rvo | quoted | react/reaksi | cekreact
 
 「 👥 *FITUR GRUP* 」
@@ -9300,7 +9306,7 @@ cekhp/spechp/infohp | bandingkan
 cuaca | ba/bluearchive
 genius/carilagu | geniusdetail
 whatsmusik/wmusik
-musikai/aimusik
+musikai/aimusik | musikai2/aimusik2
 pixiv | pixivr18
 
 「 🤖 *AI CHAT* 」
@@ -9356,7 +9362,7 @@ cekerror | cekerror reset | contact
                                 const settingTeks =
 `╔══════════════════════════════╗
 ║  ⚙️  *SETTING MENU*  ⚙️  ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 ╭─「 🤖 *AUTO FITUR* 」
@@ -9398,6 +9404,9 @@ cekerror | cekerror reset | contact
 │   ├ *.anticallvid add/del [nomor]*
 │   ╰ *.anticallvid list*
 │
+├➤ *.antiporn on/off*
+│   _Blokir konten pornografi otomatis_
+│
 ╰➤ *.antitagsw on/off*  _[khusus grup]_
    _Blokir tag spam di story_
    ├ *.antitagsw global on/off*
@@ -9429,7 +9438,7 @@ cekerror | cekerror reset | contact
                                 const groupTeks =
 `╔══════════════════════════════╗
 ║  👥  *GRUP & PESAN MENU*  👥 ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 ╭─「 👥 *FITUR GRUP* 」
@@ -9494,7 +9503,7 @@ cekerror | cekerror reset | contact
                                 const statusTeks =
 `╔══════════════════════════════╗
 ║  📡  *STATUS & STORY MENU*  📡║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 ╭─「 📡 *STATUS & STORY* 」
@@ -9551,7 +9560,7 @@ cekerror | cekerror reset | contact
                                 const dlTeks =
 `╔══════════════════════════════╗
 ║  📥  *DOWNLOAD MENU*  📥  ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 ╭─「 📥 *SOSMED & MUSIK* 」
@@ -9590,6 +9599,8 @@ cekerror | cekerror reset | contact
 │   _Download anime dari AlqAnime_
 ├➤ *.komik / .komiktap [judul]*
 │   _Cari manga/komik_
+├➤ *.komikinfo [url]*
+│   _Detail info komik dari URL_
 ├➤ *.komikget [url chapter]*
 │   _Baca/download chapter komik_
 ╰➤ *.komikupdate*
@@ -9620,7 +9631,7 @@ cekerror | cekerror reset | contact
                                 const jadibotTeks =
 `╔══════════════════════════════╗
 ║  🤖  *JADIBOT MENU*  🤖  ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 
 ╭─「 🤖 *JADIBOT* 」
@@ -9663,7 +9674,7 @@ cekerror | cekerror reset | contact
                                 const ownerTeks =
 `╔══════════════════════════════╗
 ║  👑  *OWNER MENU*  👑  ║
-║      _Wily Bot V17_        ║
+║      _Wily Bot V18.1_        ║
 ╚══════════════════════════════╝
 🔒 _Khusus pemilik bot_
 
