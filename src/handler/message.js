@@ -13773,17 +13773,25 @@ hasil += `╰══════════════════════�
                                         const partInfo    = splitIdx > 0 ? result.slice(0, splitIdx).trim() : result;
                                         const partLirik   = splitIdx > 0 ? result.slice(splitIdx).trim()  : '';
 
-                                        // Kirim hasil reply ke pesan loading bot sendiri + dua tombol copy
+                                        // Bangun contextInfo manual agar reply ke pesan loading bot sendiri
+                                        const _imCtx = loadingMsg?.key?.id ? {
+                                                stanzaId:      loadingMsg.key.id,
+                                                participant:   loadingMsg.key?.participant || loadingMsg.key?.remoteJid || m.from,
+                                                quotedMessage: loadingMsg.message || loadingMsg.raw || {},
+                                        } : {};
+
+                                        // Kirim hasil + dua tombol copy
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
                                                         .setBody(result)
                                                         .setFooter('🎵 Powered by Gemini AI')
+                                                        .setContextInfo(_imCtx)
                                                         .addCopy('🎼 Salin Genre/Info', partInfo,  'copy_infomusik_genre');
                                                 if (partLirik) {
                                                         btn.addCopy('📜 Salin Lirik', partLirik, 'copy_infomusik_lirik');
                                                 }
-                                                await btn.run(m.from, hisoka, loadingMsg);
+                                                await btn.run(m.from, hisoka, '');
                                                 buttonSent = true;
                                         } catch (_) {}
 

@@ -7124,7 +7124,7 @@
   "62895808688488@s.whatsapp.net": {
     "isContact": true,
     "id": "62895808688488@s.whatsapp.net",
-    "name": "Adit <",
+    "name": "Adit ( Facebook )",
     "lid": "160344081174578@lid",
     "jid": "62895808688488@s.whatsapp.net"
   },
@@ -9822,7 +9822,9 @@
     "id": "6283876341276@s.whatsapp.net",
     "name": "名前：ケフォ🍃",
     "lid": "276454294204660@lid",
-    "jid": "6283876341276@s.whatsapp.net"
+    "jid": "6283876341276@s.whatsapp.net",
+    "notify": "ㅤㅤㅤㅤㅤ Sৣft      ̶   Girl's    @Ggzllayq.Gods6_Warjok*On-Ts",
+    "verifiedName": "ㅤㅤㅤㅤㅤ Sৣft      ̶   Girl's    @Ggzllayq.Gods6_Warjok*On-Ts"
   },
   "6282251889637@s.whatsapp.net": {
     "isContact": true,
@@ -33258,5 +33260,10 @@
     "id": "172279979892875@lid",
     "lid": "172279979892875@lid",
     "imgUrl": "changed"
+  },
+  "87428505313453@lid": {
+    "id": "87428505313453@lid",
+    "lid": "87428505313453@lid",
+    "imgUrl": "removed"
   }
 }
