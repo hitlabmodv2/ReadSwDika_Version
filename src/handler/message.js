@@ -13790,24 +13790,40 @@ hasil += `╰══════════════════════�
                                         const copyLirik = _cleanCopy(partLirik);
 
                                         // Kirim hasil reply ke pesan user yang pakai command + dua tombol copy
-                                        // Jika pesan dari nomor bot sendiri (fromMe), skip quoted agar tidak error
-                                        const _quotedRef = m.key?.fromMe ? null : m;
+                                        // Build replyCtx manual (sama seperti sendCekautoMsg)
+                                        // agar work untuk semua pesan: orang lain, owner, maupun nomor bot sendiri (fromMe)
+                                        const _replyCtx = m.key?.id ? {
+                                                stanzaId: m.key.id,
+                                                participant: m.sender || m.key?.participant || '',
+                                                quotedMessage: m.message || {},
+                                        } : {};
+
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
                                                         .setBody(result)
                                                         .setFooter('🎵 Powered by Gemini AI')
+                                                        .setContextInfo(_replyCtx)
                                                         .addCopy('🎼 Salin Genre/Info', copyInfo,  'copy_infomusik_genre');
                                                 if (copyLirik) {
                                                         btn.addCopy('📜 Salin Lirik', copyLirik, 'copy_infomusik_lirik');
                                                 }
-                                                await btn.run(m.from, hisoka, _quotedRef);
+                                                await btn.run(m.from, hisoka);
                                                 buttonSent = true;
                                         } catch (_) {}
 
                                         if (!buttonSent) {
-                                                const _sendOpts = _quotedRef ? { quoted: _quotedRef } : {};
-                                                await hisoka.sendMessage(m.from, { text: result }, _sendOpts);
+                                                const _fallbackMsg = generateWAMessageFromContent(
+                                                        m.from,
+                                                        {
+                                                                extendedTextMessage: {
+                                                                        text: result,
+                                                                        contextInfo: _replyCtx,
+                                                                }
+                                                        },
+                                                        {}, {}
+                                                );
+                                                await hisoka.relayMessage(_fallbackMsg.key.remoteJid, _fallbackMsg.message, { messageId: _fallbackMsg.key.id });
                                         }
 
                                         logCommand(m, hisoka, 'infomusik');
