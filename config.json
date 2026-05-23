@@ -145,14 +145,14 @@
     "groups": {
       "120363192554714254@g.us": {
         "enabled": false,
-        "diubahPada": 1779186158817
+        "diubahPada": 1779505896408
       },
       "120363383540766761@g.us": {
         "enabled": false,
         "diubahPada": 1778989104118
       },
       "120363419402989015@g.us": {
-        "enabled": true,
+        "enabled": false,
         "diubahPada": 1779097792480
       }
     }

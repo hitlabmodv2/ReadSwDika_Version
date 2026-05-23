@@ -1,7 +1,7 @@
 🤖 *WILY BOT — V18*
 _📅 Rilis: Sabtu, 23 Mei 2026_
 
-✨ *14 Fitur Baru*
+✨ *15 Fitur Baru*
 🔧 *10 Bug Fix*
 🚀 *10 Improvement*
 
@@ -72,6 +72,12 @@ _📅 Rilis: Sabtu, 23 Mei 2026_
 > `📦 Episode : 12 Episode` — dihitung dari range judul (bukan jumlah file)
 > `💿 Format  : BD / Bluray` — muncul hanya kalau judul mengandung BD/Blu-ray
 > Non-batch & movie/OVA tidak terpengaruh — field muncul hanya bila relevan
+
+> ⚙️ *Command `.setpairing`*
+> Atur mode pengiriman kode pairing saat aktivasi Jadibot
+> `.setpairing v1` → kode & notif tampil di GC / owner bot
+> `.setpairing v2` → kode dikirim langsung ke nomor tujuan (default)
+> Alias: `.setpairing v1` `.setpairing v2`
 
 > 🎵 *Command `.tovn`*
 > Konversi file audio atau MP3 menjadi Voice Note WhatsApp
