@@ -284,9 +284,9 @@
       "source": "AlqanimeNotif",
       "message": "[AlqanimeNotif] ❌ Gagal fetch homepage: Request failed with status code 429",
       "stack": "Error: [AlqanimeNotif] ❌ Gagal fetch homepage: Request failed with status code 429\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at Object.cariEpisodeBaru (/home/runner/workspace/src/scrape/alqanime-monitor.cjs:337:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async runAlqanime (file:///home/runner/workspace/index.js:895:69)",
-      "count": 155,
+      "count": 156,
       "firstSeen": "2026-05-21T05:26:05.848Z",
-      "lastSeen": "2026-05-21T05:54:08.674Z"
+      "lastSeen": "2026-05-23T03:07:47.809Z"
     },
     {
       "fingerprint": "AlqanimeNotif::[AlqanimeNotif] Gagal kirim ke N@g.us: Connection Closed",

@@ -1,68 +1,9 @@
-🤖 *WILY BOT — V18.1*
-_📅 Rilis: Sabtu, 23 Mei 2026_
-
-✨ *12 Fitur Baru*
-🔧 *10 Bug Fix*
-🚀 *10 Improvement*
-
-━━━━━━━━━━━━━━━━━━━━━━
-🆕 *UPDATE V18.1 — PATCH*
-━━━━━━━━━━━━━━━━━━━━━━
-
-✨ *FITUR BARU*
-
-> 🎌 *Alqanime Notif — Info Batch di Caption*
-> Caption batch kini tampil info lengkap: total episode & status BD/Bluray
-> `📦 Episode : 12 Episode` — dihitung dari range judul (bukan jumlah file)
-> `💿 Format  : BD / Bluray` — muncul hanya kalau judul mengandung BD/Blu-ray
-> Non-batch & movie/OVA tidak terpengaruh — field muncul hanya bila relevan
-
-> 🎌 *Alqanime Notif — Deteksi Tipe Rilisan Otomatis*
-> Caption header kini tampil dinamis sesuai tipe rilisan
-> Batch → `📺 Batch 01-12`
-> Episode ongoing → `📺 Episode 07`
-> Movie / OVA → `📺 Movie / OVA`
-> Tidak perlu setting manual — otomatis deteksi dari judul & data web
-
-🔧 *BUG FIX*
-
-> 🎌 *Alqanime Notif — Batch Tampil "Episode 1" Padahal Completed*
-> Anime batch (misal 1–12) mengirim notif dengan header `Episode 1`
-> padahal status sudah Completed dan download tersedia sampai ep terakhir
-> Penyebab: `epNum` diambil dari parse judul card yang baca "Episode 1"
-> bukan dari episode terbaru di daftar download
-> Kini header & download selalu sinkron ke episode terbaru yang real
-
-🚀 *IMPROVEMENT*
-
-> 🎌 *Alqanime Notif — Movie / OVA Lebih Akurat*
-> Field `📦 Episode` kini disembunyikan untuk tipe movie/OVA
-> Sebelumnya muncul `Episode : 1` yang tidak relevan untuk film/OVA
-> Label header kini spesifik: judul ada "OVA" → `OVA`, ada "Movie" → `Movie`
-> Jika keduanya tidak ada → fallback ke `Movie / OVA`
-
-> 📋 *Menu Bot — Audit & Koreksi 7 Item*
-> Versi seluruh menu diperbarui dari V17 → V18.1 (9 tempat)
-> `musikai / aimusik` ditambah ke seksi INFO & CEK di `.menu` utama
-> `musikai2 / aimusik2` ditambah ke `.menu` & `.allmenu`
-> `tovn` (audio→VN) & `tomp3` (VN→MP3) ditambah ke seksi PESAN & STICKER
-> `antiporn` ditambah ke ANTI FITUR di `.menu`, `settingmenu`, & `.allmenu`
-> `komikinfo` ditambah ke `downloadmenu` seksi ANIME & MANGA
-
-> 🎵 *Musik AI — Genre Dinamis oleh Gemini*
-> Sebelumnya genre dikunci maksimal 1-2 di prompt AI
-> Kini Gemini bebas tentukan berapa genre yang cocok — bisa 3 atau lebih
-> sesuai karakter dan gaya rilisan lagunya (realtime, tidak hardcoded)
-> Berlaku untuk semua mode: tema bebas, random ID/EN/JP
-
-━━━━━━━━━━━━━━━━━━━━━━
-
 🤖 *WILY BOT — V18*
 _📅 Rilis: Sabtu, 23 Mei 2026_
 
-✨ *10 Fitur Baru*
-🔧 *9 Bug Fix*
-🚀 *7 Improvement*
+✨ *14 Fitur Baru*
+🔧 *10 Bug Fix*
+🚀 *10 Improvement*
 
 ━━━━━━━━━━━━━━━━━━━━━━
 ✨ *FITUR BARU*
@@ -119,6 +60,29 @@ _📅 Rilis: Sabtu, 23 Mei 2026_
 > Respons Gemini otomatis diformat pakai simbol WA
 > Bold, italic, bullet, header — rapi tanpa markdown
 
+> 🎌 *Alqanime Notif — Deteksi Tipe Rilisan Otomatis*
+> Caption header kini tampil dinamis sesuai tipe rilisan
+> Batch → `📺 Batch 01-12`
+> Episode ongoing → `📺 Episode 07`
+> Movie / OVA → `📺 Movie / OVA`
+> Tidak perlu setting manual — otomatis deteksi dari judul & data web
+
+> 🎌 *Alqanime Notif — Info Batch di Caption*
+> Caption batch kini tampil info lengkap: total episode & status BD/Bluray
+> `📦 Episode : 12 Episode` — dihitung dari range judul (bukan jumlah file)
+> `💿 Format  : BD / Bluray` — muncul hanya kalau judul mengandung BD/Blu-ray
+> Non-batch & movie/OVA tidak terpengaruh — field muncul hanya bila relevan
+
+> 🎵 *Command `.tovn`*
+> Konversi file audio atau MP3 menjadi Voice Note WhatsApp
+> Reply pesan audio/dokumen MP3, lalu ketik `.tovn`
+> Output langsung terkirim sebagai voice note bisa diputar
+
+> 🎵 *Command `.tomp3`*
+> Konversi Voice Note WhatsApp menjadi file MP3
+> Reply voice note, lalu ketik `.tomp3`
+> Output terkirim sebagai file audio yang bisa diunduh
+
 ━━━━━━━━━━━━━━━━━━━━━━
 🔧 *BUG FIX*
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -156,9 +120,16 @@ _📅 Rilis: Sabtu, 23 Mei 2026_
 > `getAiringStatus()` diam-diam drop season lanjutan → diperbaiki
 > Notifikasi episode sama muncul 2x → dedup by slug + epNum
 
-> 🎌 *Alqanime Notif*
+> 🎌 *Alqanime Notif — Fetch & Timing*
 > Post gagal-fetch tidak dicoba ulang → retry TTL 30 menit
 > Post di batas window sering terlewat → buffer waktu +3 menit
+
+> 🎌 *Alqanime Notif — Batch Tampil "Episode 1" Padahal Completed*
+> Anime batch (misal 1–12) mengirim notif dengan header `Episode 1`
+> padahal status sudah Completed dan download tersedia sampai ep terakhir
+> Penyebab: `epNum` diambil dari parse judul card yang baca "Episode 1"
+> bukan dari episode terbaru di daftar download
+> Kini header & download selalu sinkron ke episode terbaru yang real
 
 > ⚡ *Speedtest*
 > `require is not defined` di ES module → diganti `_require()`
@@ -178,15 +149,34 @@ _📅 Rilis: Sabtu, 23 Mei 2026_
 > Kini pria & wanita di-generate *bersamaan* — semua variasi
 > langsung muncul tanpa langkah tambahan, lebih cepat & praktis
 
+> 🎵 *Musik AI — Genre Dinamis oleh Gemini*
+> Sebelumnya genre dikunci maksimal 1-2 di prompt AI
+> Kini Gemini bebas tentukan berapa genre yang cocok — bisa 3 atau lebih
+> sesuai karakter dan gaya rilisan lagunya (realtime, tidak hardcoded)
+> Berlaku untuk semua mode: tema bebas, random ID/EN/JP
+
+> 🎌 *Alqanime Notif — Movie / OVA Lebih Akurat*
+> Field `📦 Episode` kini disembunyikan untuk tipe movie/OVA
+> Sebelumnya muncul `Episode : 1` yang tidak relevan untuk film/OVA
+> Label header kini spesifik: judul ada "OVA" → `OVA`, ada "Movie" → `Movie`
+> Jika keduanya tidak ada → fallback ke `Movie / OVA`
+
 > 🤖 *Jadibot — Auto-Start Lebih Akurat*
 > Jadibot lama (sebelum fitur data expiry ada) tidak lagi di-reset
 > durasinya saat restart — otomatis dijaga sebagai permanent
 
+> 📋 *Menu Bot — Audit & Koreksi*
+> Versi seluruh menu diperbarui dari V17 → V18 (9 tempat)
+> `musikai / aimusik`, `musikai2 / aimusik2` ditambah ke INFO & CEK
+> `tovn` & `tomp3` ditambah ke seksi PESAN & STICKER
+> `antiporn` ditambah ke ANTI FITUR di semua menu relevan
+> `komikinfo` ditambah ke `downloadmenu` seksi ANIME & MANGA
+> `setpairing v1/v2` ditambah ke JADIBOT & `jadibotmenu`
+
 > 🎯 *`.ceksw`* — Tampilan diringkas, 1 baris per orang
 > 🎯 *`push.sh`* — Nomor menu diurutkan ulang per group
 > 📡 *Notif Grup* — Kirim parallel, dari ~20 detik jadi ~2 detik
-> 📋 *Menu Bot* — 8 command aktif ditambah ke kategori yang tepat
 > 📋 *Menu Jadibot* — Seksi Sticker & Gambar diperbarui + `.hd`
 
 ━━━━━━━━━━━━━━━━━━━━━━
-🤖 *Wily-Bot* | *V18* | _21 Mei 2026_
+🤖 *Wily-Bot* | *V18* | _23 Mei 2026_

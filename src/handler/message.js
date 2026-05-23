@@ -9166,6 +9166,7 @@ ${ownerNum ? `📞 *Owner    :* wa.me/${ownerNum}` : ''}
 ├➤ *.jadibot [nomor] [durasi]*
 ├➤ *.stopbot [nomor]*
 ├➤ *.listbot*
+├➤ *.setpairing v1/v2*
 ╰➤ *.jadibotmenu*
 
 ╭─「 👑 *OWNER ONLY* 」
@@ -9326,7 +9327,7 @@ ss/screenshot | ssweb/webinfo
 tmail/tempmail | tminbox | tmread | tmwait | tmdel
 
 「 🤖 *JADIBOT* 」
-jadibot [nomor] [durasi] | stopbot | listbot
+jadibot [nomor] [durasi] | stopbot | listbot | setpairing v1/v2
 
 「 👑 *OWNER ONLY* 」
 listowner | addowner | delowner
@@ -9646,8 +9647,13 @@ cekerror | cekerror reset | contact
 │   _Hentikan jadibot di nomor tertentu_
 │   _Contoh: .stopbot 628xxx_
 │
-╰➤ *.listbot*
-   _Lihat daftar jadibot yang sedang aktif_
+├➤ *.listbot*
+│   _Lihat daftar jadibot yang sedang aktif_
+│
+╰➤ *.setpairing v1/v2*
+   _Atur mode pengiriman kode pairing_
+   _v1 → kode tampil di GC / owner_
+   _v2 → kode dikirim ke nomor tujuan_
 
 `;
 
