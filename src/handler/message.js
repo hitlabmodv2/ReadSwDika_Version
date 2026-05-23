@@ -1968,49 +1968,54 @@ async function sendCekautoMsg(hisoka, m) {
 
         const hasPp = Object.keys(botPpMedia).length > 0;
 
-        // Build contextInfo so message appears as a reply to the original command
+        // Build contextInfo — participant hanya diisi di group, di private harus kosong
         const replyCtx = m.key?.id ? {
                 stanzaId: m.key.id,
-                participant: m.sender || m.key?.participant || '',
+                participant: m.isGroup ? (m.sender || m.key?.participant || '') : '',
                 quotedMessage: m.message || {},
         } : {};
 
         if (cautoRows.length) {
-                const cautoMsg = generateWAMessageFromContent(
-                        m.from,
-                        {
-                                viewOnceMessage: {
-                                        message: {
-                                                messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
-                                                interactiveMessage: {
-                                                        contextInfo: replyCtx,
-                                                        ...(hasPp ? {
-                                                                header: {
-                                                                        hasMediaAttachment: true,
-                                                                        ...botPpMedia,
+                let sent = false;
+                try {
+                        const cautoMsg = generateWAMessageFromContent(
+                                m.from,
+                                {
+                                        viewOnceMessage: {
+                                                message: {
+                                                        messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                                                        interactiveMessage: {
+                                                                contextInfo: replyCtx,
+                                                                ...(hasPp ? {
+                                                                        header: {
+                                                                                hasMediaAttachment: true,
+                                                                                ...botPpMedia,
+                                                                        }
+                                                                } : {}),
+                                                                body: { text: txt },
+                                                                nativeFlowMessage: {
+                                                                        buttons: [
+                                                                                {
+                                                                                        name: 'single_select',
+                                                                                        buttonParamsJson: JSON.stringify({ title: '⚙️ Pilih & Toggle Fitur Bot', sections: cautoRows })
+                                                                                },
+                                                                                ...(m.isGroup ? [{
+                                                                                        name: 'quick_reply',
+                                                                                        buttonParamsJson: JSON.stringify({ display_text: '🏘️ Lihat Fitur Grup', id: '__cekauto_gc__' })
+                                                                                }] : [])
+                                                                        ]
                                                                 }
-                                                        } : {}),
-                                                        body: { text: txt },
-                                                        nativeFlowMessage: {
-                                                                buttons: [
-                                                                        {
-                                                                                name: 'single_select',
-                                                                                buttonParamsJson: JSON.stringify({ title: '⚙️ Pilih & Toggle Fitur Bot', sections: cautoRows })
-                                                                        },
-                                                                        ...(m.isGroup ? [{
-                                                                                name: 'quick_reply',
-                                                                                buttonParamsJson: JSON.stringify({ display_text: '🏘️ Lihat Fitur Grup', id: '__cekauto_gc__' })
-                                                                        }] : [])
-                                                                ]
                                                         }
                                                 }
                                         }
-                                }
-                        },
-                        {},
-                        {}
-                );
-                await hisoka.relayMessage(cautoMsg.key.remoteJid, cautoMsg.message, { messageId: cautoMsg.key.id });
+                                },
+                                {},
+                                {}
+                        );
+                        await hisoka.relayMessage(cautoMsg.key.remoteJid, cautoMsg.message, { messageId: cautoMsg.key.id });
+                        sent = true;
+                } catch (_) {}
+                if (!sent) await m.reply(txt);
         } else {
                 await m.reply(txt);
         }
