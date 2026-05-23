@@ -13789,14 +13789,7 @@ hasil += `╰══════════════════════�
                                         const copyInfo  = _cleanCopy(partInfo);
                                         const copyLirik = _cleanCopy(partLirik);
 
-                                        // Buat quoted reference ke pesan loading bot (dengan fallback konten)
-                                        const _qRef = loadingMsg?.key?.id ? {
-                                                key:     { ...loadingMsg.key, fromMe: true },
-                                                message: loadingMsg.message || loadingMsg.raw
-                                                        || { conversation: '✅ Analisis selesai!' },
-                                        } : m;
-
-                                        // Kirim hasil reply ke pesan loading + dua tombol copy (teks bersih)
+                                        // Kirim hasil reply ke pesan user yang pakai command + dua tombol copy
                                         let buttonSent = false;
                                         try {
                                                 const btn = new Button()
@@ -13806,12 +13799,12 @@ hasil += `╰══════════════════════�
                                                 if (copyLirik) {
                                                         btn.addCopy('📜 Salin Lirik', copyLirik, 'copy_infomusik_lirik');
                                                 }
-                                                await btn.run(m.from, hisoka, _qRef);
+                                                await btn.run(m.from, hisoka, m);
                                                 buttonSent = true;
                                         } catch (_) {}
 
                                         if (!buttonSent) {
-                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: _qRef });
+                                                await hisoka.sendMessage(m.from, { text: result }, { quoted: m });
                                         }
 
                                         logCommand(m, hisoka, 'infomusik');
