@@ -1,15 +1,21 @@
 🤖 *WILY BOT — V18.1*
 _📅 Rilis: Sabtu, 23 Mei 2026_
 
-✨ *11 Fitur Baru*
+✨ *12 Fitur Baru*
 🔧 *10 Bug Fix*
-🚀 *8 Improvement*
+🚀 *10 Improvement*
 
 ━━━━━━━━━━━━━━━━━━━━━━
 🆕 *UPDATE V18.1 — PATCH*
 ━━━━━━━━━━━━━━━━━━━━━━
 
 ✨ *FITUR BARU*
+
+> 🎌 *Alqanime Notif — Info Batch di Caption*
+> Caption batch kini tampil info lengkap: total episode & status BD/Bluray
+> `📦 Episode : 12 Episode` — dihitung dari range judul (bukan jumlah file)
+> `💿 Format  : BD / Bluray` — muncul hanya kalau judul mengandung BD/Blu-ray
+> Non-batch & movie/OVA tidak terpengaruh — field muncul hanya bila relevan
 
 > 🎌 *Alqanime Notif — Deteksi Tipe Rilisan Otomatis*
 > Caption header kini tampil dinamis sesuai tipe rilisan
@@ -28,6 +34,20 @@ _📅 Rilis: Sabtu, 23 Mei 2026_
 > Kini header & download selalu sinkron ke episode terbaru yang real
 
 🚀 *IMPROVEMENT*
+
+> 🎌 *Alqanime Notif — Movie / OVA Lebih Akurat*
+> Field `📦 Episode` kini disembunyikan untuk tipe movie/OVA
+> Sebelumnya muncul `Episode : 1` yang tidak relevan untuk film/OVA
+> Label header kini spesifik: judul ada "OVA" → `OVA`, ada "Movie" → `Movie`
+> Jika keduanya tidak ada → fallback ke `Movie / OVA`
+
+> 📋 *Menu Bot — Audit & Koreksi 7 Item*
+> Versi seluruh menu diperbarui dari V17 → V18.1 (9 tempat)
+> `musikai / aimusik` ditambah ke seksi INFO & CEK di `.menu` utama
+> `musikai2 / aimusik2` ditambah ke `.menu` & `.allmenu`
+> `tovn` (audio→VN) & `tomp3` (VN→MP3) ditambah ke seksi PESAN & STICKER
+> `antiporn` ditambah ke ANTI FITUR di `.menu`, `settingmenu`, & `.allmenu`
+> `komikinfo` ditambah ke `downloadmenu` seksi ANIME & MANGA
 
 > 🎵 *Musik AI — Genre Dinamis oleh Gemini*
 > Sebelumnya genre dikunci maksimal 1-2 di prompt AI
