@@ -453,33 +453,39 @@ function buatBarisInfo(items) {
 function deteksiTipeEp(titleRaw, episodes, epNum) {
     const title = titleRaw || '';
 
+    // ── Deteksi BD / Bluray ──────────────────────────────────────────────────
+    const isBD = /\bBD\b|\bBlu[-\s]?ray\b/i.test(title);
+
     // ── Batch? ───────────────────────────────────────────────────────────────
     if (/batch/i.test(title)) {
+        let startNum = 1, endNum = null;
+
         // Coba parse range lengkap: "Batch (Episode 01 – 12)" atau "Batch (01 – 12)"
         const fullRange = title.match(/Batch\s*\(\s*(?:Episode\s+)?(\d+)\s*[–\-]\s*(\d+)\s*\)/i);
         if (fullRange) {
-            const start = fullRange[1].padStart(2, '0');
-            const end   = fullRange[2].padStart(2, '0');
-            return { tipe: 'batch', epHeader: `Batch ${start}-${end}` };
+            startNum = parseInt(fullRange[1]);
+            endNum   = parseInt(fullRange[2]);
+        } else {
+            // Parse "(– 12)" — hanya ada end
+            const endOnly = title.match(/Batch\s*\(\s*[–\-]\s*(\d+)\s*\)/i);
+            if (endOnly) {
+                startNum = 1;
+                endNum   = parseInt(endOnly[1]);
+            } else if (episodes && episodes.length > 0) {
+                // Fallback ke episodes array (newest=index 0, oldest=last)
+                const newestM = String(episodes[0].episode || '').match(/(\d+)/);
+                const oldestM = String(episodes[episodes.length - 1].episode || '').match(/(\d+)/);
+                if (oldestM) startNum = parseInt(oldestM[1]);
+                if (newestM) endNum   = parseInt(newestM[1]);
+            }
         }
 
-        // Parse "(– 12)" — hanya ada end
-        const endOnly = title.match(/Batch\s*\(\s*[–\-]\s*(\d+)\s*\)/i);
-        if (endOnly) {
-            const end = endOnly[1].padStart(2, '0');
-            return { tipe: 'batch', epHeader: `Batch 01-${end}` };
-        }
+        const startStr    = String(startNum).padStart(2, '0');
+        const endStr      = endNum ? String(endNum).padStart(2, '0') : null;
+        const batchTotal  = (endNum && endNum >= startNum) ? (endNum - startNum + 1) : null;
+        const epHeader    = endStr ? `Batch ${startStr}-${endStr}` : 'Batch';
 
-        // Fallback ke episodes array (newest=index 0, oldest=last)
-        if (episodes && episodes.length > 0) {
-            const newestM = String(episodes[0].episode || '').match(/(\d+)/);
-            const oldestM = String(episodes[episodes.length - 1].episode || '').match(/(\d+)/);
-            const start   = oldestM  ? oldestM[1].padStart(2, '0')  : '01';
-            const end     = newestM  ? newestM[1] : null;
-            return { tipe: 'batch', epHeader: end ? `Batch ${start}-${end}` : 'Batch' };
-        }
-
-        return { tipe: 'batch', epHeader: 'Batch' };
+        return { tipe: 'batch', epHeader, isBD, batchTotal, batchStart: startNum, batchEnd: endNum };
     }
 
     // ── Episode single ───────────────────────────────────────────────────────
@@ -497,11 +503,15 @@ function deteksiTipeEp(titleRaw, episodes, epNum) {
         const epLabel = (episodes && episodes.length && episodes[0].episode)
             ? episodes[0].episode
             : String(epFinal).padStart(2, '0');
-        return { tipe: 'episode', epHeader: `Episode ${epLabel}` };
+        return { tipe: 'episode', epHeader: `Episode ${epLabel}`, isBD: false };
     }
 
     // ── Movie / OVA / tanpa episode ──────────────────────────────────────────
-    return { tipe: 'movie', epHeader: null };
+    // Cek apakah ada kata OVA/Movie di judul untuk label lebih spesifik
+    const isOVA   = /\bOVA\b/i.test(title);
+    const isMovie = /\bmovie\b|\bfilm\b/i.test(title);
+    const movieLabel = isOVA ? 'OVA' : isMovie ? 'Movie' : 'Movie / OVA';
+    return { tipe: 'movie', epHeader: movieLabel, isBD };
 }
 
 // ── Caption GAMBAR — pendek, muat di batas 1024 karakter WhatsApp ────────────
@@ -620,7 +630,7 @@ function buatCaptionGabung(data) {
     const jamMenit   = sekarang.toLocaleTimeString('id-ID', opsiJam).replace('.', ':');
     const headerWaktu = `${namaHari}, ${tglLengkap} · ${jamMenit} WIB`;
 
-    const { tipe, epHeader } = deteksiTipeEp(title || judul, episodes, epNum);
+    const { tipe, epHeader, isBD, batchTotal } = deteksiTipeEp(title || judul, episodes, epNum);
     const totalSeri = info.Episode ? parseInt(info.Episode) || 0 : 0;
     const genreStr  = genres.length ? genres.join(', ') : null;
 
@@ -631,10 +641,19 @@ function buatCaptionGabung(data) {
     const sinopsisText = (sinopsis || '-').trim();
     const sinopsisBlok = sinopsisText.split('\n').map(b => b.trim() ? `> ${b}` : '').join('\n');
 
+    // Info batch tambahan — hanya muncul kalau tipe batch
+    const batchIsiStr  = (tipe === 'batch' && batchTotal) ? `${batchTotal} Episode` : null;
+    const formatStr    = isBD ? 'BD / Bluray' : null;
+
     // ── Info Grup 1: metadata utama ──
     const seksi1 = buatBarisInfo([
         ['🗂️ Tipe      ', info.Tipe                              || null],
-        ['📦 Episode   ', totalSeri ? String(totalSeri)          : null],
+        ['📦 Episode   ', tipe === 'batch'
+            ? (batchIsiStr || (totalSeri ? String(totalSeri) : null))
+            : tipe === 'movie'
+            ? null   // movie/OVA sembunyikan "Episode: 1" — tidak relevan
+            : (totalSeri ? String(totalSeri) : null)],
+        ['💿 Format    ', formatStr],
         ['🗓️ Dirilis   ', info.Dirilis                           || null],
         ['🌸 Musim     ', info.Musim                             || null],
         ['📡 Status    ', info.Status                            || null],
