@@ -194,7 +194,7 @@ function buatCaption(nama, waktu, jadwal) {
         `📅 ${hari}, ${tgl}\n` +
         `⏰ *${waktu} WIB*\n` +
         `─────────────────\n` +
-        `🕌 *Jadwal Jakarta*\n` +
+        `🕌 *Jadwal Sholat Hari Ini*\n` +
         `${baris}\n` +
         `─────────────────\n` +
         `_${ucapan}_\n` +
