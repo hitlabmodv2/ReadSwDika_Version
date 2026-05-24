@@ -5,9 +5,9 @@
       "source": "AutoSholat",
       "message": "[AutoSholat] Error scheduler: Unexpected token '}'",
       "stack": "Error: [AutoSholat] Error scheduler: Unexpected token '}'\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at runAutoSholat (file:///home/runner/workspace/index.js:1167:57)\n    at Timeout._onTimeout (file:///home/runner/workspace/index.js:1173:41)\n    at listOnTimeout (node:internal/timers:581:17)\n    at process.processTimers (node:internal/timers:519:7)",
-      "count": 184,
+      "count": 197,
       "firstSeen": "2026-05-24T06:18:04.893Z",
-      "lastSeen": "2026-05-24T13:17:49.457Z"
+      "lastSeen": "2026-05-24T13:35:33.050Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[HotReload] Gagal load 'src/handler/message.js':\u001b[Nm The requested module '../helper/userMemory.js' does not provide",
