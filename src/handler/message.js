@@ -15894,7 +15894,6 @@ hasil += `╰══════════════════════�
                                                 // Kirim gambar viewOnce + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
                                                 const imgMsg = await hisoka.sendMessage(m.from, {
                                                         image    : hasil.urlGambar,
-                                                        viewOnce : true,
                                                         contextInfo: {
                                                                 externalAdReply: {
                                                                         showAdAttribution    : false,

@@ -1153,7 +1153,6 @@ async function main() {
                                                                         // Kirim gambar bersih + info sholat di luar gambar (externalAdReply)
                                                                         const imgMsg = await hisoka.sendMessage(jid, {
                                                                                 image    : urlGbr,
-                                                                                viewOnce : true,
                                                                                 contextInfo: {
                                                                                         externalAdReply: {
                                                                                                 showAdAttribution : false,
