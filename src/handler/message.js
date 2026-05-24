@@ -15891,10 +15891,10 @@ hasil += `╰══════════════════════�
                                                 const _owner0   = Array.isArray(_asCfg.owners) ? (_asCfg.owners[0] || '') : '';
                                                 const _emoji    = (_as.EMOJI_SHOLAT  || {})[hasil.nama] || '🕌';
                                                 const _ucapan   = (_as.UCAPAN_SHOLAT || {})[hasil.nama] || 'Segera tunaikan sholat 🤲';
-                                                // Kirim gambar bersih + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
+                                                // Kirim gambar viewOnce + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
                                                 const imgMsg = await hisoka.sendMessage(m.from, {
-                                                        image  : hasil.urlGambar,
-                                                        caption: hasil.caption,
+                                                        image    : hasil.urlGambar,
+                                                        viewOnce : true,
                                                         contextInfo: {
                                                                 externalAdReply: {
                                                                         showAdAttribution    : false,
