@@ -1161,8 +1161,7 @@ async function main() {
                                                                                                 body              : _asUcapan,
                                                                                                 sourceUrl         : `https://wa.me/${_asOwner0}`,
                                                                                                 mediaType         : 1,
-                                                                                                renderLargerThumbnail: true,
-                                                                                                thumbnail         : _asThumb,
+                                                                                                renderLargerThumbnail: false,
                                                                                         },
                                                                                 },
                                                                         });

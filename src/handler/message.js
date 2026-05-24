@@ -15902,8 +15902,7 @@ hasil += `╰══════════════════════�
                                                                         body                 : _ucapan,
                                                                         sourceUrl            : `https://wa.me/${_owner0}`,
                                                                         mediaType            : 1,
-                                                                        renderLargerThumbnail: true,
-                                                                        thumbnail            : hasil.urlThumbnail,
+                                                                        renderLargerThumbnail: false,
                                                                 },
                                                         },
                                                 }, { quoted: m });
