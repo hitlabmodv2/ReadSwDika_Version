@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 24/05/2026, 06.18.04  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 24/05/2026, 06.38.33  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 47
-  Total Kejadian Error       : 556
+  Total Kejadian Error       : 568
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [47 jenis, 556 kejadian total]
+  DAFTAR ERROR LENGKAP  [47 jenis, 568 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -30,9 +30,9 @@
 │
 │  DETAIL
 │  Sumber      : AutoSholat
-│  Frekuensi   : 1x (baru terjadi)
+│  Frekuensi   : 13x (duplikat digabung)
 │  Pertama     : 24/05/2026, 06.18.04
-│  Terakhir    : 24/05/2026, 06.18.04
+│  Terakhir    : 24/05/2026, 06.38.33
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [AutoSholat] Error scheduler: Unexpected token '}'
@@ -874,6 +874,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 47 jenis, 556 kejadian
-  Terakhir diperbarui: 24/05/2026, 06.18.04
+  End of Report  —  Total: 47 jenis, 568 kejadian
+  Terakhir diperbarui: 24/05/2026, 06.38.33
 ════════════════════════════════════════════════════════════════════════
