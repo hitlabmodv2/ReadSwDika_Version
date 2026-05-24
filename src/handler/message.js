@@ -15549,24 +15549,26 @@ hasil += `╰══════════════════════�
                         case 'hdvideo': {
                                 try {
                                         const { hdvideo } = _require(path.resolve('./src/scrape/hdvid.cjs'));
-                                        const { hdr } = _require(path.resolve('./src/scrape/iloveimg.cjs'));
+                                        const { sparkpixHdUpscale } = _require(path.resolve('./src/scrape/sparkpix.cjs'));
 
                                         const isMediaMsg = m.isMedia && (m.type === 'imageMessage' || m.type === 'videoMessage' || m.type === 'stickerMessage');
                                         const isQuotedMedia = m.isQuoted && quoted.isMedia && (quoted.type === 'imageMessage' || quoted.type === 'videoMessage' || quoted.type === 'stickerMessage');
 
                                         if (!isMediaMsg && !isQuotedMedia) {
                                                 await tolak(hisoka, m,
-                                                        `╭═══『 🖼️ *HD Enhancer* 』═══╮\n│\n` +
+                                                        `╭═══『 🖼️ *HD Upscaler* 』═══╮\n│\n` +
                                                         `│ Tingkatkan kualitas gambar/video\n` +
                                                         `│ menjadi lebih tajam & jernih!\n│\n` +
                                                         `│ *Cara Pakai:*\n` +
-                                                        `│ • Kirim gambar/video dengan caption\n` +
-                                                        `│   *.hd* / *.remini* / *.hdvideo*\n` +
-                                                        `│ • Atau reply ke gambar/video\n│\n` +
-                                                        `│ *Perintah:*\n` +
-                                                        `│ *.hd* / *.remini* / *.hdr* → Gambar\n` +
-                                                        `│ *.hdvid* / *.vidhd* / *.hdvideo* → Video\n` +
-                                                        `│\n╰═════════════════════╯`
+                                                        `│ • Kirim gambar dengan caption:\n` +
+                                                        `│   *.hd* [resolusi]\n│\n` +
+                                                        `│ *Pilihan Resolusi:*\n` +
+                                                        `│ *.hd 4k* → 4K (default)\n` +
+                                                        `│ *.hd 6k* → 6K\n` +
+                                                        `│ *.hd 8k* → 8K (terbaik)\n│\n` +
+                                                        `│ *Video:*\n` +
+                                                        `│ *.hdvid* / *.vidhd* / *.hdvideo*\n` +
+                                                        `│\n╰══════════════════════════╯`
                                                 );
                                                 break;
                                         }
@@ -15641,11 +15643,30 @@ hasil += `╰══════════════════════�
 
                                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
                                         } else {
-                                                const resultBuffer = await hdr(mediaBuffer, 4);
+                                                const resInput = (query || '4k').trim().toLowerCase().split(/\s+/)[0];
+                                                const { resolution } = (() => {
+                                                        const v = resInput;
+                                                        if (['6k','3','3x'].includes(v)) return { resolution: '6K' };
+                                                        if (['8k','4','4x'].includes(v)) return { resolution: '8K' };
+                                                        return { resolution: '4K' };
+                                                })();
+
+                                                await hisoka.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+                                                await tolak(hisoka, m, `⏳ Sedang upscale gambar ke *${resolution}* via SparkPix...\nMohon tunggu sebentar.`);
+
+                                                const result = await sparkpixHdUpscale(mediaBuffer, { resolution: resInput });
+
+                                                if (!result.status || !result.result_url) {
+                                                        throw new Error(result.message || 'API SparkPix gagal merespons');
+                                                }
+
+                                                const imgFetch = await fetch(result.result_url);
+                                                if (!imgFetch.ok) throw new Error('Gagal download hasil upscale');
+                                                const imgBuffer = Buffer.from(await imgFetch.arrayBuffer());
 
                                                 await hisoka.sendMessage(m.from, {
-                                                        image: Buffer.from(resultBuffer),
-                                                        caption: '✅ Gambar berhasil diproses ke kualitas HD!'
+                                                        image  : imgBuffer,
+                                                        caption: `✅ *Gambar berhasil diupscale ke ${resolution}!*\n🔗 Powered by SparkPix AI`
                                                 }, { quoted: m });
 
                                                 await hisoka.sendMessage(m.from, { react: { text: '✅', key: m.key } });
