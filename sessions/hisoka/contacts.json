@@ -7155,7 +7155,8 @@
     "id": "6283182665936@s.whatsapp.net",
     "name": "ルトピ",
     "lid": "165536713416760@lid",
-    "jid": "6283182665936@s.whatsapp.net"
+    "jid": "6283182665936@s.whatsapp.net",
+    "notify": "Luthfi (Lui)"
   },
   "6285950007640@s.whatsapp.net": {
     "isContact": true,
@@ -31414,5 +31415,10 @@
     "id": "149383375024230@lid",
     "lid": "149383375024230@lid",
     "notify": "Luwakzz"
+  },
+  "64008266723393@lid": {
+    "id": "64008266723393@lid",
+    "lid": "64008266723393@lid",
+    "imgUrl": "changed"
   }
 }

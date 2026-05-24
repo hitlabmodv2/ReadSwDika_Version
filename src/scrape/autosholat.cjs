@@ -229,12 +229,13 @@ async function buatGambarOverlay(nama) {
 }
 
 // ─── BUAT THUMBNAIL KECIL UNTUK externalAdReply ──────────────────────────────
-// WhatsApp butuh thumbnail kecil agar gambar bisa diklik → buka sourceUrl
+// Baileys butuh thumbnail ≤100KB, format JPEG, tanpa alpha channel
 async function buatThumbnail(nama) {
     const filePath = GAMBAR_SHOLAT[nama] || GAMBAR_SHOLAT['Zuhur'];
     return await sharp(filePath)
-        .resize(300, 200, { fit: 'cover' })
-        .jpeg({ quality: 70 })
+        .resize(200, 133, { fit: 'cover' })
+        .flatten({ background: '#000000' })   // hapus alpha → background hitam jadi warna asli
+        .jpeg({ quality: 60 })
         .toBuffer();
 }
 

@@ -15886,7 +15886,11 @@ hasil += `╰══════════════════════�
                                         try {
                                                 // Boleh tulis: .autosholat test subuh / test maghrib dll
                                                 const namaWaktu = sub.replace('test', '').trim() || null;
-                                                const hasil = await _as.simulasi(namaWaktu);
+                                                const hasil     = await _as.simulasi(namaWaktu);
+                                                const _asCfg    = loadConfig();
+                                                const _owner0   = Array.isArray(_asCfg.owners) ? (_asCfg.owners[0] || '') : '';
+                                                const _emoji    = (_as.EMOJI_SHOLAT  || {})[hasil.nama] || '🕌';
+                                                const _ucapan   = (_as.UCAPAN_SHOLAT || {})[hasil.nama] || 'Segera tunaikan sholat 🤲';
                                                 // Kirim gambar bersih + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
                                                 const imgMsg = await hisoka.sendMessage(m.from, {
                                                         image  : hasil.urlGambar,
@@ -15894,9 +15898,9 @@ hasil += `╰══════════════════════�
                                                         contextInfo: {
                                                                 externalAdReply: {
                                                                         showAdAttribution    : false,
-                                                                        title                : `${hasil.emoji} Sholat ${hasil.nama} — ${hasil.waktu} WIB`,
-                                                                        body                 : hasil.ucapan,
-                                                                        sourceUrl            : `https://wa.me/${hasil.owner0}`,
+                                                                        title                : `${_emoji} Sholat ${hasil.nama} — ${hasil.waktu} WIB`,
+                                                                        body                 : _ucapan,
+                                                                        sourceUrl            : `https://wa.me/${_owner0}`,
                                                                         mediaType            : 1,
                                                                         renderLargerThumbnail: true,
                                                                         thumbnail            : hasil.urlThumbnail,
