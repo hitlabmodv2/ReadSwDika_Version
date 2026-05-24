@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 24/05/2026, 13.35.33  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 24/05/2026, 13.38.32  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 47
-  Total Kejadian Error       : 1085
+  Total Kejadian Error       : 1095
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [47 jenis, 1085 kejadian total]
+  DAFTAR ERROR LENGKAP  [47 jenis, 1095 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -30,9 +30,9 @@
 │
 │  DETAIL
 │  Sumber      : AutoSholat
-│  Frekuensi   : 197x (duplikat digabung)
+│  Frekuensi   : 201x (duplikat digabung)
 │  Pertama     : 24/05/2026, 06.18.04
-│  Terakhir    : 24/05/2026, 13.35.33
+│  Terakhir    : 24/05/2026, 13.38.32
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [AutoSholat] Error scheduler: Unexpected token '}'
@@ -226,9 +226,9 @@
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 151x (duplikat digabung)
+│  Frekuensi   : 153x (duplikat digabung)
 │  Pertama     : 21/05/2026, 14.23.54
-│  Terakhir    : 24/05/2026, 07.10.41
+│  Terakhir    : 24/05/2026, 13.38.09
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[Groups] Gagal fetch grup:[39m Connection Closed
@@ -638,9 +638,9 @@
 │
 │  DETAIL
 │  Sumber      : unhandledRejection
-│  Frekuensi   : 166x (duplikat digabung)
+│  Frekuensi   : 168x (duplikat digabung)
 │  Pertama     : 20/05/2026, 14.22.34
-│  Terakhir    : 24/05/2026, 07.10.42
+│  Terakhir    : 24/05/2026, 13.38.09
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: Connection Closed
@@ -656,9 +656,9 @@
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 166x (duplikat digabung)
+│  Frekuensi   : 168x (duplikat digabung)
 │  Pertama     : 20/05/2026, 14.22.34
-│  Terakhir    : 24/05/2026, 07.10.41
+│  Terakhir    : 24/05/2026, 13.38.09
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Connection Closed
@@ -874,6 +874,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 47 jenis, 1085 kejadian
-  Terakhir diperbarui: 24/05/2026, 13.35.33
+  End of Report  —  Total: 47 jenis, 1095 kejadian
+  Terakhir diperbarui: 24/05/2026, 13.38.32
 ════════════════════════════════════════════════════════════════════════
