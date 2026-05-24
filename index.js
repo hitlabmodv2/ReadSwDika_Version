@@ -1142,9 +1142,11 @@ async function main() {
                                                 const AS_BATCH = 5;
                                                 for (let i = 0; i < daftarGrup.length; i += AS_BATCH) {
                                                         const chunk = daftarGrup.slice(i, i + AS_BATCH);
-                                                        const _asCfg    = loadConfig();
-                                                        const _asOwner0 = Array.isArray(_asCfg.owners) ? _asCfg.owners[0] : '';
-                                                        const _asBotName = hisoka.user?.name || 'Wily Bot';
+                                                        const _asCfg      = loadConfig();
+                                                        const _asOwner0   = Array.isArray(_asCfg.owners) ? _asCfg.owners[0] : '';
+                                                        const _asEmoji    = _as.EMOJI_SHOLAT[cocok.nama]  || '🕌';
+                                                        const _asUcapan   = _as.UCAPAN_SHOLAT[cocok.nama] || 'Segera tunaikan sholat 🤲';
+                                                        const _asThumb    = await _as.buatThumbnail(cocok.nama);
 
                                                         await Promise.allSettled(chunk.map(async jid => {
                                                                 try {
@@ -1155,12 +1157,12 @@ async function main() {
                                                                                 contextInfo: {
                                                                                         externalAdReply: {
                                                                                                 showAdAttribution : false,
-                                                                                                title             : `🕌 ${_asBotName}`,
-                                                                                                body              : `🌊 Selamat datang — Nikmati musiknya!`,
+                                                                                                title             : `${_asEmoji} Sholat ${cocok.nama} — ${cocok.waktu} WIB`,
+                                                                                                body              : _asUcapan,
                                                                                                 sourceUrl         : `https://wa.me/${_asOwner0}`,
                                                                                                 mediaType         : 1,
                                                                                                 renderLargerThumbnail: true,
-                                                                                                thumbnail         : urlGbr,
+                                                                                                thumbnail         : _asThumb,
                                                                                         },
                                                                                 },
                                                                         });

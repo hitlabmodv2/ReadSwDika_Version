@@ -228,6 +228,16 @@ async function buatGambarOverlay(nama) {
         .toBuffer();
 }
 
+// ─── BUAT THUMBNAIL KECIL UNTUK externalAdReply ──────────────────────────────
+// WhatsApp butuh thumbnail kecil agar gambar bisa diklik → buka sourceUrl
+async function buatThumbnail(nama) {
+    const filePath = GAMBAR_SHOLAT[nama] || GAMBAR_SHOLAT['Zuhur'];
+    return await sharp(filePath)
+        .resize(300, 200, { fit: 'cover' })
+        .jpeg({ quality: 70 })
+        .toBuffer();
+}
+
 // ─── SIMULASI / TES KIRIM ────────────────────────────────────────────────────
 async function simulasi(namaWaktu) {
     const jadwal = await getJadwalHariIni();
@@ -256,5 +266,8 @@ module.exports = {
     getGambar,
     getAudio,
     buatGambarOverlay,
+    buatThumbnail,
     simulasi,
+    EMOJI_SHOLAT,
+    UCAPAN_SHOLAT,
 };

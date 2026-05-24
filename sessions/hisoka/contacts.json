@@ -2967,7 +2967,8 @@
     "id": "6281345905196@s.whatsapp.net",
     "name": "pushkontak wa 21",
     "lid": "276926941929540@lid",
-    "jid": "6281345905196@s.whatsapp.net"
+    "jid": "6281345905196@s.whatsapp.net",
+    "notify": "."
   },
   "6285876946252@s.whatsapp.net": {
     "isContact": true,
@@ -4727,7 +4728,8 @@
     "id": "6281222884622@s.whatsapp.net",
     "name": "Alfian",
     "lid": "23274595578098@lid",
-    "jid": "6281222884622@s.whatsapp.net"
+    "jid": "6281222884622@s.whatsapp.net",
+    "notify": "~ Alfian"
   },
   "6285134367919@s.whatsapp.net": {
     "isContact": true,
