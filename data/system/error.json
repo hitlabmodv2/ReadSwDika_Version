@@ -5,9 +5,9 @@
       "source": "AutoSholat",
       "message": "[AutoSholat] Error scheduler: Unexpected token '}'",
       "stack": "Error: [AutoSholat] Error scheduler: Unexpected token '}'\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at runAutoSholat (file:///home/runner/workspace/index.js:1167:57)\n    at Timeout._onTimeout (file:///home/runner/workspace/index.js:1173:41)\n    at listOnTimeout (node:internal/timers:581:17)\n    at process.processTimers (node:internal/timers:519:7)",
-      "count": 201,
+      "count": 203,
       "firstSeen": "2026-05-24T06:18:04.893Z",
-      "lastSeen": "2026-05-24T13:38:32.561Z"
+      "lastSeen": "2026-05-24T13:40:36.771Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[HotReload] Gagal load 'src/handler/message.js':\u001b[Nm The requested module '../helper/userMemory.js' does not provide",
@@ -212,18 +212,18 @@
       "source": "unhandledRejection",
       "message": "Timed Out",
       "stack": "Error: Timed Out\n    at /home/runner/workspace/node_modules/socketon/lib/Utils/generics.js:153:32",
-      "count": 1,
+      "count": 2,
       "firstSeen": "2026-05-21T05:37:22.725Z",
-      "lastSeen": "2026-05-21T05:37:22.725Z"
+      "lastSeen": "2026-05-24T13:41:10.739Z"
     },
     {
       "fingerprint": "console.error::\u001b[Nm[CrashGuard] UnhandledRejection (N this minute):\u001b[Nm Timed Out",
       "source": "console.error",
       "message": "\u001b[31m[CrashGuard] UnhandledRejection (1 this minute):\u001b[39m Timed Out",
       "stack": "Error: \u001b[31m[CrashGuard] UnhandledRejection (1 this minute):\u001b[39m Timed Out\n    at console.error (file:///home/runner/workspace/index.js:366:27)\n    at process.<anonymous> (file:///home/runner/workspace/src/helper/crashGuard.js:131:17)\n    at process.emit (node:events:524:28)\n    at emitUnhandledRejection (node:internal/process/promises:250:13)\n    at throwUnhandledRejectionsMode (node:internal/process/promises:385:19)\n    at processPromiseRejections (node:internal/process/promises:470:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:96:32)",
-      "count": 1,
+      "count": 2,
       "firstSeen": "2026-05-21T05:37:22.700Z",
-      "lastSeen": "2026-05-21T05:37:22.700Z"
+      "lastSeen": "2026-05-24T13:41:10.733Z"
     },
     {
       "fingerprint": "command:hd::Connection Closed",

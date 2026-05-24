@@ -8,18 +8,18 @@
 ════════════════════════════════════════════════════════════════════════
   FILE     : infoerror.txt
   Bot      : Wily Bot
-  Update   : 24/05/2026, 13.38.32  (realtime — diperbarui otomatis setiap ada error)
+  Update   : 24/05/2026, 13.41.10  (realtime — diperbarui otomatis setiap ada error)
 ════════════════════════════════════════════════════════════════════════
 
   RINGKASAN
 ────────────────────────────────────────────────────────────────────────
   Total Jenis Error (unik)  : 47
-  Total Kejadian Error       : 1095
+  Total Kejadian Error       : 1099
   Maks. Simpan               : 200 jenis error
   Deduplikasi                : AKTIF — error sama digabung, tidak dicatat ulang
   Urutan                     : Terbaru di atas
 
-  DAFTAR ERROR LENGKAP  [47 jenis, 1095 kejadian total]
+  DAFTAR ERROR LENGKAP  [47 jenis, 1099 kejadian total]
 ────────────────────────────────────────────────────────────────────────
 
 ┌───────────────────────────────────────────────────────────────────────
@@ -30,9 +30,9 @@
 │
 │  DETAIL
 │  Sumber      : AutoSholat
-│  Frekuensi   : 201x (duplikat digabung)
+│  Frekuensi   : 203x (duplikat digabung)
 │  Pertama     : 24/05/2026, 06.18.04
-│  Terakhir    : 24/05/2026, 13.38.32
+│  Terakhir    : 24/05/2026, 13.40.36
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [AutoSholat] Error scheduler: Unexpected token '}'
@@ -441,9 +441,9 @@
 │
 │  DETAIL
 │  Sumber      : unhandledRejection
-│  Frekuensi   : 1x (baru terjadi)
+│  Frekuensi   : 2x (duplikat digabung)
 │  Pertama     : 21/05/2026, 05.37.22
-│  Terakhir    : 21/05/2026, 05.37.22
+│  Terakhir    : 24/05/2026, 13.41.10
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: Timed Out
@@ -458,9 +458,9 @@
 │
 │  DETAIL
 │  Sumber      : console.error
-│  Frekuensi   : 1x (baru terjadi)
+│  Frekuensi   : 2x (duplikat digabung)
 │  Pertama     : 21/05/2026, 05.37.22
-│  Terakhir    : 21/05/2026, 05.37.22
+│  Terakhir    : 24/05/2026, 13.41.10
 │
 │  STACK TRACE (3 baris pertama)
 │  ▶  Error: [31m[CrashGuard] UnhandledRejection (1 this minute):[39m Timed Out
@@ -874,6 +874,6 @@ Require stack:
 └───────────────────────────────────────────────────────────────────────
 
 ════════════════════════════════════════════════════════════════════════
-  End of Report  —  Total: 47 jenis, 1095 kejadian
-  Terakhir diperbarui: 24/05/2026, 13.38.32
+  End of Report  —  Total: 47 jenis, 1099 kejadian
+  Terakhir diperbarui: 24/05/2026, 13.41.10
 ════════════════════════════════════════════════════════════════════════
