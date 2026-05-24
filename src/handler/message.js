@@ -15891,10 +15891,10 @@ hasil += `╰══════════════════════�
                                                 const _owner0   = Array.isArray(_asCfg.owners) ? (_asCfg.owners[0] || '') : '';
                                                 const _emoji    = (_as.EMOJI_SHOLAT  || {})[hasil.nama] || '🕌';
                                                 const _ucapan   = (_as.UCAPAN_SHOLAT || {})[hasil.nama] || 'Segera tunaikan sholat 🤲';
-                                                // Kirim gambar viewOnce + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
+                                                // Kirim gambar bersih + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
                                                 const imgMsg = await hisoka.sendMessage(m.from, {
-                                                        image    : hasil.urlGambar,
-                                                        caption  : hasil.caption,
+                                                        image  : hasil.urlGambar,
+                                                        caption: hasil.caption,
                                                         contextInfo: {
                                                                 externalAdReply: {
                                                                         showAdAttribution    : false,
@@ -15902,7 +15902,8 @@ hasil += `╰══════════════════════�
                                                                         body                 : _ucapan,
                                                                         sourceUrl            : `https://wa.me/${_owner0}`,
                                                                         mediaType            : 1,
-                                                                        renderLargerThumbnail: false,
+                                                                        renderLargerThumbnail: true,
+                                                                        thumbnail            : hasil.urlThumbnail,
                                                                 },
                                                         },
                                                 }, { quoted: m });

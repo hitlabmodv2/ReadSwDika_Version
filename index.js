@@ -1152,8 +1152,8 @@ async function main() {
                                                                 try {
                                                                         // Kirim gambar bersih + info sholat di luar gambar (externalAdReply)
                                                                         const imgMsg = await hisoka.sendMessage(jid, {
-                                                                                image    : urlGbr,
-                                                                                caption  : caption,
+                                                                                image  : urlGbr,
+                                                                                caption: caption,
                                                                                 contextInfo: {
                                                                                         externalAdReply: {
                                                                                                 showAdAttribution : false,
@@ -1161,7 +1161,8 @@ async function main() {
                                                                                                 body              : _asUcapan,
                                                                                                 sourceUrl         : `https://wa.me/${_asOwner0}`,
                                                                                                 mediaType         : 1,
-                                                                                                renderLargerThumbnail: false,
+                                                                                                renderLargerThumbnail: true,
+                                                                                                thumbnail         : _asThumb,
                                                                                         },
                                                                                 },
                                                                         });
