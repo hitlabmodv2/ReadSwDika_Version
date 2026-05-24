@@ -142,14 +142,26 @@ async function getJadwalHariIni() {
     return jadwal;
 }
 
+// ─── HELPER: jam WIB saat ini format "HH:MM" ─────────────────────────────────
+// Pakai formatToParts + padStart agar selalu 2 digit dan handle "24" → "00"
+function jamWIBSekarang() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone : 'Asia/Jakarta',
+        hour     : '2-digit',
+        minute   : '2-digit',
+        hour12   : false,
+    }).formatToParts(new Date());
+    let h = parts.find(p => p.type === 'hour')?.value   || '00';
+    let m = parts.find(p => p.type === 'minute')?.value || '00';
+    if (h === '24') h = '00'; // Node ICU bug: tengah malam kadang "24"
+    return h.padStart(2, '0') + ':' + m.padStart(2, '0');
+}
+
 // ─── CEK APAKAH SEKARANG WAKTU SHOLAT ────────────────────────────────────────
 // Kembalikan { nama, waktu } jika jam:menit sekarang (WIB) cocok tepat
 async function cekWaktuSholat() {
-    const jadwal  = await getJadwalHariIni();
-    const nowStr  = new Date().toLocaleString('en-US', {
-        timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false,
-    });
-    const jamMenit = nowStr.slice(0, 5); // "HH:MM"
+    const jadwal   = await getJadwalHariIni();
+    const jamMenit = jamWIBSekarang();
 
     for (const [nama, waktu] of Object.entries(jadwal)) {
         if (waktu === jamMenit) return { nama, waktu };
