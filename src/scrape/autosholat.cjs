@@ -24,11 +24,11 @@ const FILE_CONFIG = path.join(process.cwd(), 'config.json');
 // File lokal di img/sholat/ — ringan, pasti tampil, tidak bergantung URL eksternal
 const IMG_DIR = path.join(process.cwd(), 'img', 'sholat');
 const GAMBAR_SHOLAT = {
-    Subuh   : path.join(IMG_DIR, 'subuh.jpg'),   // langit fajar masjid
-    Zuhur   : path.join(IMG_DIR, 'zuhur.jpg'),   // masjid siang terang
-    Ashar   : path.join(IMG_DIR, 'ashar.jpg'),   // golden hour sore
-    Maghrib : path.join(IMG_DIR, 'maghrib.jpg'), // sunset langit jingga
-    Isya    : path.join(IMG_DIR, 'isya.jpg',    // masjid malam bercahaya
+    Subuh   : path.join(IMG_DIR, 'subuh.png'),   // langit fajar masjid
+    Zuhur   : path.join(IMG_DIR, 'zuhur.png'),   // masjid siang terang
+    Ashar   : path.join(IMG_DIR, 'ashar.png'),   // golden hour sore
+    Maghrib : path.join(IMG_DIR, 'maghrib.png'), // sunset langit jingga
+    Isya    : path.join(IMG_DIR, 'isya.png'),    // masjid malam bercahaya
 };
 
 // ─── AUDIO ADZAN ──────────────────────────────────────────────────────────────

@@ -1,5 +1,34 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "PmR0UhVHpEfq1_5NA_oV6"
+uri = "file://img/sholat/subuh.png"
+type = "image"
+title = "masjid subuh fajar"
+
+[[generated]]
+id = "Csyt4JYSxWlFPcLCYyQZM"
+uri = "file://img/sholat/zuhur.png"
+type = "image"
+title = "masjid zuhur siang"
+
+[[generated]]
+id = "Svhb6SSv-dgyBC3GKb5Qw"
+uri = "file://img/sholat/ashar.png"
+type = "image"
+title = "masjid ashar golden hour"
+
+[[generated]]
+id = "yH71hjSCtGvdCvnWT0D73"
+uri = "file://img/sholat/maghrib.png"
+type = "image"
+title = "masjid maghrib sunset"
+
+[[generated]]
+id = "jpdZyW-f9QqJGmwKVbieE"
+uri = "file://img/sholat/isya.png"
+type = "image"
+title = "masjid isya malam"
 
 [[outputs]]
 id = "XHHvFLh_tTXfR1Nem4KPD"
