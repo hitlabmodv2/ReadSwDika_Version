@@ -245,12 +245,19 @@ async function simulasi(namaWaktu) {
         ? Object.keys(jadwal).find(k => k.toLowerCase() === namaWaktu.toLowerCase()) || 'Zuhur'
         : 'Zuhur';
     const waktu  = jadwal[nama];
+    const gambar = await buatGambarOverlay(nama);
+    const thumb  = await buatThumbnail(nama);
+    const owner0 = bacaOwner();
     return {
         nama,
         waktu,
-        caption  : buatCaption(nama, waktu, jadwal),
-        urlGambar: await buatGambarOverlay(nama, waktu),
-        urlAudio : getAudio(nama),
+        caption     : buatCaption(nama, waktu, jadwal),
+        urlGambar   : gambar,
+        urlThumbnail: thumb,
+        urlAudio    : getAudio(nama),
+        emoji       : EMOJI_SHOLAT[nama]  || '🕌',
+        ucapan      : UCAPAN_SHOLAT[nama] || 'Segera tunaikan sholat 🤲',
+        owner0,
         jadwal,
     };
 }

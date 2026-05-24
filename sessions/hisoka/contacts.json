@@ -361,7 +361,8 @@
     "id": "6289678522775@s.whatsapp.net",
     "name": "! Zacky Ariansyah",
     "lid": "193020829909081@lid",
-    "jid": "6289678522775@s.whatsapp.net"
+    "jid": "6289678522775@s.whatsapp.net",
+    "notify": "Zacky Ariansyah"
   },
   "62895339742323@s.whatsapp.net": {
     "isContact": true,
@@ -16549,7 +16550,8 @@
     "id": "62895704334234@s.whatsapp.net",
     "name": "▫️Dinda",
     "lid": "142696211599405@lid",
-    "jid": "62895704334234@s.whatsapp.net"
+    "jid": "62895704334234@s.whatsapp.net",
+    "notify": "☁️"
   },
   "6287847025977@s.whatsapp.net": {
     "isContact": true,
@@ -25280,7 +25282,8 @@
     "id": "6281358899877@s.whatsapp.net",
     "name": "▫️Not Lucky",
     "lid": "149383375024230@lid",
-    "jid": "6281358899877@s.whatsapp.net"
+    "jid": "6281358899877@s.whatsapp.net",
+    "notify": "Luwakzz"
   },
   "6285343518501@s.whatsapp.net": {
     "isContact": true,
@@ -31406,5 +31409,10 @@
     "id": "141446225068063@lid",
     "lid": "141446225068063@lid",
     "imgUrl": "changed"
+  },
+  "149383375024230@lid": {
+    "id": "149383375024230@lid",
+    "lid": "149383375024230@lid",
+    "notify": "Luwakzz"
   }
 }

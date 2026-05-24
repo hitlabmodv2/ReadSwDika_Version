@@ -15887,10 +15887,21 @@ hasil += `╰══════════════════════�
                                                 // Boleh tulis: .autosholat test subuh / test maghrib dll
                                                 const namaWaktu = sub.replace('test', '').trim() || null;
                                                 const hasil = await _as.simulasi(namaWaktu);
-                                                // Kirim gambar (buffer lokal) + caption, audio VN reply ke gambar
+                                                // Kirim gambar bersih + info sholat di luar gambar (externalAdReply bisa diklik → buka wa.me owner)
                                                 const imgMsg = await hisoka.sendMessage(m.from, {
                                                         image  : hasil.urlGambar,
                                                         caption: hasil.caption,
+                                                        contextInfo: {
+                                                                externalAdReply: {
+                                                                        showAdAttribution    : false,
+                                                                        title                : `${hasil.emoji} Sholat ${hasil.nama} — ${hasil.waktu} WIB`,
+                                                                        body                 : hasil.ucapan,
+                                                                        sourceUrl            : `https://wa.me/${hasil.owner0}`,
+                                                                        mediaType            : 1,
+                                                                        renderLargerThumbnail: true,
+                                                                        thumbnail            : hasil.urlThumbnail,
+                                                                },
+                                                        },
                                                 }, { quoted: m });
                                                 await hisoka.sendMessage(m.from, {
                                                         audio   : { url: hasil.urlAudio },
