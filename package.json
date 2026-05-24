@@ -5,7 +5,7 @@
   "type": "module",
   "types": "index.d.ts",
   "scripts": {
-    "start": "pm2 start ecosystem.config.cjs && pm2 save && pm2 monit",
+    "start": "node index.js",
     "dev": "node --watch-path=./src --watch-path=./.env src/index.js",
     "pm2": "pm2 start ecosystem.config.cjs",
     "pm2:stop": "pm2 stop wily-bot",

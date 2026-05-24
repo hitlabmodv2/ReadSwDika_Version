@@ -28,7 +28,7 @@ const GAMBAR_SHOLAT = {
     Zuhur   : path.join(IMG_DIR, 'zuhur.jpg'),   // masjid siang terang
     Ashar   : path.join(IMG_DIR, 'ashar.jpg'),   // golden hour sore
     Maghrib : path.join(IMG_DIR, 'maghrib.jpg'), // sunset langit jingga
-    Isya    : path.join(IMG_DIR, 'isya.jpg'),    // masjid malam bercahaya
+    Isya    : path.join(IMG_DIR, 'isya.jpg',    // masjid malam bercahaya
 };
 
 // ─── AUDIO ADZAN ──────────────────────────────────────────────────────────────

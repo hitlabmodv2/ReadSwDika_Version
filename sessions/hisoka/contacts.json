@@ -2784,7 +2784,8 @@
     "id": "6288986037769@s.whatsapp.net",
     "name": "Lita 14",
     "lid": "247734116335860@lid",
-    "jid": "6288986037769@s.whatsapp.net"
+    "jid": "6288986037769@s.whatsapp.net",
+    "notify": "🤷🏻‍♀️"
   },
   "6288268086752@s.whatsapp.net": {
     "isContact": true,
@@ -3309,7 +3310,8 @@
     "id": "6289504802678@s.whatsapp.net",
     "name": "! Rendra wa 126",
     "lid": "263445207371837@lid",
-    "jid": "6289504802678@s.whatsapp.net"
+    "jid": "6289504802678@s.whatsapp.net",
+    "notify": "Rendra pulang ada gulali"
   },
   "6281225635132@s.whatsapp.net": {
     "isContact": true,
@@ -3400,7 +3402,8 @@
     "id": "6285966168789@s.whatsapp.net",
     "name": "▫️Wayne",
     "lid": "85983277308@lid",
-    "jid": "6285966168789@s.whatsapp.net"
+    "jid": "6285966168789@s.whatsapp.net",
+    "notify": "Wayne"
   },
   "6285730994384@s.whatsapp.net": {
     "isContact": true,
@@ -4716,7 +4719,8 @@
     "id": "6285695777114@s.whatsapp.net",
     "name": "! Aisyah",
     "lid": "129334601846925@lid",
-    "jid": "6285695777114@s.whatsapp.net"
+    "jid": "6285695777114@s.whatsapp.net",
+    "notify": "╰っホム┌Ryuuka┐/⁠ᐠ⁠｡⁠ꞈ⁠｡⁠ᐟ⁠\\"
   },
   "6281222884622@s.whatsapp.net": {
     "isContact": true,
@@ -7932,7 +7936,8 @@
     "id": "628388589625@s.whatsapp.net",
     "name": "Kameriarikato ( Donasi Bot )",
     "lid": "82828679200798@lid",
-    "jid": "628388589625@s.whatsapp.net"
+    "jid": "628388589625@s.whatsapp.net",
+    "notify": "𝙢𝙖𝙪𝙡𝙖𝙣𝙖 𝙣𝙜𝙚𝙣"
   },
   "6285880926676@s.whatsapp.net": {
     "isContact": true,
@@ -31303,5 +31308,50 @@
     "id": "33479504965660@lid",
     "lid": "33479504965660@lid",
     "imgUrl": "removed"
+  },
+  "101949638746286@lid": {
+    "id": "101949638746286@lid",
+    "lid": "101949638746286@lid",
+    "imgUrl": "changed"
+  },
+  "55469821407306@lid": {
+    "id": "55469821407306@lid",
+    "lid": "55469821407306@lid",
+    "imgUrl": "changed"
+  },
+  "162981157560387@lid": {
+    "id": "162981157560387@lid",
+    "lid": "162981157560387@lid",
+    "imgUrl": "changed"
+  },
+  "83928425742502@lid": {
+    "id": "83928425742502@lid",
+    "lid": "83928425742502@lid",
+    "imgUrl": "changed"
+  },
+  "85590628409444@lid": {
+    "id": "85590628409444@lid",
+    "lid": "85590628409444@lid",
+    "imgUrl": "changed"
+  },
+  "116643124506842@lid": {
+    "id": "116643124506842@lid",
+    "lid": "116643124506842@lid",
+    "imgUrl": "removed"
+  },
+  "267211541323820@lid": {
+    "id": "267211541323820@lid",
+    "lid": "267211541323820@lid",
+    "imgUrl": "changed"
+  },
+  "127393243132132@lid": {
+    "id": "127393243132132@lid",
+    "lid": "127393243132132@lid",
+    "notify": "(T)ipii kinetik"
+  },
+  "29768636432576@lid": {
+    "id": "29768636432576@lid",
+    "lid": "29768636432576@lid",
+    "imgUrl": "changed"
   }
 }
